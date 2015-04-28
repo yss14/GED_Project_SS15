@@ -2,12 +2,16 @@
 #pragma once
 
 #include <string>
+#include <fstream>
+#include <iostream>
+#include <sstream>
 
-class ConfigParser
-{
+class ConfigParser{
 public:
 	ConfigParser();
 	~ConfigParser();
+
+	void load(std::string filepath);
 
 	struct Color{
 		float r;
@@ -23,6 +27,5 @@ private:
 	float terrainWidth;
 	float terrainDepth;
 	float terrainHeight;
-
 };
 
