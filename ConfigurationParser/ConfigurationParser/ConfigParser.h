@@ -1,5 +1,5 @@
 #pragma once
-#pragma_once
+#pragma once
 
 #include <string>
 
