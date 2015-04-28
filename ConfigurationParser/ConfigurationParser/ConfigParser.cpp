@@ -57,3 +57,31 @@ void ConfigParser::load(std::string filepath){
 	ifs.close();
 	std::cout << "Loaded " << filepath << "\n";
 }
+
+float ConfigParser::getSpinning(){
+	return this->spinning;
+}
+
+float ConfigParser::getSpinSpeed(){
+	return this->spinSpeed;
+}
+
+ConfigParser::Color ConfigParser::getBackgroundColor(){
+	return this->backgroundColor;
+}
+
+std::string ConfigParser::getTerrainPath(){
+	return this->terrainPath;
+}
+
+float ConfigParser::getTerrainWidth(){
+	return this->terrainWidth;
+}
+
+float ConfigParser::getTerrainDepth(){
+	return this->terrainDepth;
+}
+
+float ConfigParser::getTerrainHeight(){
+	return this->terrainHeight;
+}

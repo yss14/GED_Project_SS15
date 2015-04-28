@@ -11,13 +11,22 @@ public:
 	ConfigParser();
 	~ConfigParser();
 
-	void load(std::string filepath);
-
 	struct Color{
 		float r;
 		float g;
 		float b;
 	};
+
+	void load(std::string filepath);
+
+	//Getter
+	float getSpinning();
+	float getSpinSpeed();
+	ConfigParser::Color getBackgroundColor();
+	std::string getTerrainPath();
+	float getTerrainWidth();
+	float getTerrainDepth();
+	float getTerrainHeight();
 
 private:
 	float spinning;
