@@ -22,6 +22,7 @@ private:
 	std::string terrainPath;
 	float terrainWidth;
 	float terrainDepth;
-	float terrainHeight;
+	float terrainHeight;
+
 };
 

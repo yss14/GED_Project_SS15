@@ -69,6 +69,9 @@
   <ItemGroup>
     <ClCompile Include="ConfigParser.cpp" />
   </ItemGroup>
+  <ItemGroup>
+    <None Include="game.cfg" />
+  </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
   </ImportGroup>
