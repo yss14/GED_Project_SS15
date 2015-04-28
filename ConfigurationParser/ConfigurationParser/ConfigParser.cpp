@@ -30,10 +30,12 @@ void ConfigParser::load(std::string filepath){
 				sstr << readValue;
 				sstr >> this->backgroundColor.r;
 
+				sstr.clear();
 				ifs >> readValue;
 				sstr << readValue;
 				sstr >> this->backgroundColor.g;
 
+				sstr.clear();
 				ifs >> readValue;
 				sstr << readValue;
 				sstr >> this->backgroundColor.b;
