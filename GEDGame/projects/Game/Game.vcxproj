@@ -64,7 +64,7 @@
       <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <AdditionalDependencies>usp10.lib;comctl32.lib;dxguid.lib;d3dcompiler.lib;comdlg32.lib;GEDUtilsd.lib;%(AdditionalDependencies)</AdditionalDependencies>
-      <AdditionalLibraryDirectories>..\..\..\..\external\Tools\lib\$(Platform)\</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>C:\Users\Yss\Desktop\GED\Github\GED_Project_SS15\GEDGame\lib\$(Platform)\</AdditionalLibraryDirectories>
     </Link>
     <CustomBuildStep>
       <Command>
