@@ -7,6 +7,8 @@ bool descSort(int a, int b);
 
 int main(){
 
+	std::cout << "Please type in some numbers (0 to esc):\n";
+
 	std::vector<int> myVector;
 	std::vector<int>::iterator it;
 
