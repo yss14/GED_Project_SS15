@@ -64,7 +64,7 @@
       <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <AdditionalDependencies>usp10.lib;comctl32.lib;dxguid.lib;d3dcompiler.lib;comdlg32.lib;GEDUtilsd.lib;%(AdditionalDependencies)</AdditionalDependencies>
-      <AdditionalLibraryDirectories>C:\Users\yss\Documents\GitHub\external\Tools\lib\VS2013\win32</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>$(SolutionDir)\..\external\Tools\lib\VS2013\$(Platform)\</AdditionalLibraryDirectories>
     </Link>
     <CustomBuildStep>
       <Command>
@@ -103,7 +103,7 @@ exit 1</Command>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
       <AdditionalDependencies>usp10.lib;comctl32.lib;dxguid.lib;d3dcompiler.lib;kernel32.lib;gdi32.lib;comdlg32.lib;GEDUtils.lib;%(AdditionalDependencies)</AdditionalDependencies>
-      <AdditionalLibraryDirectories>C:\Users\yss\Documents\GitHub\external\Tools\lib\VS2013\win32</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>$(SolutionDir)\..\external\Tools\lib\VS2013\$(Platform)\</AdditionalLibraryDirectories>
     </Link>
     <CustomBuildStep>
       <Command>
