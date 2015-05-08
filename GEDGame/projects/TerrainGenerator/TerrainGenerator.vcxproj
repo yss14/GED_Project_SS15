@@ -52,12 +52,12 @@
       <Optimization>Disabled</Optimization>
       <PreprocessorDefinitions>WIN32;_DEBUG;_CONSOLE;_LIB;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <SDLCheck>true</SDLCheck>
-      <AdditionalIncludeDirectories>$(SolutionDir)\..\external\Tools\include\</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>..\..\..\..\external\Tools\include\</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalLibraryDirectories>$(SolutionDir)\..\external\Tools\lib\VS2013\$(Platform)\</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>..\..\..\..\external\Tools\lib\VS2013\$(Platform)\</AdditionalLibraryDirectories>
       <AdditionalDependencies>GEDUtilsd.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
@@ -70,7 +70,7 @@
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <PreprocessorDefinitions>WIN32;NDEBUG;_CONSOLE;_LIB;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <SDLCheck>true</SDLCheck>
-      <AdditionalIncludeDirectories>$(SolutionDir)\..\external\Tools\include\</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>..\..\..\..\external\Tools\include\</AdditionalIncludeDirectories>
       <InlineFunctionExpansion>AnySuitable</InlineFunctionExpansion>
     </ClCompile>
     <Link>
@@ -78,7 +78,7 @@
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
-      <AdditionalLibraryDirectories>$(SolutionDir)\..\external\Tools\lib\VS2013\$(Platform)\</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>..\..\..\..\external\Tools\lib\VS2013\$(Platform)\</AdditionalLibraryDirectories>
       <AdditionalDependencies>GEDUtils.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
