@@ -10,11 +10,22 @@
 #include <TextureGenerator.h>
 #include "DiamondSquare.h"
 
+#include "Vec3f.h"
+
 #define IDX(x, y, w)((x) + (y) * (w))
 
 
 int _tmain(int argc, _TCHAR* argv[])
 {
+	std::cout << "TESTING: " << std::endl;
+
+	Vec3f testVec1(1,-5,2);
+	Vec3f testVec2(2,0,3);
+	Vec3f sol = testVec1.cross(testVec2);
+	std::cout << sol.printVec();
+
+	system("pause");
+
 	int resolution;
 	_TCHAR* pathHeightfield = L"";
 	_TCHAR* pathColor = L"";
@@ -100,6 +111,6 @@ int _tmain(int argc, _TCHAR* argv[])
 
 	tg.generateAndStoreImages(pic, resolution, pathColor, pathNormal);
 	
-	system("pause");
+	
 	return 0;
 }

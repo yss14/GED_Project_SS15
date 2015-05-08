@@ -2,8 +2,13 @@
 #include "TextureGenerator.h"
 
 
-TextureGenerator::TextureGenerator()
+TextureGenerator::TextureGenerator(const std::wstring& texturePathLowFlat,
+	const std::wstring& texturePathLowSteep,
+	const std::wstring& texturePathHighFlat,
+	const std::wstring& texturePathHighSteep
+	)
 {
+
 }
 
 
