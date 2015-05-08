@@ -117,7 +117,11 @@ int _tmain(int argc, _TCHAR* argv[])
 	}
 
 	std::cout << "[Image] Generating color&normal..." << std::endl;
-	GEDUtils::TextureGenerator tg(L"textures/gras16.jpg", L"textures/mud02.jpg", L"textures/rock1.jpg", L"textures/rock4.jpg");
+	GEDUtils::TextureGenerator tg(std::wstring(L"../../../../external/textures/gras15.jpg"),
+		std::wstring(L"../../../../external/textures/ground02.jpg"),
+		std::wstring(L"../../../../external/textures/pebble03.jpg"),
+		std::wstring(L"../../../../external/textures/rock5.jpg"));
+
 	tg.generateAndStoreImages(pic, resolution, pathColor, pathNormal);
 	
 	system("pause");
