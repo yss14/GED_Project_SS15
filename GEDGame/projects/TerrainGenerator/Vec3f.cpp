@@ -1,3 +1,4 @@
+// Toms Vector feature
 #include "stdafx.h"
 #include "Vec3f.h"
 
