@@ -18,14 +18,14 @@ private:
 	float roughness;
 	int smoothCount;
 	int smoothRange;
-	float ri;
+	float roughnessIteration;
 	std::vector<float> field;
 	std::default_random_engine randomizer;
 
-	float getRandom(float max, float min);
-	void diamond(int x, int y, int s, float ri);
-	void square(int x, int y, int s, float ri);
-	void normalize();
-	void smooth();
+	float getRandom(float min, float max);
+	void diamondStep(int x, int y, int s, float ri);
+	void squareStep(int x, int y, int s, float ri);
+	void normalizeHeightField();
+	void smoothHeightField();
 };
 

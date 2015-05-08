@@ -61,37 +61,12 @@ int _tmain(int argc, _TCHAR* argv[])
 		}
 	}
 
-	/*
-	 * Unnecessary part of Assingment02
-	 *
-
-	float* heightMapData = new float[resolution * resolution];
-
-	std::default_random_engine random(time(0));
-	std::normal_distribution<float> distribution(0.5, 0.5);
-
-	std::cout << "Generating random values for heightmap..." << std::endl;
-	for (int x = 0; x < resolution; x++)
-	{
-		for (int y = 0; y < resolution; y++)
-		{
-			float value = distribution(random);
-			while (value > 1 || value < 0)
-				value = distribution(random);
-
-			heightMapData[IDX(x, y, resolution)] = value;
-			//std::cout << imgData[IDX(x, y, resolution)] << std::endl;
-		}
-	}
-	delete heightMapData; */
-
-
-	// Play around with this values ;)
+	// Play around with these values ;)
 	float roughness = 0.6f; // "spikyness", the closer to zero, the flatter
 	int smoothCount = 25;	// smoothCount times smoothed
 	int smoothRange = 2;	// "Smoothing Radius" 
 
-	GEDUtils::SimpleImage img(resolution, resolution);
+	GEDUtils::SimpleImage heightImage(resolution, resolution);
 
 	DiamondSquare ds(resolution, roughness, smoothCount, smoothRange);
 	std::vector<float> pic = ds.doDiamondSquare();
@@ -101,15 +76,15 @@ int _tmain(int argc, _TCHAR* argv[])
 	{
 		for (int y = 0; y < resolution; y++)
 		{
-			img.setPixel(x, y, pic[IDX(x, y, resolution + 1)]);
+			heightImage.setPixel(x, y, pic[IDX(x, y, resolution + 1)]);
 		}
 	}
+
 	std::cout << "[Image] Saving image..." << std::endl;
+	
 	try
 	{
-		//_TCHAR c[128];
-		//swprintf(c, sizeof(c), L"%.1f_%s", roughness, pathHeightfield);
-		img.save(pathHeightfield);
+		heightImage.save(pathHeightfield);
 	}
 	catch (std::exception& e)
 	{
@@ -117,6 +92,7 @@ int _tmain(int argc, _TCHAR* argv[])
 	}
 
 	std::cout << "[Image] Generating color&normal..." << std::endl;
+
 	GEDUtils::TextureGenerator tg(std::wstring(L"../../../../external/textures/gras15.jpg"),
 		std::wstring(L"../../../../external/textures/ground02.jpg"),
 		std::wstring(L"../../../../external/textures/pebble03.jpg"),

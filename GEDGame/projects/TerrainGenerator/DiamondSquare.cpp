@@ -7,7 +7,7 @@ DiamondSquare::DiamondSquare(int resolution, float roughness, int smoothCount, i
 {
 	this->resolution = resolution + 1; // +1 because (2^n + 1)^2
 	this->roughness = roughness;
-	this->ri = roughness;
+	this->roughnessIteration = roughness;
 	this->smoothCount = smoothCount;
 	this->smoothRange = smoothRange;
 	this->randomizer = std::default_random_engine(time(0));
@@ -27,44 +27,71 @@ std::vector<float> DiamondSquare::doDiamondSquare()
 	field[IDX(0, resolution - 1, resolution)] = getRandom(0, 1);
 	field[IDX(resolution - 1, resolution - 1, resolution)] = getRandom(0, 1);
 
-	int r = this->resolution-1;
+	int res = this->resolution-1;
 
-	for (int s = r; s >= 2; s /= 2) 
+	for (int step = res; step >= 2; step /= 2) 
 	{
-		int halfstep = s / 2;
-		for (int y = halfstep; y < r; y += s)
-			for (int x = halfstep; x < r; x += s)
-				diamond(x, y, halfstep, ri);
+		int halfstep = step / 2;
 
-		for (int y = 0; y <= r; y += s)
-			for (int x = halfstep; x < r; x += s)
-				square(x, y, halfstep, ri);
+		for (int y = halfstep; y < res; y += step)
+		{
+			for (int x = halfstep; x < res; x += step)
+			{
+				diamondStep(x, y, halfstep, roughnessIteration);
+			}
+		}
 
-		for (int y = halfstep; y < r; y += s)
-			for (int x = 0; x <= r; x += s)
-				square(x, y, halfstep, ri);
+		for (int y = 0; y <= res; y += step)
+		{
+			for (int x = halfstep; x < res; x += step)
+			{
+				squareStep(x, y, halfstep, roughnessIteration);
+			}
+		}
 
-		ri *= roughness;
+		for (int y = halfstep; y < res; y += step)
+		{
+			for (int x = 0; x <= res; x += step)
+			{
+				squareStep(x, y, halfstep, roughnessIteration);
+			}
+		}
+
+		roughnessIteration *= roughness;
 	}
-	normalize();
+
+	normalizeHeightField();
+
 	std::cout << "[DiamondSquare] Smoothing Heightmap..." << std::endl;
+
 	for (int i = 0; i < smoothCount; i++)
-		smooth();
+	{
+		smoothHeightField();
+	}
+
 	return field;
 }
 
-void DiamondSquare::normalize()
+void DiamondSquare::normalizeHeightField()
 {
 	std::cout << "[DiamondSquare] Normalizing Heightmap..." << std::endl;
+
 	float min = FLT_MAX;
 	float max = -FLT_MAX;
+
 	for (float val : field)
 	{
 		if (val < min)
+		{
 			min = val;
+		}
+
 		if (val > max)
+		{
 			max = val;
+		}
 	}
+
 	float diff = max - min;
 
 	for (float &val : field)
@@ -73,65 +100,75 @@ void DiamondSquare::normalize()
 	}
 }
 
-void DiamondSquare::smooth()
+void DiamondSquare::smoothHeightField()
 /*
 * Smoothes the Vector, by averaging
 */
 {
-	std::vector<float> v2(resolution*resolution);
+	std::vector<float> tempHeightField(resolution*resolution);
+
 	for (int x = 0; x < resolution; x++)
 	{
 		for (int y = 0; y < resolution; y++)
 		{
 			float sum = 0.0f;
 			int count = 0;
+
 			for (int i = -smoothRange; i <= smoothRange; i++)
 			{
 				int tmp = x + i;
+
 				if (tmp >= 0 && tmp < resolution)
 				{
 					sum += field[IDX(tmp, y, resolution)];
 					count++;
 				}
 			}
-			v2[IDX(x, y, resolution)] = sum / count;
+
+			tempHeightField[IDX(x, y, resolution)] = sum / count;
 		}
 	}
+
 	for (int x = 0; x < resolution; x++)
 	{
 		for (int y = 0; y < resolution; y++)
 		{
 			float sum = 0.0f;
 			int count = 0;
+
 			for (int j = -smoothRange; j <= smoothRange; j++)
 			{
 				int tmp = y + j;
+
 				if (tmp >= 0 && tmp < resolution)
 				{
-					sum += v2[IDX(x, tmp, resolution)];
+					sum += tempHeightField[IDX(x, tmp, resolution)];
 					count++;
 				}
 			}
+
 			field[IDX(x, y, resolution)] = sum / count;
 		}
 	}
 }
 
 
-void DiamondSquare::diamond(int x, int y, int s, float ri)
+void DiamondSquare::diamondStep(int x, int y, int s, float roughnessIteration)
 /*
 * "Diamon-step" of the DiamondSquare-Algorythm
 */
 {
-	field[IDX(x, y, resolution)] =
-		(field[IDX(x - s, y - s, resolution)] +
+	field[IDX(x, y, resolution)] = (
+		field[IDX(x - s, y - s, resolution)] +
 		field[IDX(x + s, y - s, resolution)] +
 		field[IDX(x - s, y + s, resolution)] +
-		field[IDX(x + s, y + s, resolution)]) / 4;
-	field[IDX(x, y, resolution)] += getRandom(-1, 1) * ri;
+		field[IDX(x + s, y + s, resolution)]
+		) / 4;
+
+	field[IDX(x, y, resolution)] += getRandom(-1, 1) * roughnessIteration;
 }
 
-void DiamondSquare::square(int x, int y, int s, float ri)
+void DiamondSquare::squareStep(int x, int y, int s, float roughnessIteration)
 /*
  * "Square-step" of the DiamondSquare-Algorythm
 */
@@ -144,24 +181,27 @@ void DiamondSquare::square(int x, int y, int s, float ri)
 		sum += field[IDX(x - s, y, resolution)];
 		counter++;
 	}
+
 	if (y - s >= 0)
 	{
 		sum += field[IDX(x, y - s, resolution)];
 		counter++;
 	}
+
 	if (x + s < resolution)
 	{
-		int temp = 
 		sum += field[IDX(x + s, y, resolution)];
 		counter++;
 	}
+
 	if (y + s < resolution)
 	{
 		sum += field[IDX(x, y + s, resolution)];
 		counter++;
 	}
+
 	field[IDX(x, y, resolution)] = sum / counter;
-	field[IDX(x, y, resolution)] += getRandom(-1, 1) * ri;
+	field[IDX(x, y, resolution)] += getRandom(-1, 1) * roughnessIteration;
 }
 
 float DiamondSquare::getRandom(float min, float max)
@@ -173,8 +213,12 @@ float DiamondSquare::getRandom(float min, float max)
 
 	std::normal_distribution<float> distribution(center, (max - min));
 	float value = distribution(this->randomizer);
+
 	while (value > max || value < min)
+	{
 		value = distribution(this->randomizer);
+	}
+
 	return value;
 }
 
@@ -186,7 +230,9 @@ void DiamondSquare::printField()
 		{
 			printf("%.3f\t", field[IDX(x, y, resolution)]);
 		}
+
 		std::cout << std::endl;
 	}
+
 	std::cout << std::endl;
 }
