@@ -9,6 +9,7 @@
 #include <SimpleImage.h>
 #include <TextureGenerator.h>
 #include "DiamondSquare.h"
+#include "TextureGenerator.h"
 
 #include "Vec3f.h"
 
@@ -65,7 +66,7 @@ int _tmain(int argc, _TCHAR* argv[])
 
 	// Play around with these values ;)
 	float roughness = 0.6f; // "spikyness", the closer to zero, the flatter
-	int smoothCount = 25;	// smoothCount times smoothed
+	int smoothCount = 1;	// smoothCount times smoothed
 	int smoothRange = 2;	// "Smoothing Radius" 
 
 	GEDUtils::SimpleImage heightImage(resolution, resolution);
@@ -101,7 +102,16 @@ int _tmain(int argc, _TCHAR* argv[])
 		std::wstring(L"../../../../external/textures/rock5.jpg"));
 
 	tg.generateAndStoreImages(pic, resolution, pathColor, pathNormal);
+
+
+	//Own implementation
+	TextureGenerator tg_own(std::wstring(L"../../../../external/textures/gras15.jpg"),
+		std::wstring(L"../../../../external/textures/ground02.jpg"),
+		std::wstring(L"../../../../external/textures/pebble03.jpg"),
+		std::wstring(L"../../../../external/textures/rock5.jpg"));
 	
+	tg_own.generateAndStoreImages(pic, resolution, pathColor, pathNormal);
+
 	system("pause");
 	
 	return 0;
