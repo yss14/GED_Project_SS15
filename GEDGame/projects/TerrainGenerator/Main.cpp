@@ -1,4 +1,4 @@
-#include "TextureGenerator.h"
+/*#include "TextureGenerator.h"
 
 
 int main(){
@@ -6,4 +6,4 @@ int main(){
 	GEDUtils::Vec2f myVector = GEDUtils::Vec2f();
 
 	return 0;
-}
+}*/

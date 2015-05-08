@@ -1,3 +1,0 @@
-echo "Deleting old resources..."
-del /Q "$(IntDir)*"
-del /Q "$(OutDir)resources\*"

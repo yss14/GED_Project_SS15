@@ -24,6 +24,9 @@
     <ClInclude Include="targetver.h">
       <Filter>Headerdateien</Filter>
     </ClInclude>
+    <ClInclude Include="DiamondSquare.h">
+      <Filter>Headerdateien</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="stdafx.cpp">
@@ -32,7 +35,7 @@
     <ClCompile Include="TerrainGenerator.cpp">
       <Filter>Quelldateien</Filter>
     </ClCompile>
-    <ClCompile Include="Main.cpp">
+    <ClCompile Include="DiamondSquare.cpp">
       <Filter>Quelldateien</Filter>
     </ClCompile>
   </ItemGroup>
