@@ -1,14 +1,17 @@
 // TerrainGenerator.cpp : Definiert den Einstiegspunkt für die Konsolenanwendung.
 //
 #include "stdafx.h"
+#include <cstdlib>
 #include <string>
-#include <vector>
+#include <random>
 #include <iostream>
 #include <ctime>
 #include <SimpleImage.h>
 #include <TextureGenerator.h>
+#include "DiamondSquare.h"
 
 #define IDX(x, y, w)((x) + (y) * (w))
+
 
 int _tmain(int argc, _TCHAR* argv[])
 {
@@ -17,13 +20,7 @@ int _tmain(int argc, _TCHAR* argv[])
 	_TCHAR* pathColor = L"";
 	_TCHAR* pathNormal = L"";
 
-	/*std::cout << argc <<std::endl;
-
-	for (int i = 0; i < argc; i++)
-	{
-		std::wcout << argv[i] << std::endl;
-	}*/
-
+	// Invalid parameters
 	if (argc != 9)
 	{
 		std::cerr << "Usage: -r <resolution> -o_height <output heightfield filename> -o_color <output color filename> -o_normal <output normal filename>" << std::endl;
@@ -31,6 +28,7 @@ int _tmain(int argc, _TCHAR* argv[])
 		return 1;
 	}
 
+	// Read parameters
 	for (int i = 0; i < argc; i++)
 	{
 		std::wstring arg(argv[i]);
@@ -38,7 +36,7 @@ int _tmain(int argc, _TCHAR* argv[])
 		{
 			resolution = _tstoi(argv[i + 1]);
 			i++;
-			if (resolution <= 0)
+			if (resolution <= 0) // Invalid resolution
 			{
 				std::cerr << "Usage: -r <resolution> -o_height <output heightfield filename> -o_color <output color filename> -o_normal <output normal filename>" << std::endl;
 				std::cerr << "resolution must be > 0" << std::endl;
@@ -63,37 +61,64 @@ int _tmain(int argc, _TCHAR* argv[])
 		}
 	}
 
+	/*
+	 * Unnecessary part of Assingment02
+	 *
+
 	float* heightMapData = new float[resolution * resolution];
 
-	std::srand(std::time(0));
+	std::default_random_engine random(time(0));
+	std::normal_distribution<float> distribution(0.5, 0.5);
 
 	std::cout << "Generating random values for heightmap..." << std::endl;
 	for (int x = 0; x < resolution; x++)
 	{
 		for (int y = 0; y < resolution; y++)
 		{
-			heightMapData[IDX(x, y, resolution)] = (std::rand() % 1001) / 1000.0f;
+			float value = distribution(random);
+			while (value > 1 || value < 0)
+				value = distribution(random);
+
+			heightMapData[IDX(x, y, resolution)] = value;
 			//std::cout << imgData[IDX(x, y, resolution)] << std::endl;
 		}
 	}
+	delete heightMapData; */
+
+
+	// Play around with this values ;)
+	float roughness = 0.6f; // "spikyness", the closer to zero, the flatter
+	int smoothCount = 25;	// smoothCount times smoothed
+	int smoothRange = 2;	// "Smoothing Radius" 
 
 	GEDUtils::SimpleImage img(resolution, resolution);
 
-	std::cout << "Writing image..." << std::endl;
+	DiamondSquare ds(resolution, roughness, smoothCount, smoothRange);
+	std::vector<float> pic = ds.doDiamondSquare();
+
+	std::cout << "[Image] Writing image..." << std::endl;
 	for (int x = 0; x < resolution; x++)
 	{
 		for (int y = 0; y < resolution; y++)
 		{
-			img.setPixel(x, y, heightMapData[IDX(x, y, resolution)]);
+			img.setPixel(x, y, pic[IDX(x, y, resolution + 1)]);
 		}
 	}
-	std::cout << "Saving image..." << std::endl;
-	img.save(pathHeightfield);
+	std::cout << "[Image] Saving image..." << std::endl;
+	try
+	{
+		//_TCHAR c[128];
+		//swprintf(c, sizeof(c), L"%.1f_%s", roughness, pathHeightfield);
+		img.save(pathHeightfield);
+	}
+	catch (std::exception& e)
+	{
+		std::cerr << e.what();
+	}
 
-	//GEDUtils::TextureGenerator::generateAndStoreImages(heightMapData, resolution, pathColor, pathNormal);
-
-	delete heightMapData;
-	
+	std::cout << "[Image] Generating color&normal..." << std::endl;
+	GEDUtils::TextureGenerator tg(L"textures/gras16.jpg", L"textures/mud02.jpg", L"textures/rock1.jpg", L"textures/rock4.jpg");
+	tg.generateAndStoreImages(pic, resolution, pathColor, pathNormal);
 	
 	system("pause");
 	return 0;
