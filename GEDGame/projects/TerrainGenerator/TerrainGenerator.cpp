@@ -83,7 +83,7 @@ int _tmain(int argc, _TCHAR* argv[])
 		}
 	}
 
-	ds.printField();
+	if (resolution <= 8) ds.printField();
 
 	std::cout << "[Image] Saving image..." << std::endl;
 	

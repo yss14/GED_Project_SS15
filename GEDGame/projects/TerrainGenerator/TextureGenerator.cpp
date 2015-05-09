@@ -51,16 +51,21 @@ void TextureGenerator::generateNormals(const std::vector<float>& heightfield, in
 				//std::cout << "Calc: " << heightfield[IDX(x, y + 1, resolution)] << " - " << heightfield[IDX(x, y, resolution)] << "\n";
 			}
 
-			std::cout << "X-Vector: " << vecXAxes.printVec() << "\n";
-			std::cout << "Y-Vector: " << vecYAxes.printVec() << "\n";
+			if(resolution <= 8) std::cout << "X-Vector: " << vecXAxes.printVec() << "\n";
+			if (resolution <= 8) std::cout << "Y-Vector: " << vecYAxes.printVec() << "\n";
 
 			normalAtCurPoint = vecXAxes.cross(vecYAxes);
-			std::cout << "Normal: " << normalAtCurPoint.printVec() << "\n";
+
+			//Rescaling because of different dimensions
+			normalAtCurPoint.x *= resolution;
+			normalAtCurPoint.y *= resolution;
+
+			if (resolution <= 8) std::cout << "Normal: " << normalAtCurPoint.printVec() << "\n";
 			normalAtCurPoint.normalize();
 
-			std::cout << "Normalized normal: " << normalAtCurPoint.printVec() << "\n\n";
+			if (resolution <= 8) std::cout << "Normalized normal: " << normalAtCurPoint.printVec() << "\n\n";
 
-			normalImage.setPixel(x, y, (normalAtCurPoint.x/2.0f)+0.5f, (normalAtCurPoint.y/2.0f)+0.5f, normalAtCurPoint.z);
+			normalImage.setPixel(x, y, (normalAtCurPoint.x/2.0f)+0.5f, (normalAtCurPoint.y/2.0f)+0.5f, (normalAtCurPoint.z/2.0f)+0.5f);
 		}
 	}
 
