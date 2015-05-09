@@ -18,9 +18,6 @@ TextureGenerator::~TextureGenerator()
 
 void TextureGenerator::generateNormals(const std::vector<float>& heightfield, int resolution, _TCHAR* path)
 {
-
-	//std::cout << "Resolution: " << resolution << "\n";
-
 	//Init 3 vectors to save memory while runtime
 	Vec3f normalAtCurPoint(0.0f, 0.0f, 0.0f);
 	Vec3f vecXAxes(0.0f, 0.0f, 0.0f);
@@ -37,41 +34,41 @@ void TextureGenerator::generateNormals(const std::vector<float>& heightfield, in
 			vecXAxes.y = 0.0f;
 			vecYAxes.x = 0.0f;
 			vecYAxes.y = 1.0f;
-			
-			//Forward Differecnes
-			/*if (x == resolution - 1){
-				//Special treatment for border values concerning x-axes
-			}
-			else if (y == resolution - 1){
-				//Special treatment for border values concerning x-axes
-			}
-			else{
-				//Normal treatment
-				vecXAxes.z = (heightfield[IDX(x + 1, y, resolution)] - heightfield[IDX(x, y, resolution)]) / (1.0f);
-				vecYAxes.z = (heightfield[IDX(x, y + 1, resolution)] - heightfield[IDX(x, y, resolution)]) / (1.0f);
-				//std::cout << "Calc: " << heightfield[IDX(x, y + 1, resolution)] << " - " << heightfield[IDX(x, y, resolution)] << "\n";
-			}*/
+
+			int heightMapRes = sqrt(heightfield.size());
 
 			//Central Differecnes
-			if (x == 0){
-
+			if (x == 0)
+			{
+				//Forward Differences
+				vecXAxes.z = (heightfield[IDX(x + 1, y, heightMapRes)] - heightfield[IDX(x, y, heightMapRes)]);
 			}
-			else if(x == resolution - 1){
-
+			else if (x == heightMapRes - 2)
+			{
+				//Backward Differences
+				vecXAxes.z = (heightfield[IDX(x, y, heightMapRes)] - heightfield[IDX(x - 1, y, heightMapRes)]);
 			}
-			else if (y == 0){
-
+			else
+			{
+				//Central Differences
+				vecXAxes.z = (heightfield[IDX(x + 1, y, heightMapRes)] - heightfield[IDX(x - 1, y, heightMapRes)]) / 2.0f;
 			}
-			else if (y == resolution - 1){
-
+			
+			if (y == 0)
+			{
+				//Forward Differences
+				vecYAxes.z = (heightfield[IDX(x, y + 1, heightMapRes)] - heightfield[IDX(x, y, heightMapRes)]);
 			}
-			else{
-				vecXAxes.z = (heightfield[IDX(x + 1, y, resolution)] - heightfield[IDX(x - 1, y, resolution)]) / 2.0f;
-				vecYAxes.z = (heightfield[IDX(x, y + 1, resolution)] - heightfield[IDX(x, y - 1, resolution)]) / 2.0f;
+			else if (y == heightMapRes - 2)
+			{
+				//Backward Differences
+				vecYAxes.z = (heightfield[IDX(x, y, heightMapRes)] - heightfield[IDX(x, y - 1, heightMapRes)]);
 			}
-
-			if(resolution <= 8) std::cout << "X-Vector: " << vecXAxes.printVec() << "\n";
-			if (resolution <= 8) std::cout << "Y-Vector: " << vecYAxes.printVec() << "\n";
+			else
+			{
+				//Central Differences
+				vecYAxes.z = (heightfield[IDX(x, y + 1, heightMapRes)] - heightfield[IDX(x, y - 1, heightMapRes)]) / 2.0f;
+			}
 
 			normalAtCurPoint = vecXAxes.cross(vecYAxes);
 
@@ -79,10 +76,7 @@ void TextureGenerator::generateNormals(const std::vector<float>& heightfield, in
 			normalAtCurPoint.x *= resolution;
 			normalAtCurPoint.y *= resolution;
 
-			if (resolution <= 8) std::cout << "Normal: " << normalAtCurPoint.printVec() << "\n";
 			normalAtCurPoint.normalize();
-
-			if (resolution <= 8) std::cout << "Normalized normal: " << normalAtCurPoint.printVec() << "\n\n";
 
 			normalImage.setPixel(x, y, (normalAtCurPoint.x/2.0f)+0.5f, (normalAtCurPoint.y/2.0f)+0.5f, (normalAtCurPoint.z/2.0f)+0.5f);
 		}
