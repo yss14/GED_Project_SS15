@@ -38,7 +38,8 @@ void TextureGenerator::generateNormals(const std::vector<float>& heightfield, in
 			vecYAxes.x = 0.0f;
 			vecYAxes.y = 1.0f;
 			
-			if (x == resolution - 1){
+			//Forward Differecnes
+			/*if (x == resolution - 1){
 				//Special treatment for border values concerning x-axes
 			}
 			else if (y == resolution - 1){
@@ -49,6 +50,24 @@ void TextureGenerator::generateNormals(const std::vector<float>& heightfield, in
 				vecXAxes.z = (heightfield[IDX(x + 1, y, resolution)] - heightfield[IDX(x, y, resolution)]) / (1.0f);
 				vecYAxes.z = (heightfield[IDX(x, y + 1, resolution)] - heightfield[IDX(x, y, resolution)]) / (1.0f);
 				//std::cout << "Calc: " << heightfield[IDX(x, y + 1, resolution)] << " - " << heightfield[IDX(x, y, resolution)] << "\n";
+			}*/
+
+			//Central Differecnes
+			if (x == 0){
+
+			}
+			else if(x == resolution - 1){
+
+			}
+			else if (y == 0){
+
+			}
+			else if (y == resolution - 1){
+
+			}
+			else{
+				vecXAxes.z = (heightfield[IDX(x + 1, y, resolution)] - heightfield[IDX(x - 1, y, resolution)]) / 2.0f;
+				vecYAxes.z = (heightfield[IDX(x, y + 1, resolution)] - heightfield[IDX(x, y - 1, resolution)]) / 2.0f;
 			}
 
 			if(resolution <= 8) std::cout << "X-Vector: " << vecXAxes.printVec() << "\n";
