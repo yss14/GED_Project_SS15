@@ -38,6 +38,7 @@ private:
 	void generateColors(const std::vector<float>& heightfield, const std::vector<Vec3f>& normals, int resolution,
 		std::vector<Color4f>& colorsOut);
 
-	
+	void calcAlphas(float height, float slope, float& alpha1, float& alpha2, float& alpha3);
+	Color4f calcColor(Color4f c0, Color4f c1, Color4f c2, Color4f c3, float alpha1, float alpha2, float alpha3);
 };
 
