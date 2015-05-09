@@ -1,14 +1,18 @@
 #include "stdafx.h"
 #include "TextureGenerator.h"
 
-
+//Man ist das hässlich xD
 TextureGenerator::TextureGenerator(const std::wstring& texturePathLowFlat,
 	const std::wstring& texturePathLowSteep,
 	const std::wstring& texturePathHighFlat,
 	const std::wstring& texturePathHighSteep
-	)
+	):
+	texturePathHighFlat(texturePathHighFlat),
+	texturePathHighSteep(texturePathHighSteep),
+	texturePathLowFlat(texturePathLowFlat),
+	texturePathLowSteep(texturePathLowSteep)
 {
-
+	
 }
 
 
@@ -16,7 +20,7 @@ TextureGenerator::~TextureGenerator()
 {
 }
 
-void TextureGenerator::generateNormals(const std::vector<float>& heightfield, int resolution, _TCHAR* path)
+void TextureGenerator::generateNormals(const std::vector<float>& heightfield, int resolution, _TCHAR* path, std::vector<Vec3f> normals)
 {
 	//Init 3 vectors to save memory while runtime
 	Vec3f normalAtCurPoint(0.0f, 0.0f, 0.0f);
@@ -79,6 +83,8 @@ void TextureGenerator::generateNormals(const std::vector<float>& heightfield, in
 			normalAtCurPoint.normalize();
 
 			normalImage.setPixel(x, y, (normalAtCurPoint.x/2.0f)+0.5f, (normalAtCurPoint.y/2.0f)+0.5f, (normalAtCurPoint.z/2.0f)+0.5f);
+
+			normals.insert(normals.end(), normalAtCurPoint);
 		}
 	}
 
@@ -95,8 +101,19 @@ void TextureGenerator::generateNormals(const std::vector<float>& heightfield, in
 	}
 }
 
+void TextureGenerator::generateColors(const std::vector<float>& heightfield, const std::vector<Vec3f>& normals, int resolution,
+	std::vector<Color4f>& colorsOut)
+{
+	Texture textureLowFlat(this->texturePathLowFlat);
+	Texture textureLowSteeo(this->texturePathLowSteep);
+	Texture textureHightFlat(this->texturePathHighFlat);
+	Texture textureHighSteep(this->texturePathHighSteep);
+}
+
 void TextureGenerator::generateAndStoreImages(std::vector<float> heightmap, int resolution, _TCHAR* normalPath,
 	_TCHAR* colorPath)
 {
-	this->generateNormals(heightmap, resolution, normalPath);
+	std::vector<Vec3f> normals;
+
+	this->generateNormals(heightmap, resolution, normalPath, normals);
 }
