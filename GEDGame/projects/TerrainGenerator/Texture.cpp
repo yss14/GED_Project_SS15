@@ -16,8 +16,10 @@ Texture::~Texture()
 Color4f Texture::getColorTiled(int u, int v){
 	Color4f colorAtPixel;
 
-	this->textureImage->getPixel(u % this->textureImage->getWidth(), 
-		this->textureImage->getHeight(), colorAtPixel.r, colorAtPixel.g, colorAtPixel.b);
+	int width = this->textureImage->getWidth();
+
+	this->textureImage->getPixel(u % width,
+		v % width, colorAtPixel.r, colorAtPixel.g, colorAtPixel.b);
 
 	return colorAtPixel;
 }

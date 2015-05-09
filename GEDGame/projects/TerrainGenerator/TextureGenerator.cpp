@@ -20,7 +20,7 @@ TextureGenerator::~TextureGenerator()
 {
 }
 
-void TextureGenerator::generateNormals(const std::vector<float>& heightfield, int resolution, _TCHAR* path, std::vector<Vec3f> normals)
+void TextureGenerator::generateNormals(const std::vector<float>& heightfield, int resolution, _TCHAR* path, std::vector<Vec3f>& normals)
 {
 	//Init 3 vectors to save memory while runtime
 	Vec3f normalAtCurPoint(0.0f, 0.0f, 0.0f);
@@ -84,10 +84,11 @@ void TextureGenerator::generateNormals(const std::vector<float>& heightfield, in
 
 			normalImage.setPixel(x, y, (normalAtCurPoint.x/2.0f)+0.5f, (normalAtCurPoint.y/2.0f)+0.5f, (normalAtCurPoint.z/2.0f)+0.5f);
 
-			normals.insert(normals.end(), normalAtCurPoint);
+			normals.push_back(normalAtCurPoint);
 		}
 	}
 
+	std::cout << "Length Normals after normal generation: " << normals.size() << "\n";
 
 	std::cout << "[Image] Saving normal image..." << std::endl;
 	try
@@ -104,6 +105,8 @@ void TextureGenerator::generateNormals(const std::vector<float>& heightfield, in
 void TextureGenerator::generateColors(const std::vector<float>& heightfield, const std::vector<Vec3f>& normals, int resolution,
 	std::vector<Color4f>& colorsOut)
 {
+	std::cout << "Length Heightfield: " << heightfield.size() << " Length Normals: " << normals.size() << "\n";
+
 	Texture textureLowFlat(this->texturePathLowFlat);
 	Texture textureLowSteep(this->texturePathLowSteep);
 	Texture textureHightFlat(this->texturePathHighFlat);
@@ -112,6 +115,7 @@ void TextureGenerator::generateColors(const std::vector<float>& heightfield, con
 	GEDUtils::SimpleImage colorImage(resolution, resolution);
 
 	int heightMapRes = sqrt(heightfield.size());
+	int normalMapRes = sqrt(normals.size());
 
 	float alpha1 = 0.0f;
 	float alpha2 = 0.0f;
@@ -119,7 +123,8 @@ void TextureGenerator::generateColors(const std::vector<float>& heightfield, con
 
 	for (int y = 0; y < resolution; y++){
 		for (int x = 0; x < resolution; x++){
-			this->calcAlphas(heightfield[IDX(x, y, heightMapRes)], 1.0f - normals[IDX(x, y, heightMapRes)].z, alpha1, alpha2, alpha3);
+			//std::cout << "Access on " << IDX(x, y, heightMapRes) << " of " << heightfield.size() << "\n";
+			this->calcAlphas(heightfield[IDX(x, y, heightMapRes)], 1.0f - normals[IDX(x, y, normalMapRes)].z, alpha1, alpha2, alpha3);
 			
 			Color4f c0 = textureLowFlat.getColorTiled(x, y); //ColorLowFlat
 			Color4f c1 = textureLowSteep.getColorTiled(x, y); //ColorLowSteep
@@ -128,13 +133,13 @@ void TextureGenerator::generateColors(const std::vector<float>& heightfield, con
 
 			Color4f finalColor = this->calcColor(c0, c1, c2, c3, alpha1, alpha2, alpha3);
 
-			colorsOut.insert(colorsOut.end(), finalColor);
+			//colorsOut.push_back(finalColor);
 
 			colorImage.setPixel(x, y, finalColor.r, finalColor.g, finalColor.b);
 		}
 	}
 
-	std::cout << "[Image] Saving normal image..." << std::endl;
+	std::cout << "[Image] Saving normal image own..." << std::endl;
 	try
 	{
 		std::string nPath("own_color.png");
@@ -168,7 +173,7 @@ Color4f TextureGenerator::calcColor(Color4f c0, Color4f c1, Color4f c2, Color4f 
 	float b = alpha3 * c3.b + (1.0f - alpha3) * (alpha2 * c2.b + (1.0f - alpha2) * (alpha1 * c1.b + (1.0f - alpha1) * c0.b));
 
 	std::setprecision(4);
-	std::cout << "r: " << r << " g: " << g << " b: " << b << "\n";
+	//std::cout << "r: " << r << " g: " << g << " b: " << b << "\n";
 
 	Color4f finalColor(r, g, b, 1.0f);
 

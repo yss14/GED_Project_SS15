@@ -3,6 +3,7 @@
 #include <SimpleImage.h>
 #include <string>
 #include "Color4f.h"
+#include <iostream>
 
 class Texture
 {

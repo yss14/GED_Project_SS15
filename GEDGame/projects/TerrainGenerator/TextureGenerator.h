@@ -32,7 +32,7 @@ private:
 	
 	/// Generate normals based on the heightfield properties. Results are stored in normalsOut.
 	void generateNormals(const std::vector<float>& heightfield, int resolution,
-		_TCHAR* path, std::vector<Vec3f> normals);
+		_TCHAR* path, std::vector<Vec3f>& normals);
 
 	/// Generate a color texture based on the heightfield properties and normals. Results are stored in colorsOut.
 	void generateColors(const std::vector<float>& heightfield, const std::vector<Vec3f>& normals, int resolution,
