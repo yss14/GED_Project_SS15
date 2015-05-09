@@ -83,6 +83,8 @@ int _tmain(int argc, _TCHAR* argv[])
 		}
 	}
 
+	ds.printField();
+
 	std::cout << "[Image] Saving image..." << std::endl;
 	
 	try
@@ -110,7 +112,7 @@ int _tmain(int argc, _TCHAR* argv[])
 		std::wstring(L"../../../../external/textures/pebble03.jpg"),
 		std::wstring(L"../../../../external/textures/rock5.jpg"));
 	
-	tg_own.generateAndStoreImages(pic, resolution, pathColor, pathNormal);
+	tg_own.generateAndStoreImages(pic, resolution + 1, pathColor, pathNormal);
 
 	system("pause");
 	

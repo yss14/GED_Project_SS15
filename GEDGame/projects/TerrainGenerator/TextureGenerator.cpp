@@ -18,6 +18,9 @@ TextureGenerator::~TextureGenerator()
 
 void TextureGenerator::generateNormals(const std::vector<float>& heightfield, int resolution, _TCHAR* path)
 {
+
+	//std::cout << "Resolution: " << resolution << "\n";
+
 	//Init 3 vectors to save memory while runtime
 	Vec3f normalAtCurPoint(0.0f, 0.0f, 0.0f);
 	Vec3f vecXAxes(0.0f, 0.0f, 0.0f);
@@ -25,9 +28,9 @@ void TextureGenerator::generateNormals(const std::vector<float>& heightfield, in
 
 	GEDUtils::SimpleImage normalImage(resolution, resolution);
 
-	for (int x = 0; x < resolution; x++)
+	for (int y = 0; y < resolution; y++)
 	{
-		for (int y = 0; y < resolution; y++)
+		for (int x = 0; x < resolution; x++)
 		{
 			normalAtCurPoint.x = normalAtCurPoint.y = normalAtCurPoint.z = 0;
 			vecXAxes.x = 1.0f;
@@ -43,29 +46,21 @@ void TextureGenerator::generateNormals(const std::vector<float>& heightfield, in
 			}
 			else{
 				//Normal treatment
-				vecXAxes.y = (heightfield[IDX(x + 1, y, resolution)] - heightfield[IDX(x, y, resolution)]) / (1.0f);
-				vecYAxes.y = (heightfield[IDX(x, y + 1, resolution)] - heightfield[IDX(x, y, resolution)]) / (1.0f);
+				vecXAxes.z = (heightfield[IDX(x + 1, y, resolution)] - heightfield[IDX(x, y, resolution)]) / (1.0f);
+				vecYAxes.z = (heightfield[IDX(x, y + 1, resolution)] - heightfield[IDX(x, y, resolution)]) / (1.0f);
+				//std::cout << "Calc: " << heightfield[IDX(x, y + 1, resolution)] << " - " << heightfield[IDX(x, y, resolution)] << "\n";
 			}
 
-			//std::cout << "X-Vector: " << vecXAxes.printVec() << "\n";
-			//std::cout << "Y-Vector: " << vecYAxes.printVec() << "\n";
-			//std::cout << "Normal: " << normalAtCurPoint.printVec() << "\n";
+			std::cout << "X-Vector: " << vecXAxes.printVec() << "\n";
+			std::cout << "Y-Vector: " << vecYAxes.printVec() << "\n";
 
 			normalAtCurPoint = vecXAxes.cross(vecYAxes);
+			std::cout << "Normal: " << normalAtCurPoint.printVec() << "\n";
 			normalAtCurPoint.normalize();
 
-			if ((normalAtCurPoint.x / 2.0f) + 0.5f < 0.0f || (normalAtCurPoint.x / 2.0f) + 0.5f > 1.0f ||
-				(normalAtCurPoint.y / 2.0f) + 0.5f < 0.0f || (normalAtCurPoint.y / 2.0f) + 0.5f > 1.0f ||
-				(normalAtCurPoint.z / 2.0f) + 0.5f < 0.0f || (normalAtCurPoint.z / 2.0f) + 0.5f > 1.0f)
-			{
-				std::cout << "X-Vector: " << vecXAxes.printVec() << "\n";
-				std::cout << "Y-Vector: " << vecYAxes.printVec() << "\n";
-				std::cout << "Normalized normal: " << normalAtCurPoint.printVec() << "\n";
-			}
+			std::cout << "Normalized normal: " << normalAtCurPoint.printVec() << "\n\n";
 
-			//std::cout << "Normalized normal: " << normalAtCurPoint.printVec() << "\n";
-
-			normalImage.setPixel(x, y, (normalAtCurPoint.x/2.0f)+0.5f, (normalAtCurPoint.y/2.0f)+0.5f, (normalAtCurPoint.z/2.0f)+0.5f);
+			normalImage.setPixel(x, y, (normalAtCurPoint.x/2.0f)+0.5f, (normalAtCurPoint.y/2.0f)+0.5f, normalAtCurPoint.z);
 		}
 	}
 

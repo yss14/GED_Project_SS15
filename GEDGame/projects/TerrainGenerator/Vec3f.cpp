@@ -47,7 +47,7 @@ void Vec3f::normalize()
 std::string Vec3f::printVec()
 {
 	std::ostringstream os;
-	std::setprecision(4);
-	os << "(" << this->x << "," << this->y << "," << this->z << ")";
+	os.precision(4);
+	os << "(" << this->x << "\t," << this->y << "\t," << this->z << ")";
 	return os.str();
 }
