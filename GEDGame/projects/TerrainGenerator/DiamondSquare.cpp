@@ -228,7 +228,7 @@ void DiamondSquare::printField()
 	{
 		for (int x = 0; x < resolution; x++)
 		{
-			printf("%.3f\t", field[IDX(x, y, resolution)]);
+			printf("%.6f\t", field[IDX(x, y, resolution)]);
 		}
 
 		std::cout << std::endl;
