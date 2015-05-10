@@ -24,6 +24,8 @@ public:
 	void generateAndStoreImages(std::vector<float> heightmap, int resolution, _TCHAR* normalPath,
 		_TCHAR* colorPath);
 
+	void sampleHeightfieldDown(std::vector<float>& heightfield, int& newResolution);
+
 private:
 	std::wstring texturePathLowFlat;
 	std::wstring texturePathLowSteep;
