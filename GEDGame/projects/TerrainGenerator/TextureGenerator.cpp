@@ -177,3 +177,26 @@ Color4f TextureGenerator::calcColor(Color4f c0, Color4f c1, Color4f c2, Color4f 
 
 	return finalColor;
 }
+
+void TextureGenerator::sampleHeightfieldDown(std::vector<float>& heightfield, int& newResolution){
+	const int downSamplingFactor = 4;
+	std::vector<float> newHeightMap;
+	int oldResolution = sqrt(heightfield.size());
+	newResolution = oldResolution / downSamplingFactor;
+
+	for (int x = 0; x < newResolution; x++)
+	{
+		for (int y = 0; y < newResolution; y++)
+		{
+			float sum = heightfield[IDX(x * downSamplingFactor, y * downSamplingFactor, oldResolution)] +
+				heightfield[IDX(x * downSamplingFactor + 1, y * downSamplingFactor + 1, oldResolution)] +
+				heightfield[IDX(x * downSamplingFactor + 2, y * downSamplingFactor + 2, oldResolution)] +
+				heightfield[IDX(x * downSamplingFactor + 3, y * downSamplingFactor + 3, oldResolution)];
+
+			newHeightMap.push_back(sum / 4.0f);
+
+		}
+	}
+
+	heightfield = newHeightMap;
+}

@@ -69,30 +69,8 @@ int _tmain(int argc, _TCHAR* argv[])
 	int smoothCount = 1;	// smoothCount times smoothed
 	int smoothRange = 2;	// "Smoothing Radius" 
 
-	GEDUtils::SimpleImage heightImage(resolution, resolution);
-
 	DiamondSquare ds(resolution, roughness, smoothCount, smoothRange);
 	std::vector<float> pic = ds.doDiamondSquare();
-
-	std::cout << "[Image] Writing image..." << std::endl;
-	for (int x = 0; x < resolution; x++)
-	{
-		for (int y = 0; y < resolution; y++)
-		{
-			heightImage.setPixel(x, y, pic[IDX(x, y, resolution + 1)]);
-		}
-	}
-
-	std::cout << "[Image] Saving image..." << std::endl;
-	
-	try
-	{
-		heightImage.save(pathHeightfield);
-	}
-	catch (std::exception& e)
-	{
-		std::cerr << e.what();
-	}
 
 	std::cout << "[Image] Generating color&normal..." << std::endl;
 
@@ -111,6 +89,29 @@ int _tmain(int argc, _TCHAR* argv[])
 		std::wstring(L"../../../../external/textures/rock5.jpg"));
 	
 	tg_own.generateAndStoreImages(pic, resolution, pathColor, pathNormal);
+
+	std::cout << "[Image] Downsampling heightfield..." << std::endl;
+	tg_own.sampleHeightfieldDown(pic, resolution);
+
+	std::cout << "[Image] Saving heightfield..." << std::endl;
+	std::cout << "res: " << resolution << "\n";
+	GEDUtils::SimpleImage heightImage(resolution, resolution);
+	for (int x = 0; x < resolution; x++)
+	{
+		for (int y = 0; y < resolution; y++)
+		{
+			heightImage.setPixel(x, y, pic[IDX(x, y, resolution)]);
+		}
+	}
+
+	try
+	{
+		heightImage.save(pathHeightfield);
+	}
+	catch (std::exception& e)
+	{
+		std::cerr << e.what();
+	}
 
 	system("pause");
 	
