@@ -181,9 +181,9 @@ void TextureGenerator::sampleHeightfieldDown(std::vector<float>& heightfield, in
 	int oldResolution = sqrt(heightfield.size());
 	newResolution = oldResolution / downSamplingFactor;
 
-	for (int x = 0; x < newResolution; x++)
+	for (int y = 0; y < newResolution; y++)
 	{
-		for (int y = 0; y < newResolution; y++)
+		for (int x = 0; x < newResolution; x++)
 		{
 			float sum = heightfield[IDX(x * downSamplingFactor, y * downSamplingFactor, oldResolution)] +
 				heightfield[IDX(x * downSamplingFactor + 1, y * downSamplingFactor + 1, oldResolution)] +
