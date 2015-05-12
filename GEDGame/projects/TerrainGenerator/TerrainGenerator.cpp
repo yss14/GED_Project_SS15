@@ -65,8 +65,8 @@ int _tmain(int argc, _TCHAR* argv[])
 	}
 
 	// Play around with these values ;)
-	float roughness = 0.6f; // "spikyness", the closer to zero, the flatter
-	int smoothCount = 1;	// smoothCount times smoothed
+	float roughness = 0.5f; // "spikyness", the closer to zero, the flatter
+	int smoothCount = 10;	// smoothCount times smoothed
 	int smoothRange = 2;	// "Smoothing Radius" 
 
 	DiamondSquare ds(resolution, roughness, smoothCount, smoothRange);
@@ -74,13 +74,7 @@ int _tmain(int argc, _TCHAR* argv[])
 
 	std::cout << "[Image] Generating color&normal..." << std::endl;
 
-	GEDUtils::TextureGenerator tg(std::wstring(L"../../../../external/textures/gras15.jpg"),
-		std::wstring(L"../../../../external/textures/ground02.jpg"),
-		std::wstring(L"../../../../external/textures/pebble03.jpg"),
-		std::wstring(L"../../../../external/textures/rock5.jpg"));
-
-	tg.generateAndStoreImages(pic, resolution, pathColor, pathNormal);
-
+	resolution = sqrt(pic.size());
 
 	//Own implementation
 	TextureGenerator tg_own(std::wstring(L"../../../../external/textures/gras15.jpg"),
@@ -88,17 +82,16 @@ int _tmain(int argc, _TCHAR* argv[])
 		std::wstring(L"../../../../external/textures/pebble03.jpg"),
 		std::wstring(L"../../../../external/textures/rock5.jpg"));
 	
-	tg_own.generateAndStoreImages(pic, resolution, pathColor, pathNormal);
+	tg_own.generateAndStoreImages(pic, resolution, pathNormal, pathColor);
 
 	std::cout << "[Image] Downsampling heightfield..." << std::endl;
-	tg_own.sampleHeightfieldDown(pic, resolution);
+	//tg_own.sampleHeightfieldDown(pic, resolution);
 
 	std::cout << "[Image] Saving heightfield..." << std::endl;
-	std::cout << "res: " << resolution << "\n";
 	GEDUtils::SimpleImage heightImage(resolution, resolution);
-	for (int x = 0; x < resolution; x++)
+	for (int y = 0; y < resolution; y++)
 	{
-		for (int y = 0; y < resolution; y++)
+		for (int x = 0; x < resolution; x++)
 		{
 			heightImage.setPixel(x, y, pic[IDX(x, y, resolution)]);
 		}
