@@ -47,7 +47,7 @@ void TextureGenerator::generateNormals(const std::vector<float>& heightfield, in
 				//Forward Differences
 				vecXAxes.z = (heightfield[IDX(x + 1, y, heightMapRes)] - heightfield[IDX(x, y, heightMapRes)]);
 			}
-			else if (x == heightMapRes - 2)
+			else if (x == heightMapRes - 1)
 			{
 				//Backward Differences
 				vecXAxes.z = (heightfield[IDX(x, y, heightMapRes)] - heightfield[IDX(x - 1, y, heightMapRes)]);
@@ -63,7 +63,7 @@ void TextureGenerator::generateNormals(const std::vector<float>& heightfield, in
 				//Forward Differences
 				vecYAxes.z = (heightfield[IDX(x, y + 1, heightMapRes)] - heightfield[IDX(x, y, heightMapRes)]);
 			}
-			else if (y == heightMapRes - 2)
+			else if (y == heightMapRes - 1)
 			{
 				//Backward Differences
 				vecYAxes.z = (heightfield[IDX(x, y, heightMapRes)] - heightfield[IDX(x, y - 1, heightMapRes)]);
@@ -88,13 +88,11 @@ void TextureGenerator::generateNormals(const std::vector<float>& heightfield, in
 		}
 	}
 
-	std::cout << "Length Normals after normal generation: " << normals.size() << "\n";
-
 	std::cout << "[Image] Saving normal image..." << std::endl;
+
 	try
 	{
-		std::string nPath("own_normal.png");
-		normalImage.save(nPath.c_str());
+		normalImage.save(path);
 	}
 	catch (std::exception& e)
 	{
@@ -103,7 +101,7 @@ void TextureGenerator::generateNormals(const std::vector<float>& heightfield, in
 }
 
 void TextureGenerator::generateColors(const std::vector<float>& heightfield, const std::vector<Vec3f>& normals, int resolution,
-	std::vector<Color4f>& colorsOut)
+	std::vector<Color4f>& colorsOut, _TCHAR* path)
 {
 
 	Texture textureLowFlat(this->texturePathLowFlat);
@@ -141,8 +139,7 @@ void TextureGenerator::generateColors(const std::vector<float>& heightfield, con
 	try
 	{
 		//TODO fixing parameter path
-		std::string nPath("own_color.png");
-		colorImage.save(nPath.c_str());
+		colorImage.save(path);
 	}
 	catch (std::exception& e)
 	{
@@ -157,7 +154,7 @@ void TextureGenerator::generateAndStoreImages(std::vector<float> heightmap, int 
 	std::vector<Color4f>colors;
 
 	this->generateNormals(heightmap, resolution, normalPath, normals);
-	this->generateColors(heightmap, normals, resolution, colors);
+	this->generateColors(heightmap, normals, resolution, colors, colorPath);
 }
 
 void TextureGenerator::calcAlphas(float height, float slope, float& alpha1, float& alpha2, float& alpha3){

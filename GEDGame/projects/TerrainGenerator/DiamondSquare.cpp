@@ -64,6 +64,20 @@ std::vector<float> DiamondSquare::doDiamondSquare()
 
 	std::cout << "[DiamondSquare] Smoothing Heightmap..." << std::endl;
 
+	std::vector<float> cuttedField;
+
+	for (int y = 0; y < res; y++)
+	{
+		for (int x = 0; x < res; x++)
+		{
+			cuttedField.push_back(field[IDX(x, y, res + 1)]);
+		}
+	}
+
+	resolution--;		// fix the 2^n + 1 resolution
+
+	field = cuttedField;
+
 	for (int i = 0; i < smoothCount; i++)
 	{
 		smoothHeightField();
