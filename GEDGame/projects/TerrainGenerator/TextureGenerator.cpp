@@ -160,9 +160,17 @@ void TextureGenerator::generateAndStoreImages(std::vector<float> heightmap, int 
 void TextureGenerator::calcAlphas(float height, float slope, float& alpha1, float& alpha2, float& alpha3){
 	alpha1 = (1 - height) * slope;
 	alpha2 = height;
-	alpha3 = height*slope;
+	//alpha3 = height*slope;
 
-	//TODO: Getting alhpa values less smooth
+	//Improving sharpnes at high slopes
+	alpha3 = -2.08333333f * pow(slope, 3) + 3.125f * pow(slope, 2) + -0.0416666f * slope;
+
+	float sum = alpha1 + alpha2 + alpha3;
+
+	if (sum > 1.0f){
+		alpha1 -= (sum - 1.0f) / 2.0f;
+		alpha2 -= ((sum - 1.0f)*height) / 2.0f;
+	}
 }
 
 Color4f TextureGenerator::calcColor(Color4f c0, Color4f c1, Color4f c2, Color4f c3, float alpha1, float alpha2, float alpha3){
