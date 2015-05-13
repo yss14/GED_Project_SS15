@@ -86,12 +86,15 @@
     <Text Include="ReadMe.txt" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="Color4f.h" />
     <ClInclude Include="DiamondSquare.h">
       <DeploymentContent>false</DeploymentContent>
     </ClInclude>
     <ClInclude Include="stdafx.h" />
     <ClInclude Include="targetver.h" />
+    <ClInclude Include="Texture.h" />
     <ClInclude Include="TextureGenerator.h" />
+    <ClInclude Include="Vec3f.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="DiamondSquare.cpp" />
@@ -100,7 +103,9 @@
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Create</PrecompiledHeader>
     </ClCompile>
     <ClCompile Include="TerrainGenerator.cpp" />
+    <ClCompile Include="Texture.cpp" />
     <ClCompile Include="TextureGenerator.cpp" />
+    <ClCompile Include="Vec3f.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

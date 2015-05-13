@@ -9,6 +9,9 @@
 #include <SimpleImage.h>
 #include <TextureGenerator.h>
 #include "DiamondSquare.h"
+#include "TextureGenerator.h"
+
+#include "Vec3f.h"
 
 #define IDX(x, y, w)((x) + (y) * (w))
 
@@ -62,26 +65,38 @@ int _tmain(int argc, _TCHAR* argv[])
 	}
 
 	// Play around with these values ;)
-	float roughness = 0.6f; // "spikyness", the closer to zero, the flatter
-	int smoothCount = 25;	// smoothCount times smoothed
+	float roughness = 0.5f; // "spikyness", the closer to zero, the flatter
+	int smoothCount = 10;	// smoothCount times smoothed
 	int smoothRange = 2;	// "Smoothing Radius" 
-
-	GEDUtils::SimpleImage heightImage(resolution, resolution);
 
 	DiamondSquare ds(resolution, roughness, smoothCount, smoothRange);
 	std::vector<float> pic = ds.doDiamondSquare();
 
-	std::cout << "[Image] Writing image..." << std::endl;
-	for (int x = 0; x < resolution; x++)
+	std::cout << "[Image] Generating color&normal..." << std::endl;
+
+	resolution = sqrt(pic.size());
+
+	//Own implementation
+	TextureGenerator tg_own(std::wstring(L"../../../../external/textures/gras15.jpg"),
+		std::wstring(L"../../../../external/textures/ground02.jpg"),
+		std::wstring(L"../../../../external/textures/pebble03.jpg"),
+		std::wstring(L"../../../../external/textures/rock5.jpg"));
+	
+	tg_own.generateAndStoreImages(pic, resolution, pathNormal, pathColor);
+
+	std::cout << "[Image] Downsampling heightfield..." << std::endl;
+	//tg_own.sampleHeightfieldDown(pic, resolution);
+
+	std::cout << "[Image] Saving heightfield..." << std::endl;
+	GEDUtils::SimpleImage heightImage(resolution, resolution);
+	for (int y = 0; y < resolution; y++)
 	{
-		for (int y = 0; y < resolution; y++)
+		for (int x = 0; x < resolution; x++)
 		{
-			heightImage.setPixel(x, y, pic[IDX(x, y, resolution + 1)]);
+			heightImage.setPixel(x, y, pic[IDX(x, y, resolution)]);
 		}
 	}
 
-	std::cout << "[Image] Saving image..." << std::endl;
-	
 	try
 	{
 		heightImage.save(pathHeightfield);
@@ -91,15 +106,7 @@ int _tmain(int argc, _TCHAR* argv[])
 		std::cerr << e.what();
 	}
 
-	std::cout << "[Image] Generating color&normal..." << std::endl;
-
-	GEDUtils::TextureGenerator tg(std::wstring(L"../../../../external/textures/gras15.jpg"),
-		std::wstring(L"../../../../external/textures/ground02.jpg"),
-		std::wstring(L"../../../../external/textures/pebble03.jpg"),
-		std::wstring(L"../../../../external/textures/rock5.jpg"));
-
-	tg.generateAndStoreImages(pic, resolution, pathColor, pathNormal);
-	
 	system("pause");
+	
 	return 0;
 }
