@@ -19,6 +19,7 @@
 #include "DXUTgui.h"
 #include "DXUTsettingsDlg.h"
 #include "SDKmisc.h"
+#include "ConfigParser.h"
 
 #include "d3dx11effect.h"
 
@@ -180,6 +181,9 @@ void InitApp()
 	wcstombs_s(&size, pathA, path, MAX_PATH);
 
 	// TODO: Parse your config file specified by "pathA" here
+
+	ConfigParser *cfgParser = new ConfigParser();
+	cfgParser->load(pathA);
 
     // Intialize the user interface
 

@@ -56,7 +56,7 @@
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
       <WarningLevel>Level3</WarningLevel>
       <Optimization>Disabled</Optimization>
-      <PreprocessorDefinitions>_WIN32_WINNT=0x600 ;WIN32;_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>_WIN32_WINNT=0x600;WIN32;_DEBUG;_CONSOLE;%(PreprocessorDefinitions);TARGET_DIRECTORY=LR"($(OutDir))"</PreprocessorDefinitions>
       <SDLCheck>true</SDLCheck>
       <AdditionalIncludeDirectories>..\..\..\..\external\Tools\include\;$(SolutionDir)projects\Effects11\inc\;$(SolutionDir)projects\DXUT\Core\;$(SolutionDir)projects\DXUT\Optional\;$(SolutionDir)projects\DirectXTex\DirectXTex\;$(SolutionDir)projects\DirectXTex\WICTextureLoader\;$(SolutionDir)projects\DirectXTex\DDSTextureLoader\</AdditionalIncludeDirectories>
     </ClCompile>
@@ -93,7 +93,7 @@ exit 1</Command>
       <Optimization>MaxSpeed</Optimization>
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
-      <PreprocessorDefinitions>_WIN32_WINNT=0x600 ;WIN32;NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>_WIN32_WINNT=0x600;WIN32;NDEBUG;_CONSOLE;%(PreprocessorDefinitions);TARGET_DIRECTORY=LR"($(OutDir))"</PreprocessorDefinitions>
       <SDLCheck>true</SDLCheck>
       <AdditionalIncludeDirectories>..\..\..\..\external\Tools\include\;$(SolutionDir)projects\Effects11\inc\;$(SolutionDir)projects\DXUT\Core\;$(SolutionDir)projects\DXUT\Optional\;$(SolutionDir)projects\DirectXTex\DirectXTex\;$(SolutionDir)projects\DirectXTex\WICTextureLoader\;$(SolutionDir)projects\DirectXTex\DDSTextureLoader\</AdditionalIncludeDirectories>
     </ClCompile>
@@ -129,11 +129,13 @@ exit 1</Command>
     <Text Include="ReadMe.txt" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="src\ConfigParser.h" />
     <ClInclude Include="src\debug.h" />
     <ClInclude Include="src\GameEffect.h" />
     <ClInclude Include="src\Terrain.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="src\ConfigParser.cpp" />
     <ClCompile Include="src\Game.cpp" />
     <ClCompile Include="src\Terrain.cpp" />
   </ItemGroup>
