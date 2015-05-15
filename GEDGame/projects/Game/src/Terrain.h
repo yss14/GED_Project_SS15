@@ -1,7 +1,7 @@
 #pragma once
 #include "DXUT.h"
 #include "d3dx11effect.h"
-
+#include <iostream>
 class Terrain
 {
 public:
