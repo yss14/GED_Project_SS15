@@ -22,14 +22,12 @@ TextureGenerator::~TextureGenerator()
 
 void TextureGenerator::generateNormals(const std::vector<float>& heightfield, int resolution, _TCHAR* path, std::vector<Vec3f>& normals)
 {
-	//Init 3 vectors to save memory while runtime
+	// Init 3 vectors to save memory while runtime
 	Vec3f normalAtCurPoint(0.0f, 0.0f, 0.0f);
 	Vec3f vecXAxes(0.0f, 0.0f, 0.0f);
 	Vec3f vecYAxes(0.0f, 0.0f, 0.0f);
 
 	GEDUtils::SimpleImage normalImage(resolution, resolution);
-
-	int heightMapRes = sqrt(heightfield.size());
 
 	for (int y = 0; y < resolution; y++)
 	{
@@ -45,33 +43,33 @@ void TextureGenerator::generateNormals(const std::vector<float>& heightfield, in
 			if (x == 0)
 			{
 				//Forward Differences
-				vecXAxes.z = (heightfield[IDX(x + 1, y, heightMapRes)] - heightfield[IDX(x, y, heightMapRes)]);
+				vecXAxes.z = (heightfield[IDX(x + 1, y, resolution)] - heightfield[IDX(x, y, resolution)]);
 			}
-			else if (x == heightMapRes - 1)
+			else if (x == resolution - 1)
 			{
 				//Backward Differences
-				vecXAxes.z = (heightfield[IDX(x, y, heightMapRes)] - heightfield[IDX(x - 1, y, heightMapRes)]);
+				vecXAxes.z = (heightfield[IDX(x, y, resolution)] - heightfield[IDX(x - 1, y, resolution)]);
 			}
 			else
 			{
 				//Central Differences
-				vecXAxes.z = (heightfield[IDX(x + 1, y, heightMapRes)] - heightfield[IDX(x - 1, y, heightMapRes)]) / 2.0f;
+				vecXAxes.z = (heightfield[IDX(x + 1, y, resolution)] - heightfield[IDX(x - 1, y, resolution)]) / 2.0f;
 			}
 			
 			if (y == 0)
 			{
 				//Forward Differences
-				vecYAxes.z = (heightfield[IDX(x, y + 1, heightMapRes)] - heightfield[IDX(x, y, heightMapRes)]);
+				vecYAxes.z = (heightfield[IDX(x, y + 1, resolution)] - heightfield[IDX(x, y, resolution)]);
 			}
-			else if (y == heightMapRes - 1)
+			else if (y == resolution - 1)
 			{
 				//Backward Differences
-				vecYAxes.z = (heightfield[IDX(x, y, heightMapRes)] - heightfield[IDX(x, y - 1, heightMapRes)]);
+				vecYAxes.z = (heightfield[IDX(x, y, resolution)] - heightfield[IDX(x, y - 1, resolution)]);
 			}
 			else
 			{
 				//Central Differences
-				vecYAxes.z = (heightfield[IDX(x, y + 1, heightMapRes)] - heightfield[IDX(x, y - 1, heightMapRes)]) / 2.0f;
+				vecYAxes.z = (heightfield[IDX(x, y + 1, resolution)] - heightfield[IDX(x, y - 1, resolution)]) / 2.0f;
 			}
 
 			normalAtCurPoint = vecXAxes.cross(vecYAxes);
@@ -84,7 +82,7 @@ void TextureGenerator::generateNormals(const std::vector<float>& heightfield, in
 
 			normalImage.setPixel(x, y, (normalAtCurPoint.x/2.0f)+0.5f, (normalAtCurPoint.y/2.0f)+0.5f, (normalAtCurPoint.z/2.0f)+0.5f);
 
-			normals.push_back(normalAtCurPoint);
+			normals[IDX(x, y, resolution)] = normalAtCurPoint;
 		}
 	}
 
@@ -111,9 +109,6 @@ void TextureGenerator::generateColors(const std::vector<float>& heightfield, con
 
 	GEDUtils::SimpleImage colorImage(resolution, resolution);
 
-	int heightMapRes = sqrt(heightfield.size());
-	int normalMapRes = sqrt(normals.size());
-
 	float alpha1 = 0.0f;
 	float alpha2 = 0.0f;
 	float alpha3 = 0.0f;
@@ -122,7 +117,7 @@ void TextureGenerator::generateColors(const std::vector<float>& heightfield, con
 	{
 		for (int x = 0; x < resolution; x++)
 		{
-			this->calcAlphas(heightfield[IDX(x, y, heightMapRes)], 1.0f - normals[IDX(x, y, normalMapRes)].z, alpha1, alpha2, alpha3);
+			this->calcAlphas(heightfield[IDX(x, y, resolution)], 1.0f - normals[IDX(x, y, resolution)].z, alpha1, alpha2, alpha3);
 			
 			Color4f c0 = textureLowFlat.getColorTiled(x, y); //ColorLowFlat
 			Color4f c1 = textureLowSteep.getColorTiled(x, y); //ColorLowSteep
@@ -150,8 +145,8 @@ void TextureGenerator::generateColors(const std::vector<float>& heightfield, con
 void TextureGenerator::generateAndStoreImages(std::vector<float> heightmap, int resolution, _TCHAR* normalPath,
 	_TCHAR* colorPath)
 {
-	std::vector<Vec3f> normals;
-	std::vector<Color4f>colors;
+	std::vector<Vec3f> normals(resolution*resolution, {0, 0, 0});
+	std::vector<Color4f> colors(resolution*resolution);
 
 	this->generateNormals(heightmap, resolution, normalPath, normals);
 	this->generateColors(heightmap, normals, resolution, colors, colorPath);
@@ -185,9 +180,9 @@ Color4f TextureGenerator::calcColor(Color4f c0, Color4f c1, Color4f c2, Color4f 
 
 void TextureGenerator::sampleHeightfieldDown(std::vector<float>& heightfield, int& newResolution){
 	const int downSamplingFactor = 4;
-	std::vector<float> newHeightMap;
 	int oldResolution = sqrt(heightfield.size());
 	newResolution = oldResolution / downSamplingFactor;
+	std::vector<float> newHeightMap(newResolution*newResolution);
 
 	for (int y = 0; y < newResolution; y++)
 	{
@@ -198,8 +193,7 @@ void TextureGenerator::sampleHeightfieldDown(std::vector<float>& heightfield, in
 				heightfield[IDX(x * downSamplingFactor + 2, y * downSamplingFactor + 2, oldResolution)] +
 				heightfield[IDX(x * downSamplingFactor + 3, y * downSamplingFactor + 3, oldResolution)];
 
-			newHeightMap.push_back(sum / 4.0f);
-
+			newHeightMap[IDX(x, y, newResolution)] = sum / 4.0f;
 		}
 	}
 

@@ -14,7 +14,8 @@ public:
 	void printField();
 
 private:
-	int resolution;
+	int inputResolution;
+	int calcResolution;
 	float roughness;
 	int smoothCount;
 	int smoothRange;
