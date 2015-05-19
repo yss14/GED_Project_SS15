@@ -1,14 +1,27 @@
 #pragma once
 #include "DXUT.h"
 #include "d3dx11effect.h"
+#include "ConfigParser.h"
+#include "SimpleImage.h"
 #include <iostream>
+
+struct SimpleVertex{
+	DirectX::XMFLOAT4 Pos;
+	DirectX::XMFLOAT3 Normal;
+	DirectX::XMFLOAT2 UV;
+
+	SimpleVertex(){
+		Pos.x = Pos.y = Pos.z = Pos.w = Normal.x = Normal.y = Normal.z = UV.x = UV.y = 0;
+	}
+};
+
 class Terrain
 {
 public:
 	Terrain(void);
 	~Terrain(void);
 
-	HRESULT create(ID3D11Device* device);
+	HRESULT create(ID3D11Device* device, ConfigParser* parser);
 	void destroy();
 
 	void render(ID3D11DeviceContext* context, ID3DX11EffectPass* pass);
@@ -27,5 +40,6 @@ private:
 
 	// General resources
 	ID3D11ShaderResourceView*               debugSRV;
+	std::vector<unsigned int> indexVector;
 };
 

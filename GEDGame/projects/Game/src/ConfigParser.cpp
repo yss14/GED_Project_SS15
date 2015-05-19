@@ -27,19 +27,6 @@ void ConfigParser::load(std::string filepath){
 			}else if (firstWord.compare(std::string("spinSpeed")) == 0){
 				sstr << readValue;
 				sstr >> this->spinSpeed;
-			}else if(firstWord.compare(std::string("backgroundColor")) == 0){
-				sstr << readValue;
-				sstr >> this->backgroundColor.r;
-
-				sstr.clear();
-				ifs >> readValue;
-				sstr << readValue;
-				sstr >> this->backgroundColor.g;
-
-				sstr.clear();
-				ifs >> readValue;
-				sstr << readValue;
-				sstr >> this->backgroundColor.b;
 			}else if (firstWord.compare(std::string("TerrainWidth")) == 0){
 				sstr << readValue;
 				sstr >> this->terrainWidth;
@@ -67,12 +54,8 @@ float ConfigParser::getSpinSpeed(){
 	return this->spinSpeed;
 }
 
-ConfigParser::Color ConfigParser::getBackgroundColor(){
-	return this->backgroundColor;
-}
-
 std::string ConfigParser::getTerrainPath(){
-	return this->terrainPath;
+	return this->terrainHeightPath;
 }
 
 float ConfigParser::getTerrainWidth(){
@@ -81,6 +64,14 @@ float ConfigParser::getTerrainWidth(){
 
 float ConfigParser::getTerrainDepth(){
 	return this->terrainDepth;
+}
+
+std::string ConfigParser::getTerrainTexturePath(){
+	return this->terrainColorPath;
+}
+
+std::string ConfigParser::getTerrainNormalPath(){
+	return this->terrainNormalPath;
 }
 
 float ConfigParser::getTerrainHeight(){

@@ -15,9 +15,10 @@
 
 #define IDX(x, y, w)((x) + (y) * (w))
 
-
 int _tmain(int argc, _TCHAR* argv[])
 {
+
+
 	int resolution;
 	_TCHAR* pathHeightfield = L"";
 	_TCHAR* pathColor = L"";
