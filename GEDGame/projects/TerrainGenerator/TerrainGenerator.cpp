@@ -66,7 +66,7 @@ int _tmain(int argc, _TCHAR* argv[])
 	}
 
 	// Play around with these values ;)
-	float roughness = 0.53f; // "spikyness", the closer to zero, the flatter
+	float roughness = 0.45f; // "spikyness", the closer to zero, the flatter
 	int smoothCount = 15;	 // smoothCount times smoothed
 	int smoothRange = 1;	 // "Smoothing Radius" 
 
@@ -82,7 +82,6 @@ int _tmain(int argc, _TCHAR* argv[])
 		std::wstring(L"../../../../external/textures/rock5.jpg"));
 	
 	tg_own.generateAndStoreImages(heightmap, resolution, pathNormal, pathColor);
-
 	std::cout << "[Image] Downsampling heightfield..." << std::endl;
 	tg_own.sampleHeightfieldDown(heightmap, resolution);
 

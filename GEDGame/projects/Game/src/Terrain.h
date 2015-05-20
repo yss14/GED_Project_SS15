@@ -4,6 +4,7 @@
 #include "ConfigParser.h"
 #include "SimpleImage.h"
 #include <iostream>
+#include "Vec3f.h"
 
 struct SimpleVertex{
 	DirectX::XMFLOAT4 Pos;
@@ -25,7 +26,7 @@ public:
 	void destroy();
 
 	void render(ID3D11DeviceContext* context, ID3DX11EffectPass* pass);
-
+	Vec3f calculateNormal(int x, int z, int resolution);
 
 private:
 	Terrain(const Terrain&);
@@ -40,6 +41,8 @@ private:
 
 	// General resources
 	ID3D11ShaderResourceView*               debugSRV;
-	std::vector<unsigned int> indexVector;
+	std::vector<unsigned int>				indexVector;
+	std::vector<float>						heightMapVector;
+	int										indexLength;
 };
 

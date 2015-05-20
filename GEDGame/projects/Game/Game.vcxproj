@@ -133,11 +133,13 @@ exit 1</Command>
     <ClInclude Include="src\debug.h" />
     <ClInclude Include="src\GameEffect.h" />
     <ClInclude Include="src\Terrain.h" />
+    <ClInclude Include="src\Vec3f.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\ConfigParser.cpp" />
     <ClCompile Include="src\Game.cpp" />
     <ClCompile Include="src\Terrain.cpp" />
+    <ClCompile Include="src\Vec3f.cpp" />
   </ItemGroup>
   <ItemGroup>
     <FxCompile Include="shader\game.fx">

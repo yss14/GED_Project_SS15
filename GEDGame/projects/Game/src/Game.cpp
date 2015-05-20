@@ -163,6 +163,8 @@ int _tmain(int argc, _TCHAR* argv[])
 
     DXUTMainLoop(); // Enter into the DXUT render loop
 
+	delete cfgParser;
+	cfgParser = nullptr;
     return DXUTGetExitCode();
 }
 
@@ -300,9 +302,6 @@ HRESULT CALLBACK OnD3D11CreateDevice( ID3D11Device* pd3dDevice,
 	// TODO: You might pass a ConfigParser object to the create function.
 	//       Therefore you can adjust the TerrainClass accordingly
 	V_RETURN(g_terrain.create(pd3dDevice, cfgParser));
-
-	delete cfgParser;
-	cfgParser = nullptr;
 
     return S_OK;
 }
