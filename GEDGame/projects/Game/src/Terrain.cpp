@@ -37,39 +37,24 @@ HRESULT Terrain::create(ID3D11Device* device, ConfigParser* parser)
 {
 	HRESULT hr;
 
-	// In our example, we load a debug texture
-
 	// Loading the heightMap
 	std::wstring outDir(TARGET_DIRECTORY);
 	outDir += L"resources\\";
 	std::wstring tmp = s2ws(parser->getTerrainPath());
-	//std::wstring tmp(parser->getTerrainPath().begin(), parser->getTerrainPath().end());
 	outDir += tmp;
 	GEDUtils::SimpleImage heightMap(outDir.c_str());
 
+	// Loading Terrain Texture
 	outDir = TARGET_DIRECTORY;
 	outDir += L"resources\\";
 	tmp = s2ws(parser->getTerrainTexturePath());
 	outDir += tmp;
-	// Loading Terrain Texture
 	V(DirectX::CreateDDSTextureFromFile(device, outDir.c_str() , nullptr, &diffuseTextureSRV));
 
 	if (hr != S_OK) {
 		MessageBoxA(NULL, "Could not load Terrain Texture", "Invalid texture", MB_ICONERROR | MB_OK);
 		return hr;
 	}
-	
-	//std::wcout << "Path: " << outDir << std::endl;
-	
-	// Load Debug Texture
-	/*outDir = TARGET_DIRECTORY;
-	outDir += L"resources\\debug_green.dds";
-	V(DirectX::CreateDDSTextureFromFile(device,outDir.c_str(), nullptr, &diffuseTexture));*/
-
-	//if (hr != S_OK) {
-	//	MessageBoxA(NULL, "Could not load texture \"resources\\debug_green.dds\"", "Invalid texture", MB_ICONERROR | MB_OK);
-	//	return hr;
-	//}
 
 	// TODO: Replace this vertex array (triangle) with an array (or vector)
 	// which contains the vertices of your terrain. Calculate position,
@@ -85,27 +70,26 @@ HRESULT Terrain::create(ID3D11Device* device, ConfigParser* parser)
 	// Note 3: In the coordinate system of the vertex buffer (output):
 	// x = east,    y = up,    z = south,          x,y,z in [0,1] (float)
 
+	// Initialising vectors
 	indexLength = (heightMap.getWidth() - 1) * (heightMap.getHeight() - 1) * 6;
 	std::vector<SimpleVertex> vertexVector(heightMap.getWidth() * heightMap.getHeight(), {});
-	std::vector<float> vertexFloatVector(heightMap.getWidth() * heightMap.getHeight() * 10, 0.0f);
-	std::vector<unsigned int> indexVector(indexLength,0);
-
-	D3D11_SUBRESOURCE_DATA id;
-	id.pSysMem = &vertexFloatVector[0];
-	id.SysMemPitch = 10 * sizeof(float); // Stride
-	id.SysMemSlicePitch = 0;
+	//std::vector<float> vertexFloatVector(heightMap.getWidth() * heightMap.getHeight() * 10, 0.0f);
+	indexVector = std::vector<unsigned int>(indexLength, 0);
 
 	// Vertex buffer init
 	D3D11_BUFFER_DESC bd;
 	bd.BindFlags = D3D11_BIND_VERTEX_BUFFER;
-	//bd.ByteWidth = vertexFloatVector.size() * sizeof(char*);//The size in bytes of the pointer array of the heightmap
-	bd.ByteWidth = vertexFloatVector.size() * sizeof(float);
+	bd.ByteWidth = vertexVector.size() * sizeof(SimpleVertex);//The size in bytes of the pointer array of the heightmap
 	bd.CPUAccessFlags = 0;
 	bd.MiscFlags = 0;
 	bd.Usage = D3D11_USAGE_DEFAULT;
 
-	// index buffer init stuff
+	D3D11_SUBRESOURCE_DATA id;
+	id.pSysMem = &vertexVector[0];
+	id.SysMemPitch = 10 * sizeof(SimpleVertex); // Stride
+	id.SysMemSlicePitch = 0;
 
+	// index buffer init stuff
 	D3D11_SUBRESOURCE_DATA idi;
 	ZeroMemory(&idi, sizeof(idi));
 	idi.pSysMem = &indexVector[0];
@@ -118,56 +102,50 @@ HRESULT Terrain::create(ID3D11Device* device, ConfigParser* parser)
 	bdi.MiscFlags = 0;
 	bdi.Usage = D3D11_USAGE_DEFAULT;
 
-
-
-
 	int indexCnt = 0;
 	int vertexCnt = 0;
 	int width = heightMap.getWidth();
 	int height = heightMap.getHeight();
 
+	// Copying heightMap Data from the picture 
 	heightMapVector = std::vector<float>(height*width);
 	for (int z = 0; z < height; z++){
 		for (int x = 0; x < width; x++){
 			heightMapVector[IDX(x, z, width)] = heightMap.getPixel(x, z);
 		}
 	}
-
-//	#echo "Creating new resources..."
-//	#mkdir "$(OutDir)resources"
-//#"$(OutDir)TerrainGenerator.exe" -r 4096 -o_height "$(OutDir)resources\terrain_height.tiff" -o_color "$(IntDir)terrain_color.tiff" -o_normal "$(IntDir)terrain_normal.tiff"
-//#"$(OutDir)texconv.exe" -srgbi -f R8G8B8A8_UNORM_SRGB -o "$(OutDir)resources" "$(IntDir)terrain_color.tiff"
-//#"$(OutDir)texconv.exe" -f BC5_UNORM -o "$(OutDir)resources" "$(IntDir)terrain_normal.tiff"
-//#"$(OutDir)texconv" -o "$(OutDir)resources" -srgbi -f R8G8B8A8_UNORM_SRGB "..\..\..\..\external\textures\debug_green.jpg"
-
 	for (int z = 0; z < height; z++){
 		for (int x = 0; x < width; x++){
+			Vec3f tmpNormal = calculateNormal(x, z, width);
+
 			SimpleVertex tmp;
 			tmp.Pos.x = x * 4;
 			tmp.Pos.z = z * 4;
-			tmp.Pos.y = heightMap.getPixel(x, z);
+			tmp.Pos.y = heightMapVector[IDX(x, z, width)] * (2 * width);
 			tmp.Pos.w = 1.0f;
 
-			tmp.Normal.x = 0.0f;
-			tmp.Normal.z = 0.0f;
-			tmp.Normal.y = 1.0f;
+			tmp.Normal.x = tmpNormal.x;
+			tmp.Normal.z = tmpNormal.z;
+			tmp.Normal.y = tmpNormal.y;
+			tmp.Normal.w = 0.0f;
 
-			tmp.UV.x = (x*1.0f) / width;
-			tmp.UV.y = (z*1.0f) / height;
+			tmp.UV.x = x / (width - 1.0f);
+			tmp.UV.y = z / (height - 1.0f);
 
-			vertexFloatVector[vertexCnt++] = x * 4;
-			vertexFloatVector[vertexCnt++] = heightMapVector[IDX(x, z, width)] * (2*width);
-			vertexFloatVector[vertexCnt++] = z * 4;
-			vertexFloatVector[vertexCnt++] = 1.0f;
+			vertexVector[IDX(x, z, width)] = tmp;
 
-			Vec3f tmpNormal = calculateNormal(x, z, width);
-			vertexFloatVector[vertexCnt++] = tmpNormal.x;
-			vertexFloatVector[vertexCnt++] = tmpNormal.y;
-			vertexFloatVector[vertexCnt++] = tmpNormal.z;
-			vertexFloatVector[vertexCnt++] = 0.0f;
+			//vertexFloatVector[vertexCnt++] = x * 4;
+			//vertexFloatVector[vertexCnt++] = heightMapVector[IDX(x, z, width)] * (2*width);
+			//vertexFloatVector[vertexCnt++] = z * 4;
+			//vertexFloatVector[vertexCnt++] = 1.0f;
 
-			vertexFloatVector[vertexCnt++] = (x) / (width-1.0f);
-			vertexFloatVector[vertexCnt++] = (z) / (height-1.0f);
+			//vertexFloatVector[vertexCnt++] = tmpNormal.x;
+			//vertexFloatVector[vertexCnt++] = tmpNormal.y;
+			//vertexFloatVector[vertexCnt++] = tmpNormal.z;
+			//vertexFloatVector[vertexCnt++] = 0.0f;
+
+			//vertexFloatVector[vertexCnt++] = x / (width-1.0f);
+			//vertexFloatVector[vertexCnt++] = z / (height-1.0f);
 
 			// doesn't have to add triangles for the  last row/col
 			if (x < width - 1 && z < height - 1){
@@ -251,7 +229,7 @@ void Terrain::render(ID3D11DeviceContext* context, ID3DX11EffectPass* pass)
 	// Draw
 	// TODO: Use DrawIndexed to draw the terrain geometry using as shared vertex list
 	// (instead of drawing only the vertex buffer)
-	context->DrawIndexed(indexLength , 0, 0);
+	context->DrawIndexed(indexVector.size(), 0, 0);
 	//context->Draw(3, 0);
 }
 
