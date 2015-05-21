@@ -69,6 +69,7 @@ XMVECTOR                                g_lightDir;
 Terrain									g_terrain;
 
 GameEffect								g_gameEffect; // CPU part of Shader
+ConfigParser*							cfgParser; // ConfigParser Reference
 
 //--------------------------------------------------------------------------------------
 // UI control IDs
@@ -162,6 +163,8 @@ int _tmain(int argc, _TCHAR* argv[])
 
     DXUTMainLoop(); // Enter into the DXUT render loop
 
+	delete cfgParser;
+	cfgParser = nullptr;
     return DXUTGetExitCode();
 }
 
@@ -182,7 +185,7 @@ void InitApp()
 
 	// TODO: Parse your config file specified by "pathA" here
 
-	ConfigParser *cfgParser = new ConfigParser();
+	cfgParser = new ConfigParser();
 	cfgParser->load(pathA);
 
     // Intialize the user interface
@@ -298,7 +301,7 @@ HRESULT CALLBACK OnD3D11CreateDevice( ID3D11Device* pd3dDevice,
 
 	// TODO: You might pass a ConfigParser object to the create function.
 	//       Therefore you can adjust the TerrainClass accordingly
-	V_RETURN(g_terrain.create(pd3dDevice));
+	V_RETURN(g_terrain.create(pd3dDevice, cfgParser));
 
     return S_OK;
 }
