@@ -224,7 +224,6 @@ void Terrain::destroy()
 	SAFE_RELEASE(indexBuffer);
 	SAFE_RELEASE(debugSRV);
 	SAFE_RELEASE(diffuseTextureSRV);
-	// TODO: Release the terrain's shader resource view and texture
 }
 
 
