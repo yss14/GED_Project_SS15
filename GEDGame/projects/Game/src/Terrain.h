@@ -8,11 +8,12 @@
 
 struct SimpleVertex{
 	DirectX::XMFLOAT4 Pos;
-	DirectX::XMFLOAT3 Normal;
+	DirectX::XMFLOAT4 Normal;
 	DirectX::XMFLOAT2 UV;
 
-	SimpleVertex(){
-		Pos.x = Pos.y = Pos.z = Pos.w = Normal.x = Normal.y = Normal.z = UV.x = UV.y = 0;
+	SimpleVertex() : Pos(0, 0, 0, 0), Normal(0, 0, 0, 0), UV(0, 0)
+	{
+		//Pos.x = Pos.y = Pos.z = Pos.w = Normal.x = Normal.y = Normal.z = UV.x = UV.y = 0;
 	}
 };
 

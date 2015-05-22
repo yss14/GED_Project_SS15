@@ -66,9 +66,9 @@ int _tmain(int argc, _TCHAR* argv[])
 	}
 
 	// Play around with these values ;)
-	float roughness = 0.45f; // "spikyness", the closer to zero, the flatter
-	int smoothCount = 15;	 // smoothCount times smoothed
-	int smoothRange = 1;	 // "Smoothing Radius" 
+	float roughness = 0.52f; // "spikyness", the closer to zero, the flatter
+	int smoothCount = 4;	 // smoothCount times smoothed
+	int smoothRange = 2;	 // "Smoothing Radius" 
 
 	DiamondSquare ds(resolution, roughness, smoothCount, smoothRange);
 	std::vector<float> heightmap = ds.doDiamondSquare();
