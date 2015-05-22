@@ -1,12 +1,12 @@
 #include "Terrain.h"
 #include "GameEffect.h"
 #include <algorithm>
-//#include "SimpleImage/SimpleImage.h"
 #include <DDSTextureLoader.h>
 #include "DirectXTex.h"
 
 // You can use this macro to access your height field
 #define IDX(X,Y,WIDTH) ((X) + (Y) * (WIDTH))
+
 std::wstring s2ws(const std::string& s)
 {
 	int len;
@@ -56,24 +56,8 @@ HRESULT Terrain::create(ID3D11Device* device, ConfigParser* parser)
 		return hr;
 	}
 
-	// TODO: Replace this vertex array (triangle) with an array (or vector)
-	// which contains the vertices of your terrain. Calculate position,
-	// normal and texture coordinates according to your height field and
-	// the dimensions of the terrain specified by the ConfigParser
-
-	// Note 1: The normal map that you created last week will not be used
-	// in this assignment (Assignment 4). It will be of use in later assignments
-
-	// Note 2: For each vertex 10 floats are stored. Do not use another
-	// layout.
-
-	// Note 3: In the coordinate system of the vertex buffer (output):
-	// x = east,    y = up,    z = south,          x,y,z in [0,1] (float)
-
 	// Initialising vectors
-	//indexLength = (heightMap.getWidth() - 1) * (heightMap.getHeight() - 1) * 6;
 	std::vector<SimpleVertex> vertexVector(heightMap.getWidth() * heightMap.getHeight(), {});
-	//std::vector<float> vertexFloatVector(heightMap.getWidth() * heightMap.getHeight() * 10, 0.0f);
 	indexVector = std::vector<unsigned int>((heightMap.getWidth() - 1) * (heightMap.getHeight() - 1) * 6, 0);
 
 	// Vertex buffer init
@@ -97,11 +81,12 @@ HRESULT Terrain::create(ID3D11Device* device, ConfigParser* parser)
  	D3D11_BUFFER_DESC bdi;
 	ZeroMemory(&bdi, sizeof(bdi));
 	bdi.BindFlags = D3D11_BIND_INDEX_BUFFER;
-	bdi.ByteWidth = indexVector.size() * sizeof(unsigned int);//The size in bytes of the pointer array of the heightmap
+	bdi.ByteWidth = indexVector.size() * sizeof(unsigned int); //The size in bytes of the pointer array of the heightmap
 	bdi.CPUAccessFlags = 0;
 	bdi.MiscFlags = 0;
 	bdi.Usage = D3D11_USAGE_DEFAULT;
 
+	// init stuff for vertexVector and indexVector initialisation 
 	int indexCnt = 0;
 	int vertexCnt = 0;
 	int width = heightMap.getWidth();
@@ -133,19 +118,6 @@ HRESULT Terrain::create(ID3D11Device* device, ConfigParser* parser)
 			tmp.UV.y = z / (height - 1.0f);
 
 			vertexVector[IDX(x, z, width)] = tmp;
-
-			//vertexFloatVector[vertexCnt++] = x * 4;
-			//vertexFloatVector[vertexCnt++] = heightMapVector[IDX(x, z, width)] * (2*width);
-			//vertexFloatVector[vertexCnt++] = z * 4;
-			//vertexFloatVector[vertexCnt++] = 1.0f;
-
-			//vertexFloatVector[vertexCnt++] = tmpNormal.x;
-			//vertexFloatVector[vertexCnt++] = tmpNormal.y;
-			//vertexFloatVector[vertexCnt++] = tmpNormal.z;
-			//vertexFloatVector[vertexCnt++] = 0.0f;
-
-			//vertexFloatVector[vertexCnt++] = x / (width-1.0f);
-			//vertexFloatVector[vertexCnt++] = z / (height-1.0f);
 
 			// doesn't have to add triangles for the  last row/col
 			if (x < width - 1 && z < height - 1){
@@ -182,16 +154,9 @@ HRESULT Terrain::create(ID3D11Device* device, ConfigParser* parser)
 	//vertexFloatVector.assign(triangle, triangle + 30);
 	//int indices[] = {2,1,0};
 	//indexVector.assign(indices, indices + 3);
-	// Create index buffer
-	// TODO: Insert your code to create the index buffer
+
 	V(device->CreateBuffer(&bdi, &idi, &indexBuffer));
 	V(device->CreateBuffer(&bd, &id, &vertexBuffer)); // http://msdn.microsoft.com/en-us/library/ff476899%28v=vs.85%29.aspx
-
-	// Load color texture (color map)
-	// TODO: Insert your code to load the color texture and create
-	// the texture "diffuseTexture" as well as the shader resource view
-	// "diffuseTextureSRV"
-
 	return hr;
 }
 
@@ -218,16 +183,13 @@ void Terrain::render(ID3D11DeviceContext* context, ID3DX11EffectPass* pass)
 	// Tell the input assembler stage which primitive topology to use
 	context->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 
-	// TODO: Bind the SRV of the terrain diffuse texture to the effect variable
-	// (instead of the SRV of the debug texture)
+	// Bind the SRV of the terrain diffuse texture to the effect variable
 	V(g_gameEffect.diffuseEV->SetResource(diffuseTextureSRV));
 
 	// Apply the rendering pass in order to submit the necessary render state changes to the device
 	V(pass->Apply(0, context));
 
-	// Draw
-	// TODO: Use DrawIndexed to draw the terrain geometry using as shared vertex list
-	// (instead of drawing only the vertex buffer)
+	// Draw the terrain geometry using as shared vertex list
 	context->DrawIndexed(indexVector.size(), 0, 0);
 	//context->Draw(3, 0);
 }
