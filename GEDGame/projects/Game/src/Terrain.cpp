@@ -71,10 +71,10 @@ HRESULT Terrain::create(ID3D11Device* device, ConfigParser* parser)
 	// x = east,    y = up,    z = south,          x,y,z in [0,1] (float)
 
 	// Initialising vectors
-	indexLength = (heightMap.getWidth() - 1) * (heightMap.getHeight() - 1) * 6;
+	//indexLength = (heightMap.getWidth() - 1) * (heightMap.getHeight() - 1) * 6;
 	std::vector<SimpleVertex> vertexVector(heightMap.getWidth() * heightMap.getHeight(), {});
 	//std::vector<float> vertexFloatVector(heightMap.getWidth() * heightMap.getHeight() * 10, 0.0f);
-	indexVector = std::vector<unsigned int>(indexLength, 0);
+	indexVector = std::vector<unsigned int>((heightMap.getWidth() - 1) * (heightMap.getHeight() - 1) * 6, 0);
 
 	// Vertex buffer init
 	D3D11_BUFFER_DESC bd;
@@ -97,7 +97,7 @@ HRESULT Terrain::create(ID3D11Device* device, ConfigParser* parser)
  	D3D11_BUFFER_DESC bdi;
 	ZeroMemory(&bdi, sizeof(bdi));
 	bdi.BindFlags = D3D11_BIND_INDEX_BUFFER;
-	bdi.ByteWidth = indexLength * sizeof(unsigned int);//The size in bytes of the pointer array of the heightmap
+	bdi.ByteWidth = indexVector.size() * sizeof(unsigned int);//The size in bytes of the pointer array of the heightmap
 	bdi.CPUAccessFlags = 0;
 	bdi.MiscFlags = 0;
 	bdi.Usage = D3D11_USAGE_DEFAULT;

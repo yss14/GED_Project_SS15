@@ -44,6 +44,6 @@ private:
 	ID3D11ShaderResourceView*               debugSRV;
 	std::vector<unsigned int>				indexVector;
 	std::vector<float>						heightMapVector;
-	int										indexLength;
+	//int										indexLength;
 };
 
