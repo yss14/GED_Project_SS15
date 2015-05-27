@@ -196,7 +196,7 @@ void Terrain::render(ID3D11DeviceContext* context, ID3DX11EffectPass* pass)
 	V(g_gameEffect.normalmap->SetResource(normalmapTextureSRV));
 
 	V(g_gameEffect.resolution->SetInt(256));
-	std::cout << "Set g_gameEffect.resolution = 256 \n";
+	//std::cout << "Set g_gameEffect.resolution = 256 \n";
 
 	// Apply the rendering pass in order to submit the necessary render state changes to the device
 	V(pass->Apply(0, context));

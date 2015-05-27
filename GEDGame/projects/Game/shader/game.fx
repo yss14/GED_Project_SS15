@@ -143,6 +143,33 @@ float4 SimplePS(PosTexLi Input) : SV_Target0 {
 	//return float4(Input.normal, 1);
 }
 
+PosTex TerrainVS(uint VertexID : SV_VertexID){
+	PosTex output = (PosTex)0;
+
+	//Calc
+	output.Pos.x = VertexID % g_TerrainRes;
+	output.Pos.z = VertexID / g_TerrainRes;
+	output.Pos.y = g_HeightMap[VertexID];
+
+	//Translate
+	output.Pos.x = output.Pos.x - g_TerrainRes / 2;
+	output.Pos.z = output.Pos.z - g_TerrainRes / 2;
+	output.Pos.y = output.Pos.y - 0.5;
+
+	output.Pos.w = 1;
+
+	// Transform position from object space to homogenious clip space
+	output.Pos = mul(output.Pos, g_WorldViewProjection);
+
+	output.Tex.x = output.Pos.x / (g_TerrainRes - 1);
+	output.Tex.y = output.Pos.z / (g_TerrainRes - 1);
+
+	return output;
+}
+
+float4 TerrainPS(PosTex pos):SV_Target0{
+	return float4(0, 0, 0, 1);
+}
 
 //--------------------------------------------------------------------------------------
 // Techniques
@@ -151,9 +178,9 @@ technique11 Render
 {
     pass P0
     {
-        SetVertexShader(CompileShader(vs_4_0, SimpleVS()));
+        SetVertexShader(CompileShader(vs_4_0, TerrainVS()));
         SetGeometryShader(NULL);
-        SetPixelShader(CompileShader(ps_4_0, SimplePS()));
+        SetPixelShader(CompileShader(ps_4_0, TerrainPS()));
         
         SetRasterizerState(rsCullNone);
         SetDepthStencilState(EnableDepth, 0);

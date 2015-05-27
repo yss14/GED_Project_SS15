@@ -492,12 +492,13 @@ void CALLBACK OnFrameMove( double fTime, float fElapsedTime, void* pUserContext 
     g_terrainWorld = XMMatrixIdentity();
 
 	//Scaling
-	g_terrainWorld *= XMMatrixScaling(cfgParser->getTerrainWidth(), cfgParser->getTerrainHeight(), cfgParser->getTerrainDepth());
-    
+	//g_terrainWorld *= XMMatrixScaling(cfgParser->getTerrainWidth(), cfgParser->getTerrainHeight(), cfgParser->getTerrainDepth());
+	g_terrainWorld *= XMMatrixScaling(10.0f, 10.0f, 10.0f);
+
     if( g_terrainSpinning ) 
     {
 		// If spinng enabled, rotate the world matrix around the y-axis
-        //g_terrainWorld *= XMMatrixRotationY(30.0f * DEG2RAD((float)fTime)); // Rotate around world-space "up" axis
+        g_terrainWorld *= XMMatrixRotationY(30.0f * DEG2RAD((float)fTime)); // Rotate around world-space "up" axis
     }
 
 	// Set the light vector
