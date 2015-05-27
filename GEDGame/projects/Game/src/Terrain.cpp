@@ -43,6 +43,7 @@ HRESULT Terrain::create(ID3D11Device* device, ConfigParser* parser)
 	std::wstring tmp = s2ws(parser->getTerrainPath());
 	outDir += tmp;
 	GEDUtils::SimpleImage heightMap(outDir.c_str());
+	std::cout << "Loading height map " << parser->getTerrainPath() << " into DirectX \n";
 
 	// Loading Terrain Texture
 	outDir = TARGET_DIRECTORY;
@@ -50,6 +51,15 @@ HRESULT Terrain::create(ID3D11Device* device, ConfigParser* parser)
 	tmp = s2ws(parser->getTerrainTexturePath());
 	outDir += tmp;
 	V(DirectX::CreateDDSTextureFromFile(device, outDir.c_str() , nullptr, &diffuseTextureSRV));
+	std::cout << "Loading texture map " << parser->getTerrainTexturePath() << " into DirectX \n";
+
+	// Loading Normal Map
+	outDir = TARGET_DIRECTORY;
+	outDir += L"resources\\";
+	tmp = s2ws(parser->getTerrainNormalPath());
+	outDir += tmp;
+	V(DirectX::CreateDDSTextureFromFile(device, outDir.c_str(), nullptr, &diffuseTextureSRV));
+	std::cout << "Loading normal map " << parser->getTerrainNormalPath() << " into DirectX \n";
 
 	if (hr != S_OK) {
 		MessageBoxA(NULL, "Could not load Terrain Texture", "Invalid texture", MB_ICONERROR | MB_OK);
@@ -60,7 +70,7 @@ HRESULT Terrain::create(ID3D11Device* device, ConfigParser* parser)
 	std::vector<SimpleVertex> vertexVector(heightMap.getWidth() * heightMap.getHeight(), {});
 	indexVector = std::vector<unsigned int>((heightMap.getWidth() - 1) * (heightMap.getHeight() - 1) * 6, 0);
 
-	// Vertex buffer init
+	/*// Vertex buffer init
 	D3D11_BUFFER_DESC bd;
 	bd.BindFlags = D3D11_BIND_VERTEX_BUFFER;
 	bd.ByteWidth = vertexVector.size() * sizeof(SimpleVertex);//The size in bytes of the pointer array of the heightmap
@@ -71,7 +81,7 @@ HRESULT Terrain::create(ID3D11Device* device, ConfigParser* parser)
 	D3D11_SUBRESOURCE_DATA id;
 	id.pSysMem = &vertexVector[0];
 	id.SysMemPitch = 10 * sizeof(SimpleVertex); // Stride
-	id.SysMemSlicePitch = 0;
+	id.SysMemSlicePitch = 0;*/
 
 	// index buffer init stuff
 	D3D11_SUBRESOURCE_DATA idi;
@@ -101,23 +111,6 @@ HRESULT Terrain::create(ID3D11Device* device, ConfigParser* parser)
 	}
 	for (int z = 0; z < height; z++){
 		for (int x = 0; x < width; x++){
-			Vec3f tmpNormal = calculateNormal(x, z, width);
-
-			SimpleVertex tmp;
-			tmp.Pos.x = x * 4;
-			tmp.Pos.z = z * 4;
-			tmp.Pos.y = heightMapVector[IDX(x, z, width)] * (2 * width);
-			tmp.Pos.w = 1.0f;
-
-			tmp.Normal.x = tmpNormal.x;
-			tmp.Normal.z = tmpNormal.z;
-			tmp.Normal.y = tmpNormal.y;
-			tmp.Normal.w = 0.0f;
-
-			tmp.UV.x = x / (width - 1.0f);
-			tmp.UV.y = z / (height - 1.0f);
-
-			vertexVector[IDX(x, z, width)] = tmp;
 
 			// doesn't have to add triangles for the  last row/col
 			if (x < width - 1 && z < height - 1){
@@ -134,28 +127,33 @@ HRESULT Terrain::create(ID3D11Device* device, ConfigParser* parser)
 			}
 		}
 	}
-	//float triangle[] = {
-	//	// Vertex 0
-	//	-400.0f, 0.0f, -400.0f, 1.0f, // Position
-	//	0.0f, 1.0f, 0.0f, 0.0f, // Normal
-	//	0.0f, 0.0f,                 // Texcoords
 
-	//	// Vertex 1
-	//	400.0f, 0.0f, -400.0f, 1.0f, // Position
-	//	0.0f, 1.0f, 0.0f, 0.0f, // Normal
-	//	0.0f, 1.0f,                // Texcoords
+	// Vertex buffer init
+	D3D11_BUFFER_DESC bd_heightmap;
+	bd_heightmap.BindFlags = D3D11_BIND_SHADER_RESOURCE;
+	bd_heightmap.ByteWidth = heightMapVector.size() * sizeof(float);//The size in bytes of the pointer array of the heightmap
+	bd_heightmap.CPUAccessFlags = 0;
+	bd_heightmap.MiscFlags = 0;
+	bd_heightmap.Usage = D3D11_USAGE_DEFAULT;
 
-	//	// Vertex 2
-	//	-400.0f, 0.0f, 400.0f, 1.0f, // Position
-	//	0.0f, 1.0f, 0.0f, 0.0f, // Normal
-	//	1.0f, 0.0f,                 // Texcoords
-	//};
+	std::cout << "\nbd_heightmap ByteWidth=" << (heightMapVector.size() * sizeof(float)) << " Bytes \n";
 
-	//vertexFloatVector.assign(triangle, triangle + 30);
-	//int indices[] = {2,1,0};
-	//indexVector.assign(indices, indices + 3);
+
+	D3D11_SUBRESOURCE_DATA id_heightmap;
+	id_heightmap.pSysMem = &heightMapVector[0];
+	id_heightmap.SysMemPitch = sizeof(float);
+	id_heightmap.SysMemSlicePitch = 0;
+
+	D3D11_SHADER_RESOURCE_VIEW_DESC srvd;
+	srvd.ViewDimension = D3D11_SRV_DIMENSION_BUFFER;
+	srvd.Format = DXGI_FORMAT_R32_FLOAT;
+	srvd.Buffer.FirstElement = 0;
+	srvd.Buffer.NumElements = width * height;
 
 	V(device->CreateBuffer(&bdi, &idi, &indexBuffer));
+	V(device->CreateBuffer(&bd_heightmap, &id_heightmap, &heightBuffer));
+
+	V(device->CreateShaderResourceView(heightBuffer, &srvd, &heightBufferSRV));
 	//V(device->CreateBuffer(&bd, &id, &vertexBuffer)); // http://msdn.microsoft.com/en-us/library/ff476899%28v=vs.85%29.aspx
 	return hr;
 }
@@ -167,6 +165,12 @@ void Terrain::destroy()
 	SAFE_RELEASE(indexBuffer);
 	SAFE_RELEASE(debugSRV);
 	SAFE_RELEASE(diffuseTextureSRV);
+
+	//Added in Assignment05
+	SAFE_RELEASE(normalmapTexture);
+	SAFE_RELEASE(normalmapTextureSRV);
+	SAFE_RELEASE(heightBuffer);
+	SAFE_RELEASE(heightBufferSRV);
 }
 
 
