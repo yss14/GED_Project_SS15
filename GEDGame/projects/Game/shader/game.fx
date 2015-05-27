@@ -135,14 +135,6 @@ PosTexLi SimpleVS(PosNorTex Input) {
     return output;
 }
 
-float4 SimplePS(PosTexLi Input) : SV_Target0 {
-    // Perform lighting in object space, so that we can use the input normal "as it is"
-    //float4 matDiffuse = g_Diffuse.Sample(samAnisotropic, Input.Tex);
-    float4 matDiffuse = g_Diffuse.Sample(samLinearClamp, Input.Tex);
-    return float4(matDiffuse.rgb * Input.Li, 1);
-	//return float4(Input.normal, 1);
-}
-
 PosTex TerrainVS(uint VertexID : SV_VertexID){
 	PosTex output = (PosTex)0;
 
@@ -156,6 +148,7 @@ PosTex TerrainVS(uint VertexID : SV_VertexID){
 	output.Pos.z = output.Pos.z - g_TerrainRes / 2;
 	output.Pos.y = output.Pos.y - 0.5;
 
+	//For matrix operations
 	output.Pos.w = 1;
 
 	// Transform position from object space to homogenious clip space
@@ -167,8 +160,35 @@ PosTex TerrainVS(uint VertexID : SV_VertexID){
 	return output;
 }
 
-float4 TerrainPS(PosTex pos):SV_Target0{
-	return float4(0, 0, 0, 1);
+float4 SimplePS(PosTexLi Input) : SV_Target0 {
+    // Perform lighting in object space, so that we can use the input normal "as it is"
+    //float4 matDiffuse = g_Diffuse.Sample(samAnisotropic, Input.Tex);
+    float4 matDiffuse = g_Diffuse.Sample(samLinearClamp, Input.Tex);
+    return float4(matDiffuse.rgb * Input.Li, 1);
+	//return float4(Input.normal, 1);
+}
+
+float4 TerrainPS(PosTex input):SV_Target0{
+	float3 n; //Normal
+	
+	float4 normalDataFromFile = g_NormalMap.Sample(samAnisotropic, input.Tex);
+	normalDataFromFile = normalDataFromFile * 2 - 1;
+
+	n.x = normalDataFromFile.x;
+	n.z = normalDataFromFile.z;
+	//Calc y with dot product
+	float3 calcedNormal = dot(float3(n.x, 0, 0), float3(0, 0, n.z));
+	n.y = calcedNormal.y;
+
+	//Transform the normal to world space
+	n = mul(n, g_WorldViewProjection);
+	n = n * g_TerrainRes;
+
+	float4 matDiffuse = g_Diffuse.Sample(samLinearClamp, input.Tex);
+
+	float3 i = saturate(dot(n, g_LightDir));
+
+	return float4(matDiffuse.rgb * i, 1);
 }
 
 //--------------------------------------------------------------------------------------
