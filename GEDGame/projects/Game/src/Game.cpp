@@ -294,8 +294,7 @@ HRESULT CALLBACK OnD3D11CreateDevice( ID3D11Device* pd3dDevice,
 	// Create the input layout
     D3DX11_PASS_DESC pd;
 	V_RETURN(g_gameEffect.pass0->GetDesc(&pd));
-	V_RETURN( pd3dDevice->CreateInputLayout( layout, numElements, pd.pIAInputSignature,
-            pd.IAInputSignatureSize, &g_terrainVertexLayout ) );
+	//V_RETURN( pd3dDevice->CreateInputLayout( layout, numElements, pd.pIAInputSignature, pd.IAInputSignatureSize, &g_terrainVertexLayout ) );
 
 	// Create the terrain
 
@@ -317,7 +316,7 @@ void CALLBACK OnD3D11DestroyDevice( void* pUserContext )
     g_dialogResourceManager.OnD3D11DestroyDevice();
     g_settingsDlg.OnD3D11DestroyDevice();
     DXUTGetGlobalResourceCache().OnDestroyDevice();
-    SAFE_RELEASE( g_terrainVertexLayout );
+    //SAFE_RELEASE( g_terrainVertexLayout );
     
 	// Destroy the terrain
 	g_terrain.destroy();
@@ -491,11 +490,14 @@ void CALLBACK OnFrameMove( double fTime, float fElapsedTime, void* pUserContext 
     
 	// Start with identity matrix
     g_terrainWorld = XMMatrixIdentity();
+
+	//Scaling
+	g_terrainWorld *= XMMatrixScaling(cfgParser->getTerrainWidth(), cfgParser->getTerrainHeight(), cfgParser->getTerrainDepth());
     
     if( g_terrainSpinning ) 
     {
 		// If spinng enabled, rotate the world matrix around the y-axis
-        g_terrainWorld *= XMMatrixRotationY(30.0f * DEG2RAD((float)fTime)); // Rotate around world-space "up" axis
+        //g_terrainWorld *= XMMatrixRotationY(30.0f * DEG2RAD((float)fTime)); // Rotate around world-space "up" axis
     }
 
 	// Set the light vector
@@ -544,12 +546,18 @@ void CALLBACK OnD3D11FrameRender( ID3D11Device* pd3dDevice, ID3D11DeviceContext*
     XMMATRIX const view = g_camera.GetViewMatrix(); // http://msdn.microsoft.com/en-us/library/windows/desktop/bb206342%28v=vs.85%29.aspx
     XMMATRIX const proj = g_camera.GetProjMatrix(); // http://msdn.microsoft.com/en-us/library/windows/desktop/bb147302%28v=vs.85%29.aspx
     XMMATRIX worldViewProj = g_terrainWorld * view * proj;
+
+	//inverse transposed worldNormalsMatrix
+	XMMATRIX worldNormalsMatrix = XMMatrixInverse(NULL, g_terrainWorld);
+	worldNormalsMatrix = XMMatrixInverse(NULL, worldNormalsMatrix);
+
 	V(g_gameEffect.worldEV->SetMatrix( ( float* )&g_terrainWorld ));
 	V(g_gameEffect.worldViewProjectionEV->SetMatrix( ( float* )&worldViewProj ));
+	V(g_gameEffect.worldNormalsMatrix->SetMatrix(( float* )&worldNormalsMatrix));
 	V(g_gameEffect.lightDirEV->SetFloatVector( ( float* )&g_lightDir ));
 
     // Set input layout
-    pd3dImmediateContext->IASetInputLayout( g_terrainVertexLayout );
+    //pd3dImmediateContext->IASetInputLayout( g_terrainVertexLayout );
 
 	g_terrain.render(pd3dImmediateContext, g_gameEffect.pass0);
     
