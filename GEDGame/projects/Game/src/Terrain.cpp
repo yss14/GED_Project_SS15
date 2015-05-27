@@ -19,7 +19,7 @@ std::wstring s2ws(const std::string& s)
 
 Terrain::Terrain(void) :
 indexBuffer(nullptr),
-vertexBuffer(nullptr),
+//vertexBuffer(nullptr),
 diffuseTexture(nullptr),
 diffuseTextureSRV(nullptr),
 debugSRV(nullptr)
@@ -156,14 +156,14 @@ HRESULT Terrain::create(ID3D11Device* device, ConfigParser* parser)
 	//indexVector.assign(indices, indices + 3);
 
 	V(device->CreateBuffer(&bdi, &idi, &indexBuffer));
-	V(device->CreateBuffer(&bd, &id, &vertexBuffer)); // http://msdn.microsoft.com/en-us/library/ff476899%28v=vs.85%29.aspx
+	//V(device->CreateBuffer(&bd, &id, &vertexBuffer)); // http://msdn.microsoft.com/en-us/library/ff476899%28v=vs.85%29.aspx
 	return hr;
 }
 
 
 void Terrain::destroy()
 {
-	SAFE_RELEASE(vertexBuffer);
+	//SAFE_RELEASE(vertexBuffer);
 	SAFE_RELEASE(indexBuffer);
 	SAFE_RELEASE(debugSRV);
 	SAFE_RELEASE(diffuseTextureSRV);
@@ -175,7 +175,7 @@ void Terrain::render(ID3D11DeviceContext* context, ID3DX11EffectPass* pass)
 	HRESULT hr;
 
 	// Bind the terrain vertex buffer to the input assembler stage 
-	ID3D11Buffer* vbs[] = { vertexBuffer, };
+	ID3D11Buffer* vbs[] = { nullptr, };
 	unsigned int strides[] = { 10 * sizeof(float), }, offsets[] = { 0, };
 	context->IASetVertexBuffers(0, 1, vbs, strides, offsets);
 	context->IASetIndexBuffer(indexBuffer, DXGI_FORMAT_R32_UINT, 0);

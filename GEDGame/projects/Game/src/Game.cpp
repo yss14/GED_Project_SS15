@@ -57,7 +57,7 @@ CDXUTTextHelper*                        g_txtHelper = NULL;
 CDXUTDialog                             g_hud;                  // dialog for standard controls
 CDXUTDialog                             g_sampleUI;             // dialog for sample specific controls
 
-ID3D11InputLayout*                      g_terrainVertexLayout; // Describes the structure of the vertex buffer to the input assembler stage
+//ID3D11InputLayout*                      g_terrainVertexLayout; // Describes the structure of the vertex buffer to the input assembler stage
 
 
 bool                                    g_terrainSpinning = true;
