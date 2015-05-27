@@ -181,6 +181,7 @@ void Terrain::render(ID3D11DeviceContext* context, ID3DX11EffectPass* pass)
 	// Bind the terrain vertex buffer to the input assembler stage 
 	ID3D11Buffer* vbs[] = { nullptr, };
 	unsigned int strides[] = { 10 * sizeof(float), }, offsets[] = { 0, };
+	context->IASetInputLayout(nullptr);
 	context->IASetVertexBuffers(0, 1, vbs, strides, offsets);
 	context->IASetIndexBuffer(indexBuffer, DXGI_FORMAT_R32_UINT, 0);
 
@@ -189,6 +190,13 @@ void Terrain::render(ID3D11DeviceContext* context, ID3DX11EffectPass* pass)
 
 	// Bind the SRV of the terrain diffuse texture to the effect variable
 	V(g_gameEffect.diffuseEV->SetResource(diffuseTextureSRV));
+
+	//Added in Assignment05
+	V(g_gameEffect.heightmap->SetResource(heightBufferSRV));
+	V(g_gameEffect.normalmap->SetResource(normalmapTextureSRV));
+
+	V(g_gameEffect.resolution->SetInt(256));
+	std::cout << "Set g_gameEffect.resolution = 256 \n";
 
 	// Apply the rendering pass in order to submit the necessary render state changes to the device
 	V(pass->Apply(0, context));
