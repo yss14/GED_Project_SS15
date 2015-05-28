@@ -138,6 +138,9 @@ PosTexLi SimpleVS(PosNorTex Input) {
 PosTex TerrainVS(uint VertexID : SV_VertexID){
 	PosTex output = (PosTex)0;
 
+	int x = VertexID % g_TerrainRes;
+	int z = VertexID / g_TerrainRes;
+
 	//Calc
 	output.Pos.x = VertexID % g_TerrainRes;
 	output.Pos.z = VertexID / g_TerrainRes;
@@ -151,11 +154,12 @@ PosTex TerrainVS(uint VertexID : SV_VertexID){
 	//For matrix operations
 	output.Pos.w = 1;
 
+	output.Tex.x = (float)x / (g_TerrainRes - 1.0);
+	output.Tex.y = (float)z / (g_TerrainRes - 1.0);
+
 	// Transform position from object space to homogenious clip space
 	output.Pos = mul(output.Pos, g_WorldViewProjection);
 
-	output.Tex.x = output.Pos.x / (g_TerrainRes - 1.0);
-	output.Tex.y = output.Pos.z / (g_TerrainRes - 1.0);
 
 	return output;
 }
