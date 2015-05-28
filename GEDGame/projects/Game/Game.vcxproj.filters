@@ -26,12 +26,20 @@
     <ClInclude Include="src\Terrain.h">
       <Filter>Source</Filter>
     </ClInclude>
+    <ClInclude Include="src\ConfigParser.h" />
+    <ClInclude Include="src\Vec3f.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\Game.cpp">
       <Filter>Source</Filter>
     </ClCompile>
     <ClCompile Include="src\Terrain.cpp">
+      <Filter>Source</Filter>
+    </ClCompile>
+    <ClCompile Include="src\ConfigParser.cpp">
+      <Filter>Source</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Vec3f.cpp">
       <Filter>Source</Filter>
     </ClCompile>
   </ItemGroup>

@@ -43,20 +43,20 @@
     <LinkIncremental>true</LinkIncremental>
     <OutDir>$(SolutionDir)$(Configuration)\</OutDir>
     <IntDir>$(Configuration)\</IntDir>
-    <LibraryPath>$(SolutionDir)lib\$(Platform)\$(Configuration)\;$(VCInstallDir)lib;$(VCInstallDir)atlmfc\lib;$(WindowsSDK_LibraryPath_x86);</LibraryPath>
+    <LibraryPath>..\..\..\..\external\Tools\lib\VS2013\$(Platform)\;$(SolutionDir)lib\$(Platform)\$(Configuration)\;$(VCInstallDir)lib;$(VCInstallDir)atlmfc\lib;$(WindowsSDK_LibraryPath_x86)</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <LinkIncremental>false</LinkIncremental>
     <OutDir>$(SolutionDir)$(Configuration)\</OutDir>
     <IntDir>$(Configuration)\</IntDir>
-    <LibraryPath>$(SolutionDir)lib\$(Platform)\$(Configuration)\;$(VCInstallDir)lib;$(VCInstallDir)atlmfc\lib;$(WindowsSDK_LibraryPath_x86);</LibraryPath>
+    <LibraryPath>..\..\..\..\external\Tools\lib\VS2013\$(Platform)\;$(SolutionDir)lib\$(Platform)\$(Configuration)\;$(VCInstallDir)lib;$(VCInstallDir)atlmfc\lib;$(WindowsSDK_LibraryPath_x86)</LibraryPath>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
       <WarningLevel>Level3</WarningLevel>
       <Optimization>Disabled</Optimization>
-      <PreprocessorDefinitions>_WIN32_WINNT=0x600 ;WIN32;_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>_WIN32_WINNT=0x600;WIN32;_DEBUG;_CONSOLE;%(PreprocessorDefinitions);TARGET_DIRECTORY=LR"($(OutDir))"</PreprocessorDefinitions>
       <SDLCheck>true</SDLCheck>
       <AdditionalIncludeDirectories>..\..\..\..\external\Tools\include\;$(SolutionDir)projects\Effects11\inc\;$(SolutionDir)projects\DXUT\Core\;$(SolutionDir)projects\DXUT\Optional\;$(SolutionDir)projects\DirectXTex\DirectXTex\;$(SolutionDir)projects\DirectXTex\WICTextureLoader\;$(SolutionDir)projects\DirectXTex\DDSTextureLoader\</AdditionalIncludeDirectories>
     </ClCompile>
@@ -93,7 +93,7 @@ exit 1</Command>
       <Optimization>MaxSpeed</Optimization>
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
-      <PreprocessorDefinitions>_WIN32_WINNT=0x600 ;WIN32;NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>_WIN32_WINNT=0x600;WIN32;NDEBUG;_CONSOLE;%(PreprocessorDefinitions);TARGET_DIRECTORY=LR"($(OutDir))"</PreprocessorDefinitions>
       <SDLCheck>true</SDLCheck>
       <AdditionalIncludeDirectories>..\..\..\..\external\Tools\include\;$(SolutionDir)projects\Effects11\inc\;$(SolutionDir)projects\DXUT\Core\;$(SolutionDir)projects\DXUT\Optional\;$(SolutionDir)projects\DirectXTex\DirectXTex\;$(SolutionDir)projects\DirectXTex\WICTextureLoader\;$(SolutionDir)projects\DirectXTex\DDSTextureLoader\</AdditionalIncludeDirectories>
     </ClCompile>
@@ -102,7 +102,7 @@ exit 1</Command>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
-      <AdditionalDependencies>usp10.lib;comctl32.lib;dxguid.lib;d3dcompiler.lib;kernel32.lib;gdi32.lib;comdlg32.lib;GEDUtils.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>usp10.lib;comctl32.lib;dxguid.lib;d3dcompiler.lib;GEDUtils.lib;kernel32.lib;gdi32.lib;comdlg32.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <AdditionalLibraryDirectories>..\..\..\..\external\Tools\lib\VS2013\$(Platform)\</AdditionalLibraryDirectories>
     </Link>
     <CustomBuildStep>
@@ -129,13 +129,17 @@ exit 1</Command>
     <Text Include="ReadMe.txt" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="src\ConfigParser.h" />
     <ClInclude Include="src\debug.h" />
     <ClInclude Include="src\GameEffect.h" />
     <ClInclude Include="src\Terrain.h" />
+    <ClInclude Include="src\Vec3f.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="src\ConfigParser.cpp" />
     <ClCompile Include="src\Game.cpp" />
     <ClCompile Include="src\Terrain.cpp" />
+    <ClCompile Include="src\Vec3f.cpp" />
   </ItemGroup>
   <ItemGroup>
     <FxCompile Include="shader\game.fx">

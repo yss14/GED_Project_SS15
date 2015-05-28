@@ -19,6 +19,7 @@
 #include "DXUTgui.h"
 #include "DXUTsettingsDlg.h"
 #include "SDKmisc.h"
+#include "ConfigParser.h"
 
 #include "d3dx11effect.h"
 
@@ -56,7 +57,7 @@ CDXUTTextHelper*                        g_txtHelper = NULL;
 CDXUTDialog                             g_hud;                  // dialog for standard controls
 CDXUTDialog                             g_sampleUI;             // dialog for sample specific controls
 
-ID3D11InputLayout*                      g_terrainVertexLayout; // Describes the structure of the vertex buffer to the input assembler stage
+//ID3D11InputLayout*                      g_terrainVertexLayout; // Describes the structure of the vertex buffer to the input assembler stage
 
 
 bool                                    g_terrainSpinning = true;
@@ -68,6 +69,7 @@ XMVECTOR                                g_lightDir;
 Terrain									g_terrain;
 
 GameEffect								g_gameEffect; // CPU part of Shader
+ConfigParser*							cfgParser; // ConfigParser Reference
 
 //--------------------------------------------------------------------------------------
 // UI control IDs
@@ -161,6 +163,8 @@ int _tmain(int argc, _TCHAR* argv[])
 
     DXUTMainLoop(); // Enter into the DXUT render loop
 
+	delete cfgParser;
+	cfgParser = nullptr;
     return DXUTGetExitCode();
 }
 
@@ -180,6 +184,10 @@ void InitApp()
 	wcstombs_s(&size, pathA, path, MAX_PATH);
 
 	// TODO: Parse your config file specified by "pathA" here
+
+	cfgParser = new ConfigParser();
+	cfgParser->load(pathA);
+	std::cout << "Loaded game.cfg from " << pathA << "\n";
 
     // Intialize the user interface
 
@@ -287,14 +295,13 @@ HRESULT CALLBACK OnD3D11CreateDevice( ID3D11Device* pd3dDevice,
 	// Create the input layout
     D3DX11_PASS_DESC pd;
 	V_RETURN(g_gameEffect.pass0->GetDesc(&pd));
-	V_RETURN( pd3dDevice->CreateInputLayout( layout, numElements, pd.pIAInputSignature,
-            pd.IAInputSignatureSize, &g_terrainVertexLayout ) );
+	//V_RETURN( pd3dDevice->CreateInputLayout( layout, numElements, pd.pIAInputSignature, pd.IAInputSignatureSize, &g_terrainVertexLayout ) );
 
 	// Create the terrain
 
 	// TODO: You might pass a ConfigParser object to the create function.
 	//       Therefore you can adjust the TerrainClass accordingly
-	V_RETURN(g_terrain.create(pd3dDevice));
+	V_RETURN(g_terrain.create(pd3dDevice, cfgParser));
 
     return S_OK;
 }
@@ -310,7 +317,7 @@ void CALLBACK OnD3D11DestroyDevice( void* pUserContext )
     g_dialogResourceManager.OnD3D11DestroyDevice();
     g_settingsDlg.OnD3D11DestroyDevice();
     DXUTGetGlobalResourceCache().OnDestroyDevice();
-    SAFE_RELEASE( g_terrainVertexLayout );
+    //SAFE_RELEASE( g_terrainVertexLayout );
     
 	// Destroy the terrain
 	g_terrain.destroy();
@@ -484,7 +491,11 @@ void CALLBACK OnFrameMove( double fTime, float fElapsedTime, void* pUserContext 
     
 	// Start with identity matrix
     g_terrainWorld = XMMatrixIdentity();
-    
+
+	//Scaling
+	g_terrainWorld *= XMMatrixScaling(cfgParser->getTerrainWidth(), cfgParser->getTerrainHeight(), cfgParser->getTerrainDepth());
+	//g_terrainWorld *= XMMatrixScaling(10.0f, 800.0f, 10.0f);
+
     if( g_terrainSpinning ) 
     {
 		// If spinng enabled, rotate the world matrix around the y-axis
@@ -537,12 +548,18 @@ void CALLBACK OnD3D11FrameRender( ID3D11Device* pd3dDevice, ID3D11DeviceContext*
     XMMATRIX const view = g_camera.GetViewMatrix(); // http://msdn.microsoft.com/en-us/library/windows/desktop/bb206342%28v=vs.85%29.aspx
     XMMATRIX const proj = g_camera.GetProjMatrix(); // http://msdn.microsoft.com/en-us/library/windows/desktop/bb147302%28v=vs.85%29.aspx
     XMMATRIX worldViewProj = g_terrainWorld * view * proj;
+
+	//inverse transposed worldNormalsMatrix
+	XMMATRIX worldNormalsMatrix = XMMatrixInverse(NULL, g_terrainWorld);
+	worldNormalsMatrix = XMMatrixTranspose(worldNormalsMatrix);
+
 	V(g_gameEffect.worldEV->SetMatrix( ( float* )&g_terrainWorld ));
 	V(g_gameEffect.worldViewProjectionEV->SetMatrix( ( float* )&worldViewProj ));
+	V(g_gameEffect.worldNormalsMatrix->SetMatrix(( float* )&worldNormalsMatrix));
 	V(g_gameEffect.lightDirEV->SetFloatVector( ( float* )&g_lightDir ));
 
     // Set input layout
-    pd3dImmediateContext->IASetInputLayout( g_terrainVertexLayout );
+    //pd3dImmediateContext->IASetInputLayout( g_terrainVertexLayout );
 
 	g_terrain.render(pd3dImmediateContext, g_gameEffect.pass0);
     
