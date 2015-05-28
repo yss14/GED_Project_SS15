@@ -154,8 +154,8 @@ PosTex TerrainVS(uint VertexID : SV_VertexID){
 	// Transform position from object space to homogenious clip space
 	output.Pos = mul(output.Pos, g_WorldViewProjection);
 
-	output.Tex.x = output.Pos.x / (g_TerrainRes - 1);
-	output.Tex.y = output.Pos.z / (g_TerrainRes - 1);
+	output.Tex.x = output.Pos.x / (g_TerrainRes - 1.0);
+	output.Tex.y = output.Pos.z / (g_TerrainRes - 1.0);
 
 	return output;
 }
@@ -169,24 +169,39 @@ float4 SimplePS(PosTexLi Input) : SV_Target0 {
 }
 
 float4 TerrainPS(PosTex input):SV_Target0{
-	float3 n; //Normal
-	
-	float4 normalDataFromFile = g_NormalMap.Sample(samAnisotropic, input.Tex);
-	normalDataFromFile = normalDataFromFile * 2 - 1;
+	//float4 n; //Normal
+	//n.w = 1;
+	//
+	//float4 normalDataFromFile = g_NormalMap.Sample(samAnisotropic, input.Tex);
+	//normalDataFromFile = normalDataFromFile * 2 - 1;
 
-	n.x = normalDataFromFile.x;
-	n.z = normalDataFromFile.z;
+	//n.x = normalDataFromFile.x;
+	//n.z = normalDataFromFile.z;
 	//Calc y with dot product
-	float3 calcedNormal = dot(float3(n.x, 0, 0), float3(0, 0, n.z));
-	n.y = calcedNormal.y;
+	//float3 calcedNormal = dot(float3(n.x, 0, 0), float3(0, 0, n.z));
+	//n.y = sqrt(1 - n.x*n.x - n.z*n.z);
 
+	//n.xyz = (0.0f, 1.0f, 0.0f);
 	//Transform the normal to world space
-	n = mul(n, g_WorldViewProjection);
-	n = n * g_TerrainRes;
+	//n = normalize(mul(n, g_WorldNormals));
 
-	float4 matDiffuse = g_Diffuse.Sample(samLinearClamp, input.Tex);
+	//float3 matDiffuse = g_Diffuse.Sample(samLinearClamp, input.Tex).xyz;
 
-	float3 i = saturate(dot(n, g_LightDir));
+	//float i = saturate(dot(n, g_LightDir));
+
+	//return float4(matDiffuse.rgb, 1);
+
+	float3 n = float3(0, 0, 0);
+	n.xz = g_NormalMap.Sample(samAnisotropic, input.Tex).xy;
+	n.x = n.x * 2 - 1;
+	n.z = n.z * 2 - 1;
+
+	n.y = sqrt(1 - n.x*n.x - n.z*n.z);
+	n = normalize(mul(n, g_World).xyz);
+
+	float3 matDiffuse = g_Diffuse.Sample(samLinearClamp, input.Tex);
+	
+	float i = saturate(dot(n, normalize(g_LightDir)));
 
 	return float4(matDiffuse.rgb * i, 1);
 }

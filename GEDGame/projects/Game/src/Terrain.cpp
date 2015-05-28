@@ -58,7 +58,7 @@ HRESULT Terrain::create(ID3D11Device* device, ConfigParser* parser)
 	outDir += L"resources\\";
 	tmp = s2ws(parser->getTerrainNormalPath());
 	outDir += tmp;
-	V(DirectX::CreateDDSTextureFromFile(device, outDir.c_str(), nullptr, &diffuseTextureSRV));
+	V(DirectX::CreateDDSTextureFromFile(device, outDir.c_str(), nullptr, &normalmapTextureSRV));
 	std::cout << "Loading normal map " << parser->getTerrainNormalPath() << " into DirectX \n";
 
 	if (hr != S_OK) {

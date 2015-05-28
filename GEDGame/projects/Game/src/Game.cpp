@@ -550,7 +550,7 @@ void CALLBACK OnD3D11FrameRender( ID3D11Device* pd3dDevice, ID3D11DeviceContext*
 
 	//inverse transposed worldNormalsMatrix
 	XMMATRIX worldNormalsMatrix = XMMatrixInverse(NULL, g_terrainWorld);
-	worldNormalsMatrix = XMMatrixInverse(NULL, worldNormalsMatrix);
+	worldNormalsMatrix = XMMatrixTranspose(worldNormalsMatrix);
 
 	V(g_gameEffect.worldEV->SetMatrix( ( float* )&g_terrainWorld ));
 	V(g_gameEffect.worldViewProjectionEV->SetMatrix( ( float* )&worldViewProj ));
