@@ -187,6 +187,7 @@ void InitApp()
 
 	cfgParser = new ConfigParser();
 	cfgParser->load(pathA);
+	std::cout << "Loaded game.cfg from " << pathA << "\n";
 
     // Intialize the user interface
 
@@ -492,8 +493,8 @@ void CALLBACK OnFrameMove( double fTime, float fElapsedTime, void* pUserContext 
     g_terrainWorld = XMMatrixIdentity();
 
 	//Scaling
-	//g_terrainWorld *= XMMatrixScaling(cfgParser->getTerrainWidth(), cfgParser->getTerrainHeight(), cfgParser->getTerrainDepth());
-	g_terrainWorld *= XMMatrixScaling(10.0f, 800.0f, 10.0f);
+	g_terrainWorld *= XMMatrixScaling(cfgParser->getTerrainWidth(), cfgParser->getTerrainHeight(), cfgParser->getTerrainDepth());
+	//g_terrainWorld *= XMMatrixScaling(10.0f, 800.0f, 10.0f);
 
     if( g_terrainSpinning ) 
     {

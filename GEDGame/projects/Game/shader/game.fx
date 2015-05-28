@@ -173,39 +173,28 @@ float4 SimplePS(PosTexLi Input) : SV_Target0 {
 }
 
 float4 TerrainPS(PosTex input):SV_Target0{
-	//float4 n; //Normal
-	//n.w = 1;
-	//
-	//float4 normalDataFromFile = g_NormalMap.Sample(samAnisotropic, input.Tex);
-	//normalDataFromFile = normalDataFromFile * 2 - 1;
-
-	//n.x = normalDataFromFile.x;
-	//n.z = normalDataFromFile.z;
-	//Calc y with dot product
-	//float3 calcedNormal = dot(float3(n.x, 0, 0), float3(0, 0, n.z));
-	//n.y = sqrt(1 - n.x*n.x - n.z*n.z);
-
-	//n.xyz = (0.0f, 1.0f, 0.0f);
-	//Transform the normal to world space
-	//n = normalize(mul(n, g_WorldNormals));
-
-	//float3 matDiffuse = g_Diffuse.Sample(samLinearClamp, input.Tex).xyz;
-
-	//float i = saturate(dot(n, g_LightDir));
-
-	//return float4(matDiffuse.rgb, 1);
-
 	float3 n = float3(0, 0, 0);
 	n.xz = g_NormalMap.Sample(samAnisotropic, input.Tex).xy;
 	n.x = n.x * 2 - 1;
 	n.z = n.z * 2 - 1;
 
-	n.y = sqrt(1 - n.x*n.x - n.z*n.z);
+	//Fixing division by 0
+	float xzSqr;
+	xzSqr = n.x * n.x + n.z * n.z;
+	if (xzSqr > 0.995f){
+		n.y = 0.1f;
+	}
+	else{
+		n.y = sqrt(1.0 - xzSqr);
+	}
+
+
+	//n.y = sqrt(1 - n.x*n.x - n.z*n.z);
 	n = normalize(mul(n, g_World).xyz);
 
 	float3 matDiffuse = g_Diffuse.Sample(samLinearClamp, input.Tex);
 	
-	float i = saturate(dot(n, normalize(g_LightDir)));
+	float i = saturate(dot(n, normalize(g_LightDir.xyz)));
 
 	return float4(matDiffuse.rgb * i, 1);
 }
