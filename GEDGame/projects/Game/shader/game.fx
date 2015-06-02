@@ -142,8 +142,8 @@ PosTex TerrainVS(uint VertexID : SV_VertexID){
 	int z = VertexID / g_TerrainRes;
 
 	//Calc
-	output.Pos.x = VertexID % g_TerrainRes;
-	output.Pos.z = VertexID / g_TerrainRes;
+	output.Pos.x = x;
+	output.Pos.z = z;
 	output.Pos.y = g_HeightMap[VertexID];
 
 	//Translate
@@ -190,11 +190,16 @@ float4 TerrainPS(PosTex input):SV_Target0{
 
 
 	//n.y = sqrt(1 - n.x*n.x - n.z*n.z);
-	n = normalize(mul(n, g_World).xyz);
+	n = normalize(mul(float4(n,0), g_WorldNormals).xyz);
 
-	float3 matDiffuse = g_Diffuse.Sample(samLinearClamp, input.Tex);
+	float3 matDiffuse = g_Diffuse.Sample(samLinearClamp, input.Tex).xyz;
 	
-	float i = saturate(dot(n, normalize(g_LightDir.xyz)));
+	float i = saturate(dot(n, g_LightDir.xyz));
+
+	//Simulate Ambient Lighting
+	/*if (i < 0.2){
+		i = 0.2;
+	}*/
 
 	return float4(matDiffuse.rgb * i, 1);
 }
