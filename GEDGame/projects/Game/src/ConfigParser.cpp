@@ -36,6 +36,18 @@ void ConfigParser::load(std::string filepath){
 			}else if (firstWord.compare(std::string("TerrainHeight")) == 0){
 				sstr << readValue;
 				sstr >> this->terrainHeight;
+			}
+			else if (firstWord.compare(std::string("Mesh")) == 0){
+				ifs >> readValue;
+
+				
+
+				if (readValue.compare(std::string("Cockpit")) == 0){
+					ifs >> cockpitModelFiles.modelPath;
+					ifs >> cockpitModelFiles.diffuseTexturePath;
+					ifs >> cockpitModelFiles.specularTexturePath;
+					ifs >> cockpitModelFiles.glowTexturePath;
+				}
 			}else{
 				std::cout << "Can't read property >" << firstWord << "< from file " << filepath;
 			}

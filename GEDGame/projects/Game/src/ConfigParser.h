@@ -6,6 +6,14 @@
 #include <iostream>
 #include <sstream>
 
+struct MeshFiles{
+
+	std::string modelPath;
+	std::string diffuseTexturePath;
+	std::string specularTexturePath;
+	std::string glowTexturePath;
+};
+
 class ConfigParser{
 public:
 	ConfigParser();
@@ -30,6 +38,7 @@ private:
 	float terrainDepth;
 	float terrainHeight;
 	float spinSpeed;
+	MeshFiles cockpitModelFiles;
 
 };
 
