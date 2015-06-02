@@ -20,6 +20,8 @@
 #include "DXUTsettingsDlg.h"
 #include "SDKmisc.h"
 #include "ConfigParser.h"
+#include "Mesh.h"
+#include "Utils.h"
 
 #include "d3dx11effect.h"
 
@@ -71,6 +73,8 @@ Terrain									g_terrain;
 GameEffect								g_gameEffect; // CPU part of Shader
 ConfigParser*							cfgParser; // ConfigParser Reference
 
+Mesh*									g_cockpitMesh = nullptr;
+
 //--------------------------------------------------------------------------------------
 // UI control IDs
 //--------------------------------------------------------------------------------------
@@ -103,6 +107,7 @@ void CALLBACK OnD3D11FrameRender( ID3D11Device* pd3dDevice, ID3D11DeviceContext*
 
 void InitApp();
 void RenderText();
+void DeinitApp();
 
 void ReleaseShader();
 HRESULT ReloadShader(ID3D11Device* pd3dDevice);
@@ -163,8 +168,8 @@ int _tmain(int argc, _TCHAR* argv[])
 
     DXUTMainLoop(); // Enter into the DXUT render loop
 
-	delete cfgParser;
-	cfgParser = nullptr;
+	DXUTShutdown();
+	DeinitApp();
     return DXUTGetExitCode();
 }
 
@@ -207,6 +212,17 @@ void InitApp()
     g_sampleUI.SetCallback( OnGUIEvent ); iY = 10;
     iY += 24;
     g_sampleUI.AddCheckBox( IDC_TOGGLESPIN, L"Toggle Spinning", 0, iY += 24, 125, 22, g_terrainSpinning );   
+
+	// init cockpit mesh
+	//std::wcout << Utils::buildRessourcePath(cfgParser->getCockpitMeshFiles()->modelPath) << std::endl;
+	//std::wcout << Utils::buildRessourcePath(cfgParser->getCockpitMeshFiles()->diffuseTexturePath) << std::endl;
+	//std::wcout << Utils::buildRessourcePath(cfgParser->getCockpitMeshFiles()->specularTexturePath) << std::endl;
+	//std::wcout << Utils::buildRessourcePath(cfgParser->getCockpitMeshFiles()->glowTexturePath) << std::endl;
+
+	g_cockpitMesh = new Mesh(Utils::buildRessourcePath(cfgParser->getCockpitMeshFiles()->modelPath), 
+		Utils::buildRessourcePath(cfgParser->getCockpitMeshFiles()->diffuseTexturePath),
+		Utils::buildRessourcePath(cfgParser->getCockpitMeshFiles()->specularTexturePath),
+		Utils::buildRessourcePath(cfgParser->getCockpitMeshFiles()->glowTexturePath));
 }
 
 //--------------------------------------------------------------------------------------
@@ -302,6 +318,7 @@ HRESULT CALLBACK OnD3D11CreateDevice( ID3D11Device* pd3dDevice,
 	// TODO: You might pass a ConfigParser object to the create function.
 	//       Therefore you can adjust the TerrainClass accordingly
 	V_RETURN(g_terrain.create(pd3dDevice, cfgParser));
+	V_RETURN(g_cockpitMesh->create(pd3dDevice));
 
     return S_OK;
 }
@@ -321,6 +338,7 @@ void CALLBACK OnD3D11DestroyDevice( void* pUserContext )
     
 	// Destroy the terrain
 	g_terrain.destroy();
+	g_cockpitMesh->destroy();
 
     SAFE_DELETE( g_txtHelper );
     ReleaseShader();
@@ -576,4 +594,10 @@ void CALLBACK OnD3D11FrameRender( ID3D11Device* pd3dDevice, ID3D11DeviceContext*
         OutputDebugString( L"\n" );
         dwTimefirst = GetTickCount();
     }
+}
+
+void DeinitApp()
+{
+	SAFE_DELETE(g_cockpitMesh);
+	SAFE_DELETE(cfgParser);
 }

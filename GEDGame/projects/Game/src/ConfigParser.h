@@ -30,6 +30,7 @@ public:
 	float getTerrainHeight();
 	std::string getTerrainTexturePath();
 	std::string getTerrainNormalPath();
+	MeshFiles* getCockpitMeshFiles();
 
 private:
 	std::string terrainHeightPath, terrainColorPath, terrainNormalPath;

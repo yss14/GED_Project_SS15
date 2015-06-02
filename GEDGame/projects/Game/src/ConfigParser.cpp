@@ -38,8 +38,6 @@ void ConfigParser::load(std::string filepath){
 				sstr >> this->terrainHeight;
 			}
 			else if (firstWord.compare(std::string("Mesh")) == 0){
-				ifs >> readValue;
-
 				
 
 				if (readValue.compare(std::string("Cockpit")) == 0){
@@ -88,4 +86,8 @@ std::string ConfigParser::getTerrainNormalPath(){
 
 float ConfigParser::getTerrainHeight(){
 	return this->terrainHeight;
+}
+
+MeshFiles* ConfigParser::getCockpitMeshFiles(){
+	return &(this->cockpitModelFiles);
 }

@@ -14,9 +14,6 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <Text Include="ReadMe.txt" />
-  </ItemGroup>
-  <ItemGroup>
     <ClInclude Include="src\debug.h">
       <Filter>Source</Filter>
     </ClInclude>
@@ -28,6 +25,9 @@
     </ClInclude>
     <ClInclude Include="src\ConfigParser.h" />
     <ClInclude Include="src\Vec3f.h" />
+    <ClInclude Include="src\Mesh.h" />
+    <ClInclude Include="src\T3d.h" />
+    <ClInclude Include="src\Utils.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\Game.cpp">
@@ -40,6 +40,15 @@
       <Filter>Source</Filter>
     </ClCompile>
     <ClCompile Include="src\Vec3f.cpp">
+      <Filter>Source</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Mesh.cpp">
+      <Filter>Source</Filter>
+    </ClCompile>
+    <ClCompile Include="src\T3d.cpp">
+      <Filter>Source</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Utils.cpp">
       <Filter>Source</Filter>
     </ClCompile>
   </ItemGroup>

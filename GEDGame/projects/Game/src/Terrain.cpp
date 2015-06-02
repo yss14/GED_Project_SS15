@@ -3,19 +3,10 @@
 #include <algorithm>
 #include <DDSTextureLoader.h>
 #include "DirectXTex.h"
+#include "Utils.h"
 
 // You can use this macro to access your height field
 #define IDX(X,Y,WIDTH) ((X) + (Y) * (WIDTH))
-
-std::wstring s2ws(const std::string& s)
-{
-	int len;
-	int slength = (int)s.length() + 1;
-	len = MultiByteToWideChar(CP_ACP, 0, s.c_str(), slength, 0, 0);
-	std::wstring r(len, L'\0');
-	MultiByteToWideChar(CP_ACP, 0, s.c_str(), slength, &r[0], len);
-	return r;
-}
 
 Terrain::Terrain(void) :
 indexBuffer(nullptr),
@@ -40,7 +31,7 @@ HRESULT Terrain::create(ID3D11Device* device, ConfigParser* parser)
 	// Loading the heightMap
 	std::wstring outDir(TARGET_DIRECTORY);
 	outDir += L"resources\\";
-	std::wstring tmp = s2ws(parser->getTerrainPath());
+	std::wstring tmp = Utils::s2ws(parser->getTerrainPath());
 	outDir += tmp;
 	GEDUtils::SimpleImage heightMap(outDir.c_str());
 	std::cout << "Loading height map " << parser->getTerrainPath() << " into DirectX \n";
@@ -48,7 +39,7 @@ HRESULT Terrain::create(ID3D11Device* device, ConfigParser* parser)
 	// Loading Terrain Texture
 	outDir = TARGET_DIRECTORY;
 	outDir += L"resources\\";
-	tmp = s2ws(parser->getTerrainTexturePath());
+	tmp = Utils::s2ws(parser->getTerrainTexturePath());
 	outDir += tmp;
 	V(DirectX::CreateDDSTextureFromFile(device, outDir.c_str() , nullptr, &diffuseTextureSRV));
 	std::cout << "Loading texture map " << parser->getTerrainTexturePath() << " into DirectX \n";
@@ -56,7 +47,7 @@ HRESULT Terrain::create(ID3D11Device* device, ConfigParser* parser)
 	// Loading Normal Map
 	outDir = TARGET_DIRECTORY;
 	outDir += L"resources\\";
-	tmp = s2ws(parser->getTerrainNormalPath());
+	tmp = Utils::s2ws(parser->getTerrainNormalPath());
 	outDir += tmp;
 	V(DirectX::CreateDDSTextureFromFile(device, outDir.c_str(), nullptr, &normalmapTextureSRV));
 	std::cout << "Loading normal map " << parser->getTerrainNormalPath() << " into DirectX \n";
