@@ -319,7 +319,7 @@ HRESULT CALLBACK OnD3D11CreateDevice( ID3D11Device* pd3dDevice,
 	//       Therefore you can adjust the TerrainClass accordingly
 	V_RETURN(g_terrain.create(pd3dDevice, cfgParser));
 	V_RETURN(g_cockpitMesh->create(pd3dDevice));
-
+	V_RETURN(Mesh::createInputLayout(pd3dDevice, g_gameEffect.meshPass1));
     return S_OK;
 }
 
@@ -339,7 +339,7 @@ void CALLBACK OnD3D11DestroyDevice( void* pUserContext )
 	// Destroy the terrain
 	g_terrain.destroy();
 	g_cockpitMesh->destroy();
-
+	Mesh::destroyInputLayout();
     SAFE_DELETE( g_txtHelper );
     ReleaseShader();
 }

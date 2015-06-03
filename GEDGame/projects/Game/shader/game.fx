@@ -2,11 +2,14 @@
 // Shader resources
 //--------------------------------------------------------------------------------------
 
-Texture2D   g_Diffuse; // Material albedo for diffuse lighting
+Texture2D		g_Diffuse; // Material albedo for diffuse lighting
 
-Buffer<float> g_HeightMap;
-Texture2D g_NormalMap;
+Buffer<float>	g_HeightMap;
+Texture2D		g_NormalMap;
 
+
+Texture2D		g_specular;
+Texture2D		g_glow;
 
 //--------------------------------------------------------------------------------------
 // Constant buffers
@@ -15,7 +18,7 @@ Texture2D g_NormalMap;
 cbuffer cbConstant
 {
     float4  g_LightDir; // Object space
-	int g_TerrainRes;
+	int		g_TerrainRes;
 };
 
 cbuffer cbChangesEveryFrame
@@ -23,7 +26,8 @@ cbuffer cbChangesEveryFrame
     matrix  g_World;
     matrix  g_WorldViewProjection;
     float   g_Time;
-	matrix g_WorldNormals;
+	matrix	g_WorldNormals;
+	float4	g_cameraWorldPos;
 };
 
 cbuffer cbUserChanges
@@ -50,10 +54,28 @@ struct PosTexLi
 	float3 normal: NORMAL;
 };
 
-struct PosTex{
+struct PosTex
+{
 	float4 Pos : SV_POSITION;
 	float2 Tex : TEXCOORD;
 };
+
+struct T3dVertexVSIn 
+{
+	float3 Pos : POSITION;		//Position in object space
+	float2 Tex : TEXCOORD;		//Texture coordinate
+	float3 Nor : NORMAL;		//Normal in object space
+	float3 Tan : TANGENT;		//Tangent in object space (not used in Ass. 5)
+};
+
+struct T3dVertexPSIn 
+{
+	float4 Pos : SV_POSITION;	//Position in clip space
+	float2 Tex : TEXCOORD;		//Texture coordinate
+	float3 PosWorld : POSITION; //Position in world space
+	float3 NorWorld : NORMAL;	//Normal in world space
+	float3 TanWorld : TANGENT;	//Tangent in world space (not used in Ass. 5)
+};
 
 //--------------------------------------------------------------------------------------
 // Samplers
@@ -204,6 +226,16 @@ float4 TerrainPS(PosTex input):SV_Target0{
 	return float4(matDiffuse.rgb * i, 1);
 }
 
+// Mesh Shaders
+
+T3dVertexPSIn MeshVS(T3dVertexVSIn input){
+
+}
+
+float4 MeshPS(T3dVertexVSIn input) :SV_Target0{
+
+}
+
 //--------------------------------------------------------------------------------------
 // Techniques
 //--------------------------------------------------------------------------------------
@@ -219,4 +251,15 @@ technique11 Render
         SetDepthStencilState(EnableDepth, 0);
         SetBlendState(NoBlending, float4(0.0f, 0.0f, 0.0f, 0.0f), 0xFFFFFFFF);
     }
+
+	pass P1_Mesh
+	{
+		SetVertexShader(CompileShader(vs_4_0, MeshVS()));
+		SetGeometryShader(NULL);
+		SetPixelShader(CompileShader(ps_4_0, MeshPS()));
+
+		SetRasterizerState(rsCullBack);
+		SetDepthStencilState(EnableDepth, 0);
+		SetBlendState(NoBlending, float4(0.0f, 0.0f, 0.0f, 0.0f), 0xFFFFFFFF);
+	}
 }

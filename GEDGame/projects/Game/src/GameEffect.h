@@ -37,6 +37,14 @@ struct GameEffect
 	ID3DX11EffectScalarVariable*			resolution;
 	ID3DX11EffectMatrixVariable*			worldNormalsMatrix;
 
+	// Additional Shader Resources	|	Assignment 6
+	ID3DX11EffectShaderResourceVariable*	specularEV;
+	ID3DX11EffectShaderResourceVariable*	glowEV;
+	ID3DX11EffectVectorVariable*			cameraPosWorldEV;
+	ID3DX11EffectPass*						meshPass1;
+
+
+
 	GameEffect() { ZeroMemory(this, sizeof(*this)); }		// WARNING: This will set ALL members to 0!
 
 
@@ -74,6 +82,11 @@ struct GameEffect
 		SAFE_GET_RESOURCE(effect, "g_NormalMap", normalmap);
 		SAFE_GET_SCALAR(effect, "g_TerrainRes", resolution);
 		SAFE_GET_MATRIX(effect, "g_WorldNormals", worldNormalsMatrix);
+
+		//Bindings to effect variables in Assignment06
+		SAFE_GET_RESOURCE(effect, "g_specular", specularEV);
+		SAFE_GET_RESOURCE(effect, "g_glow", glowEV);
+		SAFE_GET_VECTOR(effect, "g_cameraWorldPos", cameraPosWorldEV);
 
 		return S_OK;
 	}
