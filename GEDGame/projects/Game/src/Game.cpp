@@ -581,6 +581,28 @@ void CALLBACK OnD3D11FrameRender( ID3D11Device* pd3dDevice, ID3D11DeviceContext*
 
 	g_terrain.render(pd3dImmediateContext, g_gameEffect.pass0);
     
+	// Cockpit Stuff
+
+	//Create transformation matrices
+	XMMATRIX mTrans, mScale, mRot;
+	mRot = XMMatrixRotationY(DEG2RAD(180.0f)); //set angleInRadians yourself
+	mTrans = XMMatrixTranslation(0, -16, 42);
+	mScale = XMMatrixScaling(0.05f, 0.05f, 0.05f);
+
+	XMMATRIX mWorld = mRot * mTrans * mScale * g_camera.GetWorldMatrix();
+
+	XMMATRIX mWorldViewProj = mWorld * g_camera.GetViewMatrix() * g_camera.GetProjMatrix();
+
+	XMMATRIX mWorldNormals = XMMatrixInverse(nullptr, mWorld);
+	XMVECTOR cameraPosWorld = g_camera.GetEyePt();
+
+	V(g_gameEffect.worldEV->SetMatrix((float*)&mWorld));
+	V(g_gameEffect.worldViewProjectionEV->SetMatrix((float*)&mWorldViewProj));
+	V(g_gameEffect.worldNormalsMatrix->SetMatrix((float*)&mWorldNormals));
+	V(g_gameEffect.cameraPosWorldEV->SetFloatVector((float*)&cameraPosWorld));
+
+	g_cockpitMesh->render(pd3dImmediateContext, g_gameEffect.meshPass1, g_gameEffect.diffuseEV, g_gameEffect.specularEV, g_gameEffect.glowEV);
+
     DXUT_BeginPerfEvent( DXUT_PERFEVENTCOLOR, L"HUD / Stats" );
     V(g_hud.OnRender( fElapsedTime ));
     V(g_sampleUI.OnRender( fElapsedTime ));

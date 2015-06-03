@@ -229,11 +229,25 @@ float4 TerrainPS(PosTex input):SV_Target0{
 // Mesh Shaders
 
 T3dVertexPSIn MeshVS(T3dVertexVSIn input){
+	T3dVertexPSIn output = (T3dVertexPSIn)0;
+	float3 n = float3(0, 0, 0);
+	output.Pos = mul(float4(input.Pos, 1), g_WorldViewProjection);
+	output.Tex = input.Tex;
+	float4 worldpos = mul(float4(input.Pos, 1), g_World);
+		output.PosWorld = worldpos.xyz / worldpos.w;
+	output.NorWorld = normalize(mul(float4(input.Nor, 0), g_WorldNormals).xyz);
+	output.TanWorld = normalize(mul(float4(input.Tan, 0), g_WorldNormals).xyz);
 
+	return output;
 }
 
-float4 MeshPS(T3dVertexVSIn input) :SV_Target0{
 
+float4 MeshPS(T3dVertexPSIn input) : SV_Target0{
+	float3 matDiffuse = g_Diffuse.Sample(samLinearClamp, input.Tex).xyz;
+	float3 n = float3(0, 0, 0);
+	n = normalize(mul(float4(n, 0), g_WorldNormals).xyz);
+	float i = saturate(dot(n, g_LightDir.xyz));
+	return float4(matDiffuse.rgb * i, 1);
 }
 
 //--------------------------------------------------------------------------------------
@@ -241,16 +255,16 @@ float4 MeshPS(T3dVertexVSIn input) :SV_Target0{
 //--------------------------------------------------------------------------------------
 technique11 Render
 {
-    pass P0
-    {
-        SetVertexShader(CompileShader(vs_4_0, TerrainVS()));
-        SetGeometryShader(NULL);
-        SetPixelShader(CompileShader(ps_4_0, TerrainPS()));
-        
-        SetRasterizerState(rsCullNone);
-        SetDepthStencilState(EnableDepth, 0);
-        SetBlendState(NoBlending, float4(0.0f, 0.0f, 0.0f, 0.0f), 0xFFFFFFFF);
-    }
+	pass P0
+	{
+		SetVertexShader(CompileShader(vs_4_0, TerrainVS()));
+		SetGeometryShader(NULL);
+		SetPixelShader(CompileShader(ps_4_0, TerrainPS()));
+
+		SetRasterizerState(rsCullNone);
+		SetDepthStencilState(EnableDepth, 0);
+		SetBlendState(NoBlending, float4(0.0f, 0.0f, 0.0f, 0.0f), 0xFFFFFFFF);
+	}
 
 	pass P1_Mesh
 	{
