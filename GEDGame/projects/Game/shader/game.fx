@@ -219,9 +219,9 @@ float4 TerrainPS(PosTex input):SV_Target0{
 	float i = saturate(dot(n, g_LightDir.xyz));
 
 	//Simulate Ambient Lighting
-	/*if (i < 0.2){
-		i = 0.2;
-	}*/
+	if (i < 0.07){
+		i = 0.07;
+	}
 
 	return float4(matDiffuse.rgb * i, 1);
 }
@@ -229,11 +229,20 @@ float4 TerrainPS(PosTex input):SV_Target0{
 // Mesh Shaders
 
 T3dVertexPSIn MeshVS(T3dVertexVSIn input){
+	T3dVertexPSIn output = (T3dVertexPSIn)0;
 
+	output.Pos = mul(float4(input.Pos, 1), g_WorldViewProjection);
+	output.Tex.x = input.Tex.x;
+	output.Tex.y = input.Tex.y;
+	output.PosWorld = mul(float4(input.Pos, 1), g_World);
+	output.NorWorld = (float3)normalize(mul(float4(input.Nor,0), g_WorldNormals));
+	output.TanWorld = (float3)normalize(mul(float4(input.Tan, 0), g_WorldNormals));
+
+	return output;
 }
 
-float4 MeshPS(T3dVertexVSIn input) :SV_Target0{
-
+float4 MeshPS(T3dVertexPSIn input) :SV_Target0{
+	return g_Diffuse.Sample(samAnisotropic, input.Tex);
 }
 
 //--------------------------------------------------------------------------------------

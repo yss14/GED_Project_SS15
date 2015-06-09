@@ -70,6 +70,7 @@ struct GameEffect
 
 		// Obtain the effect pass
 		SAFE_GET_PASS(technique, "P0", pass0);
+		SAFE_GET_PASS(technique, "P1_Mesh", meshPass1);
 
 		// Obtain the effect variables
 		SAFE_GET_RESOURCE(effect, "g_Diffuse", diffuseEV);
