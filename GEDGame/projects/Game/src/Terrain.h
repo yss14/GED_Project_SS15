@@ -28,6 +28,8 @@ public:
 
 	void render(ID3D11DeviceContext* context, ID3DX11EffectPass* pass);
 	Vec3f calculateNormal(int x, int z, int resolution);
+	float getHeight(int x, int z);
+	float getCenterHeight();
 
 private:
 	Terrain(const Terrain&);

@@ -75,6 +75,8 @@ ConfigParser*							cfgParser; // ConfigParser Reference
 
 Mesh*									g_cockpitMesh = nullptr;
 
+bool									canMove = false;
+
 //--------------------------------------------------------------------------------------
 // UI control IDs
 //--------------------------------------------------------------------------------------
@@ -291,13 +293,6 @@ HRESULT CALLBACK OnD3D11CreateDevice( ID3D11Device* pd3dDevice,
     g_txtHelper = new CDXUTTextHelper( pd3dDevice, pd3dImmediateContext, &g_dialogResourceManager, 15 );
 
     V_RETURN( ReloadShader(pd3dDevice) );
-    
-    
-    // Initialize the camera
-	XMVECTOR vEye = XMVectorSet(0.0f, 400.0f, -500.0f, 0.0f);   // Camera eye is here
-    XMVECTOR vAt = XMVectorSet(0.0f, 0.0f, 0.0f, 1.0f);               // ... facing at this position
-    g_camera.SetViewParams(vEye, vAt); // http://msdn.microsoft.com/en-us/library/windows/desktop/bb206342%28v=vs.85%29.aspx
-	g_camera.SetScalers(g_cameraRotateScaler, g_cameraMoveScaler);
 
 	// Define the input layout
 	const D3D11_INPUT_ELEMENT_DESC layout[] = // http://msdn.microsoft.com/en-us/library/bb205117%28v=vs.85%29.aspx
@@ -318,6 +313,13 @@ HRESULT CALLBACK OnD3D11CreateDevice( ID3D11Device* pd3dDevice,
 	// TODO: You might pass a ConfigParser object to the create function.
 	//       Therefore you can adjust the TerrainClass accordingly
 	V_RETURN(g_terrain.create(pd3dDevice, cfgParser));
+	// Initialize the camera
+	XMVECTOR vEye = XMVectorSet(0.0f, (g_terrain.getCenterHeight() + 0.5) * cfgParser->getTerrainHeight(), 0.0f, 0.0f);   // Camera eye is here
+	std::cout << g_terrain.getCenterHeight() << std::endl;
+	XMVECTOR vAt = XMVectorSet(1.0f, (g_terrain.getCenterHeight() + 0.5) * cfgParser->getTerrainHeight(), 0.0f, 1.0f);               // ... facing at this position
+	g_camera.SetViewParams(vEye, vAt); // http://msdn.microsoft.com/en-us/library/windows/desktop/bb206342%28v=vs.85%29.aspx
+	g_camera.SetScalers(g_cameraRotateScaler, g_cameraMoveScaler);
+
 	V_RETURN(g_cockpitMesh->create(pd3dDevice));
 	V_RETURN(Mesh::createInputLayout(pd3dDevice, g_gameEffect.meshPass1));
     return S_OK;
@@ -462,6 +464,7 @@ LRESULT CALLBACK MsgProc( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam, bo
 //--------------------------------------------------------------------------------------
 void CALLBACK OnKeyboard( UINT nChar, bool bKeyDown, bool bAltDown, void* pUserContext )
 {
+
 	UNREFERENCED_PARAMETER(nChar);
 	UNREFERENCED_PARAMETER(bKeyDown);
 	UNREFERENCED_PARAMETER(bAltDown);
@@ -501,8 +504,8 @@ void CALLBACK OnGUIEvent( UINT nEvent, int nControlID, CDXUTControl* pControl, v
 void CALLBACK OnFrameMove( double fTime, float fElapsedTime, void* pUserContext )
 {
 	UNREFERENCED_PARAMETER(pUserContext);
-    // Update the camera's position based on user input 
-    g_camera.FrameMove( fElapsedTime );
+	// Update the camera's position based on user input 
+	g_camera.FrameMove(fElapsedTime);
     
     // Initialize the terrain world matrix
     // http://msdn.microsoft.com/en-us/library/windows/desktop/bb206365%28v=vs.85%29.aspx
@@ -517,7 +520,7 @@ void CALLBACK OnFrameMove( double fTime, float fElapsedTime, void* pUserContext 
     if( g_terrainSpinning ) 
     {
 		// If spinng enabled, rotate the world matrix around the y-axis
-        g_terrainWorld *= XMMatrixRotationY(30.0f * DEG2RAD((float)fTime)); // Rotate around world-space "up" axis
+        g_terrainWorld *= XMMatrixRotationY(00.0f * DEG2RAD((float)fTime)); // Rotate around world-space "up" axis
     }
 
 	// Set the light vector

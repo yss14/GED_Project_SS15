@@ -253,3 +253,11 @@ Vec3f Terrain::calculateNormal(int x, int z, int resolution){
 	return normalAtCurPoint;
 }
 
+float Terrain::getHeight(int x, int z){
+	return heightMapVector[(x, z, sqrt(this->heightMapVector.size()))];
+}
+
+float Terrain::getCenterHeight(){
+	return getHeight(sqrt(this->heightMapVector.size()) / 2, sqrt(this->heightMapVector.size()) / 2);
+}
+
