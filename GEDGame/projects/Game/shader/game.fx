@@ -242,7 +242,26 @@ T3dVertexPSIn MeshVS(T3dVertexVSIn input){
 }
 
 float4 MeshPS(T3dVertexPSIn input) :SV_Target0{
-	return g_Diffuse.Sample(samAnisotropic, input.Tex);
+	
+	float4 matDiffuse, matSpecular, matGlow, colLight, colLightAmbient;
+	float3 n, r, v;
+	float cd = 0.5f;
+	float cs = 0.4f;
+	float ca = 0.15f;
+	float cg = 0.5f;
+	colLight = float4(1.0f, 1.0f, 1.0f, 1.0f);
+	colLightAmbient = float4(1.0f, 1.0f, 1.0f, 1.0f);
+	matDiffuse = g_Diffuse.Sample(samAnisotropic, input.Tex);
+	matSpecular = g_specular.Sample(samAnisotropic, input.Tex);
+	matGlow = g_glow.Sample(samAnisotropic, input.Tex);
+	n = normalize(input.NorWorld);
+	r = reflect(-(g_LightDir.xyz), n);
+	v = normalize(g_cameraWorldPos.xyz - input.PosWorld);
+
+	return (cd * matDiffuse * saturate(dot(n, g_LightDir.xyz)) * colLight +
+		cs * matSpecular * pow(saturate(dot(r, v)), 10) * colLight +
+		ca * matDiffuse * colLightAmbient + cg * matGlow);
+	//return g_Diffuse.Sample(samAnisotropic, input.Tex);
 }
 
 //--------------------------------------------------------------------------------------

@@ -375,7 +375,7 @@ HRESULT CALLBACK OnD3D11ResizedSwapChain( ID3D11Device* pd3dDevice, IDXGISwapCha
     g_cameraParams.farPlane = 5000.f;
 
     g_camera.SetProjParams(g_cameraParams.fovy, g_cameraParams.aspect, g_cameraParams.nearPlane, g_cameraParams.farPlane);
-	g_camera.SetEnablePositionMovement(true);
+	g_camera.SetEnablePositionMovement(false);
 	g_camera.SetRotateButtons(true, false, false);
 	g_camera.SetScalers( g_cameraRotateScaler, g_cameraMoveScaler );
 	g_camera.SetDrag( true );
@@ -464,7 +464,11 @@ LRESULT CALLBACK MsgProc( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam, bo
 //--------------------------------------------------------------------------------------
 void CALLBACK OnKeyboard( UINT nChar, bool bKeyDown, bool bAltDown, void* pUserContext )
 {
+	if (nChar == 'C' && bKeyDown){
+		canMove = !canMove;
+	}
 
+	g_camera.SetEnablePositionMovement(canMove);
 	UNREFERENCED_PARAMETER(nChar);
 	UNREFERENCED_PARAMETER(bKeyDown);
 	UNREFERENCED_PARAMETER(bAltDown);
