@@ -12,7 +12,7 @@ field((inputResolution % 2 == 0 ? inputResolution + 1 : inputResolution)*(inputR
 	this->roughnessIteration = roughness;
 	this->smoothCount = smoothCount;
 	this->smoothRange = smoothRange;
-	this->randomizer = std::default_random_engine(time(0));
+	this->randomizer = std::default_random_engine(42);
 }
 
 

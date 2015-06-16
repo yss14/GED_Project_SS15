@@ -2,6 +2,8 @@
 
 #include "T3d.h"
 #include <DDSTextureLoader.h>
+#include <iostream>
+#include <string>
 
 ID3D11InputLayout*	Mesh::inputLayout;
 
@@ -57,6 +59,8 @@ HRESULT Mesh::create(ID3D11Device* device)
 	std::vector<T3dVertex> vertexBufferData;
 	std::vector<uint32_t> indexBufferData;
 
+	std::wcout << filenameT3d;
+
 	V(T3d::readFromFile(filenameT3d.c_str(), vertexBufferData, indexBufferData));
 
 	id.pSysMem = &vertexBufferData[0];
@@ -90,10 +94,17 @@ HRESULT Mesh::create(ID3D11Device* device)
 
 
 	// Create textures
-	V(createTexture(device, filenameDDSDiffuse, &diffuseTex, &diffuseSRV)	);
-	V(createTexture(device, filenameDDSSpecular, &specularTex, &specularSRV));
-	V(createTexture(device, filenameDDSGlow, &glowTex, &glowSRV)			);
-
+	if (!filenameDDSDiffuse.compare(L"-")){
+		V(createTexture(device, filenameDDSDiffuse, &diffuseTex, &diffuseSRV));
+	}
+	
+	if (!filenameDDSSpecular.compare(L"-")){
+		V(createTexture(device, filenameDDSSpecular, &specularTex, &specularSRV));
+	}
+	
+	if (!filenameDDSGlow.compare(L"-")){
+		V(createTexture(device, filenameDDSGlow, &glowTex, &glowSRV));
+	}
 
 	return S_OK;
 }

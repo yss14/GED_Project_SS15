@@ -46,12 +46,25 @@ mkdir "$(OutDir)resources"
 "$(OutDir)texconv" -o "$(OutDir)resources" -srgbi -f R8G8B8A8_UNORM_SRGB "..\..\..\..\external\textures\debug_green.jpg"
 
 "$(SolutionDir)..\..\external\Tools\bin\obj2t3d.exe" -i "$(SolutionDir)..\..\external\art\01-Cockpit\cockpit\final\cockpit_o_low.obj" -o "$(OutDir)resources\cockpit_o_low.t3d" –y
-
 "$(OutDir)texconv" -o "$(OutDir)resources" -srgbi -f BC1_UNORM_SRGB "$(SolutionDir)..\..\external\art\01-Cockpit\cockpit\final\cockpit_m_diffuse.png"
-
 "$(OutDir)texconv" -o "$(OutDir)resources" -srgbi -f BC1_UNORM_SRGB "$(SolutionDir)..\..\external\art\01-Cockpit\cockpit\final\cockpit_m_specular.png"
+"$(OutDir)texconv" -o "$(OutDir)resources" -srgbi -f BC1_UNORM_SRGB "$(SolutionDir)..\..\external\art\01-Cockpit\cockpit\final\cockpit_m_glow.png"
 
-"$(OutDir)texconv" -o "$(OutDir)resources" -srgbi -f BC1_UNORM_SRGB "$(SolutionDir)..\..\external\art\01-Cockpit\cockpit\final\cockpit_m_glow.png"</NMakeBuildCommandLine>
+"$(SolutionDir)..\..\external\Tools\bin\obj2t3d.exe" -i "$(SolutionDir)..\..\external\art\01-Cockpit\gatling_gun\final\gatling_o_base.obj" -o "$(OutDir)resources\gatling_o_base.t3d" –y
+"$(SolutionDir)..\..\external\Tools\bin\obj2t3d.exe" -i "$(SolutionDir)..\..\external\art\01-Cockpit\gatling_gun\final\gatling_o_top.obj" -o "$(OutDir)resources\gatling_o_top.t3d" –y
+"$(OutDir)texconv" -o "$(OutDir)resources" -srgbi -f BC1_UNORM_SRGB "$(SolutionDir)..\..\external\art\01-Cockpit\gatling_gun\final\gatling_m_diffuse.png"
+"$(OutDir)texconv" -o "$(OutDir)resources" -srgbi -f BC1_UNORM_SRGB "$(SolutionDir)..\..\external\art\01-Cockpit\gatling_gun\final\gatling_m_specular.png"
+"$(OutDir)texconv" -o "$(OutDir)resources" -srgbi -f BC1_UNORM_SRGB "$(SolutionDir)..\..\external\art\01-Cockpit\gatling_gun\final\gatling_m_glow.png"
+
+"$(SolutionDir)..\..\external\Tools\bin\obj2t3d.exe" -i "$(SolutionDir)..\..\external\art\03-Environment\barracks\barracks.obj" -o "$(OutDir)resources\barracks.t3d" –y
+"$(OutDir)texconv" -o "$(OutDir)resources" -srgbi -f BC1_UNORM_SRGB "$(SolutionDir)..\..\external\art\03-Environment\barracks\barracks_diffuse.png"
+"$(OutDir)texconv" -o "$(OutDir)resources" -srgbi -f BC1_UNORM_SRGB "$(SolutionDir)..\..\external\art\03-Environment\barracks\barracks_specular.png"
+"$(OutDir)texconv" -o "$(OutDir)resources" -srgbi -f BC1_UNORM_SRGB "$(SolutionDir)..\..\external\art\03-Environment\barracks\barracks_normal.png"
+
+"$(SolutionDir)..\..\external\Tools\bin\obj2t3d.exe" -i "$(SolutionDir)..\..\external\art\03-Environment\tower\tower.obj" -o "$(OutDir)resources\tower.t3d" –y
+"$(OutDir)texconv" -o "$(OutDir)resources" -srgbi -f BC1_UNORM_SRGB "$(SolutionDir)..\..\external\art\03-Environment\tower\tower_diffuse.png"
+"$(OutDir)texconv" -o "$(OutDir)resources" -srgbi -f BC1_UNORM_SRGB "$(SolutionDir)..\..\external\art\03-Environment\tower\tower_specular.png"
+"$(OutDir)texconv" -o "$(OutDir)resources" -srgbi -f BC1_UNORM_SRGB "$(SolutionDir)..\..\external\art\03-Environment\tower\tower_normal.png"</NMakeBuildCommandLine>
     <NMakeCleanCommandLine>echo "Deleting old resources..."
 del /Q "$(IntDir)*"
 del /Q "$(OutDir)resources\*"</NMakeCleanCommandLine>
@@ -67,12 +80,25 @@ mkdir "$(OutDir)resources"
 "$(OutDir)texconv" -o "$(OutDir)resources" -srgbi -f R8G8B8A8_UNORM_SRGB "..\..\..\..\external\textures\debug_green.jpg"
 
 "$(SolutionDir)..\..\external\Tools\bin\obj2t3d.exe" -i "$(SolutionDir)..\..\external\art\01-Cockpit\cockpit\final\cockpit_o_low.obj" -o "$(OutDir)resources\cockpit_o_low.t3d" –y
-
 "$(OutDir)texconv" -o "$(OutDir)resources" -srgbi -f BC1_UNORM_SRGB "$(SolutionDir)..\..\external\art\01-Cockpit\cockpit\final\cockpit_m_diffuse.png"
-
 "$(OutDir)texconv" -o "$(OutDir)resources" -srgbi -f BC1_UNORM_SRGB "$(SolutionDir)..\..\external\art\01-Cockpit\cockpit\final\cockpit_m_specular.png"
+"$(OutDir)texconv" -o "$(OutDir)resources" -srgbi -f BC1_UNORM_SRGB "$(SolutionDir)..\..\external\art\01-Cockpit\cockpit\final\cockpit_m_glow.png"
 
-"$(OutDir)texconv" -o "$(OutDir)resources" -srgbi -f BC1_UNORM_SRGB "$(SolutionDir)..\..\external\art\01-Cockpit\cockpit\final\cockpit_m_glow.png"</NMakeBuildCommandLine>
+"$(SolutionDir)..\..\external\Tools\bin\obj2t3d.exe" -i "$(SolutionDir)..\..\external\art\01-Cockpit\gatling_gun\final\gatling_o_base.obj" -o "$(OutDir)resources\gatling_o_base.t3d" –y
+"$(SolutionDir)..\..\external\Tools\bin\obj2t3d.exe" -i "$(SolutionDir)..\..\external\art\01-Cockpit\gatling_gun\final\gatling_o_top.obj" -o "$(OutDir)resources\gatling_o_top.t3d" –y
+"$(OutDir)texconv" -o "$(OutDir)resources" -srgbi -f BC1_UNORM_SRGB "$(SolutionDir)..\..\external\art\01-Cockpit\gatling_gun\final\gatling_m_diffuse.png"
+"$(OutDir)texconv" -o "$(OutDir)resources" -srgbi -f BC1_UNORM_SRGB "$(SolutionDir)..\..\external\art\01-Cockpit\gatling_gun\final\gatling_m_specular.png"
+"$(OutDir)texconv" -o "$(OutDir)resources" -srgbi -f BC1_UNORM_SRGB "$(SolutionDir)..\..\external\art\01-Cockpit\gatling_gun\final\gatling_m_glow.png"
+
+"$(SolutionDir)..\..\external\Tools\bin\obj2t3d.exe" -i "$(SolutionDir)..\..\external\art\03-Environment\barracks\barracks.obj" -o "$(OutDir)resources\barracks.t3d" –y
+"$(OutDir)texconv" -o "$(OutDir)resources" -srgbi -f BC1_UNORM_SRGB "$(SolutionDir)..\..\external\art\03-Environment\barracks\barracks_diffuse.png"
+"$(OutDir)texconv" -o "$(OutDir)resources" -srgbi -f BC1_UNORM_SRGB "$(SolutionDir)..\..\external\art\03-Environment\barracks\barracks_specular.png"
+"$(OutDir)texconv" -o "$(OutDir)resources" -srgbi -f BC1_UNORM_SRGB "$(SolutionDir)..\..\external\art\03-Environment\barracks\barracks_normal.png"
+
+"$(SolutionDir)..\..\external\Tools\bin\obj2t3d.exe" -i "$(SolutionDir)..\..\external\art\03-Environment\tower\tower.obj" -o "$(OutDir)resources\tower.t3d" –y
+"$(OutDir)texconv" -o "$(OutDir)resources" -srgbi -f BC1_UNORM_SRGB "$(SolutionDir)..\..\external\art\03-Environment\tower\tower_diffuse.png"
+"$(OutDir)texconv" -o "$(OutDir)resources" -srgbi -f BC1_UNORM_SRGB "$(SolutionDir)..\..\external\art\03-Environment\tower\tower_specular.png"
+"$(OutDir)texconv" -o "$(OutDir)resources" -srgbi -f BC1_UNORM_SRGB "$(SolutionDir)..\..\external\art\03-Environment\tower\tower_normal.png"</NMakeBuildCommandLine>
     <NMakeCleanCommandLine>echo "Deleting old resources..."
 del /Q "$(IntDir)*"
 del /Q "$(OutDir)resources\*"</NMakeCleanCommandLine>

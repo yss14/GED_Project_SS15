@@ -11,6 +11,7 @@
 #include <sstream>
 #include <string>
 #include <cstdint>
+#include <map>
 
 
 #include "dxut.h"
@@ -73,7 +74,7 @@ Terrain									g_terrain;
 GameEffect								g_gameEffect; // CPU part of Shader
 ConfigParser*							cfgParser; // ConfigParser Reference
 
-Mesh*									g_cockpitMesh = nullptr;
+std::map<std::string, Mesh*>			g_Meshes;
 
 bool									canMove = false;
 
@@ -190,7 +191,7 @@ void InitApp()
 	size_t size;
 	wcstombs_s(&size, pathA, path, MAX_PATH);
 
-	// TODO: Parse your config file specified by "pathA" here
+	g_Meshes;
 
 	cfgParser = new ConfigParser();
 	cfgParser->load(pathA);
@@ -220,11 +221,13 @@ void InitApp()
 	//std::wcout << Utils::buildRessourcePath(cfgParser->getCockpitMeshFiles()->diffuseTexturePath) << std::endl;
 	//std::wcout << Utils::buildRessourcePath(cfgParser->getCockpitMeshFiles()->specularTexturePath) << std::endl;
 	//std::wcout << Utils::buildRessourcePath(cfgParser->getCockpitMeshFiles()->glowTexturePath) << std::endl;
-
-	g_cockpitMesh = new Mesh(Utils::buildRessourcePath(cfgParser->getCockpitMeshFiles()->modelPath), 
-		Utils::buildRessourcePath(cfgParser->getCockpitMeshFiles()->diffuseTexturePath),
-		Utils::buildRessourcePath(cfgParser->getCockpitMeshFiles()->specularTexturePath),
-		Utils::buildRessourcePath(cfgParser->getCockpitMeshFiles()->glowTexturePath));
+	std::wcout << Utils::buildRessourcePath(cfgParser->meshPathes["Cockpit"]->modelPath) << std::endl;
+	for (auto iterator = cfgParser->meshPathes.begin(); iterator != cfgParser->meshPathes.end(); iterator++) {
+		g_Meshes[iterator->first] = new Mesh(Utils::buildRessourcePath(cfgParser->meshPathes[iterator->first]->modelPath),
+			Utils::buildRessourcePath(cfgParser->meshPathes[iterator->first]->diffuseTexturePath),
+			Utils::buildRessourcePath(cfgParser->meshPathes[iterator->first]->specularTexturePath),
+			Utils::buildRessourcePath(cfgParser->meshPathes[iterator->first]->glowTexturePath));
+	}
 }
 
 //--------------------------------------------------------------------------------------
@@ -320,7 +323,10 @@ HRESULT CALLBACK OnD3D11CreateDevice( ID3D11Device* pd3dDevice,
 	g_camera.SetViewParams(vEye, vAt); // http://msdn.microsoft.com/en-us/library/windows/desktop/bb206342%28v=vs.85%29.aspx
 	g_camera.SetScalers(g_cameraRotateScaler, g_cameraMoveScaler);
 
-	V_RETURN(g_cockpitMesh->create(pd3dDevice));
+	for (auto iterator = g_Meshes.begin(); iterator != g_Meshes.end(); iterator++) {
+		V_RETURN(g_Meshes[iterator->first]->create(pd3dDevice));
+	}
+
 	V_RETURN(Mesh::createInputLayout(pd3dDevice, g_gameEffect.meshPass1));
     return S_OK;
 }
@@ -339,8 +345,14 @@ void CALLBACK OnD3D11DestroyDevice( void* pUserContext )
     //SAFE_RELEASE( g_terrainVertexLayout );
     
 	// Destroy the terrain
+
+	for (auto iterator = g_Meshes.begin(); iterator != g_Meshes.end(); iterator++) {
+		g_Meshes[iterator->first]->destroy();
+		SAFE_DELETE(g_Meshes[iterator->first]);
+	}
+
+
 	g_terrain.destroy();
-	g_cockpitMesh->destroy();
 	Mesh::destroyInputLayout();
     SAFE_DELETE( g_txtHelper );
     ReleaseShader();
@@ -604,7 +616,7 @@ void CALLBACK OnD3D11FrameRender( ID3D11Device* pd3dDevice, ID3D11DeviceContext*
 	V(g_gameEffect.worldNormalsMatrix->SetMatrix((float*)&worldNormalsMatrix));
 	V(g_gameEffect.cameraPosWorldEV->SetFloatVector((float*)&g_camera.GetEyePt()));
 
-	g_cockpitMesh->render(pd3dImmediateContext, g_gameEffect.meshPass1, g_gameEffect.diffuseEV, g_gameEffect.specularEV, g_gameEffect.glowEV);
+	g_Meshes["Cockpit"]->render(pd3dImmediateContext, g_gameEffect.meshPass1, g_gameEffect.diffuseEV, g_gameEffect.specularEV, g_gameEffect.glowEV);
 
     DXUT_BeginPerfEvent( DXUT_PERFEVENTCOLOR, L"HUD / Stats" );
     V(g_hud.OnRender( fElapsedTime ));
@@ -623,6 +635,5 @@ void CALLBACK OnD3D11FrameRender( ID3D11Device* pd3dDevice, ID3D11DeviceContext*
 
 void DeinitApp()
 {
-	SAFE_DELETE(g_cockpitMesh);
 	SAFE_DELETE(cfgParser);
 }

@@ -5,6 +5,7 @@
 #include <fstream>
 #include <iostream>
 #include <sstream>
+#include <map>
 
 struct MeshFiles{
 
@@ -12,6 +13,7 @@ struct MeshFiles{
 	std::string diffuseTexturePath;
 	std::string specularTexturePath;
 	std::string glowTexturePath;
+	std::string normalTexturePath;
 };
 
 class ConfigParser{
@@ -31,6 +33,7 @@ public:
 	std::string getTerrainTexturePath();
 	std::string getTerrainNormalPath();
 	MeshFiles* getCockpitMeshFiles();
+	std::map<std::string, MeshFiles*> meshPathes;
 
 private:
 	std::string terrainHeightPath, terrainColorPath, terrainNormalPath;
@@ -39,7 +42,7 @@ private:
 	float terrainDepth;
 	float terrainHeight;
 	float spinSpeed;
-	MeshFiles cockpitModelFiles;
+	
 
 };
 

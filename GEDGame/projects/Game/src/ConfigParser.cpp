@@ -2,12 +2,14 @@
 
 
 ConfigParser::ConfigParser(){
-
+	
 }
 
 
 ConfigParser::~ConfigParser(){
-
+	for (auto iterator = meshPathes.begin(); iterator != meshPathes.end(); iterator++) {
+		delete iterator->second;
+	}
 }
 
 void ConfigParser::load(std::string filepath){
@@ -38,14 +40,14 @@ void ConfigParser::load(std::string filepath){
 				sstr >> this->terrainHeight;
 			}
 			else if (firstWord.compare(std::string("Mesh")) == 0){
-				
-
-				if (readValue.compare(std::string("Cockpit")) == 0){
-					ifs >> cockpitModelFiles.modelPath;
-					ifs >> cockpitModelFiles.diffuseTexturePath;
-					ifs >> cockpitModelFiles.specularTexturePath;
-					ifs >> cockpitModelFiles.glowTexturePath;
-				}
+				std::string tmpModelName = readValue;
+				MeshFiles *meshFilePaths = new MeshFiles();
+				ifs >> meshFilePaths->modelPath;
+				ifs >> meshFilePaths->diffuseTexturePath;
+				ifs >> meshFilePaths->specularTexturePath;
+				ifs >> meshFilePaths->glowTexturePath;
+				ifs >> meshFilePaths->normalTexturePath;
+				meshPathes[readValue] = meshFilePaths;
 			}else{
 				std::cout << "Can't read property >" << firstWord << "< from file " << filepath;
 			}
@@ -86,8 +88,4 @@ std::string ConfigParser::getTerrainNormalPath(){
 
 float ConfigParser::getTerrainHeight(){
 	return this->terrainHeight;
-}
-
-MeshFiles* ConfigParser::getCockpitMeshFiles(){
-	return &(this->cockpitModelFiles);
 }
