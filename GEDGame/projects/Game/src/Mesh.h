@@ -2,6 +2,7 @@
 
 #include <DXUT.h>
 #include <d3dx11effect.h>
+#include "Utils.h"
 
 #include <vector>
 #include <cstdint>

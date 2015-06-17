@@ -6,6 +6,9 @@
 #include <iostream>
 #include <sstream>
 #include <map>
+#include <DirectXMath.h>
+#include <vector>
+#include "Vec3f.h"
 
 struct MeshFiles{
 
@@ -14,6 +17,20 @@ struct MeshFiles{
 	std::string specularTexturePath;
 	std::string glowTexturePath;
 	std::string normalTexturePath;
+};
+
+struct TransformData{
+	std::string type;
+	std::string name;
+	float scale = 0;
+	float rotX = 0;		// Use Vec3f????
+	float rotY = 0;
+	float rotZ = 0;
+
+	float posX = 0;
+	float posY = 0;
+	float posZ = 0;
+
 };
 
 class ConfigParser{
@@ -34,6 +51,7 @@ public:
 	std::string getTerrainNormalPath();
 	MeshFiles* getCockpitMeshFiles();
 	std::map<std::string, MeshFiles*> meshPathes;
+	std::vector<TransformData*>		objectsData;
 
 private:
 	std::string terrainHeightPath, terrainColorPath, terrainNormalPath;
@@ -42,7 +60,5 @@ private:
 	float terrainDepth;
 	float terrainHeight;
 	float spinSpeed;
-	
-
 };
 

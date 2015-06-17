@@ -2,7 +2,7 @@
 
 
 ConfigParser::ConfigParser(){
-	
+	objectsData;
 }
 
 
@@ -48,6 +48,22 @@ void ConfigParser::load(std::string filepath){
 				ifs >> meshFilePaths->glowTexturePath;
 				ifs >> meshFilePaths->normalTexturePath;
 				meshPathes[readValue] = meshFilePaths;
+			}
+			else if (firstWord.compare(std::string("CockpitObject")) || firstWord.compare(std::string("GroundObject"))){
+				TransformData *tmpData = new TransformData();
+				tmpData->type = firstWord;
+				tmpData->name = readValue;
+				ifs >> tmpData->scale;
+				ifs >> tmpData->rotX;
+				ifs >> tmpData->rotY;
+				ifs >> tmpData->rotZ;
+
+				ifs >> tmpData->posX;
+				ifs >> tmpData->posY;
+				ifs >> tmpData->posZ;
+
+				objectsData.push_back(tmpData);
+
 			}else{
 				std::cout << "Can't read property >" << firstWord << "< from file " << filepath;
 			}

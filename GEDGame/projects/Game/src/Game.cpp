@@ -221,7 +221,7 @@ void InitApp()
 	//std::wcout << Utils::buildRessourcePath(cfgParser->getCockpitMeshFiles()->diffuseTexturePath) << std::endl;
 	//std::wcout << Utils::buildRessourcePath(cfgParser->getCockpitMeshFiles()->specularTexturePath) << std::endl;
 	//std::wcout << Utils::buildRessourcePath(cfgParser->getCockpitMeshFiles()->glowTexturePath) << std::endl;
-	std::wcout << Utils::buildRessourcePath(cfgParser->meshPathes["Cockpit"]->modelPath) << std::endl;
+	//std::wcout << Utils::buildRessourcePath(cfgParser->meshPathes["Cockpit"]->modelPath) << std::endl;
 	for (auto iterator = cfgParser->meshPathes.begin(); iterator != cfgParser->meshPathes.end(); iterator++) {
 		g_Meshes[iterator->first] = new Mesh(Utils::buildRessourcePath(cfgParser->meshPathes[iterator->first]->modelPath),
 			Utils::buildRessourcePath(cfgParser->meshPathes[iterator->first]->diffuseTexturePath),
@@ -322,7 +322,7 @@ HRESULT CALLBACK OnD3D11CreateDevice( ID3D11Device* pd3dDevice,
 	XMVECTOR vAt = XMVectorSet(1.0f, (g_terrain.getCenterHeight() + 0.5) * cfgParser->getTerrainHeight(), 0.0f, 1.0f);               // ... facing at this position
 	g_camera.SetViewParams(vEye, vAt); // http://msdn.microsoft.com/en-us/library/windows/desktop/bb206342%28v=vs.85%29.aspx
 	g_camera.SetScalers(g_cameraRotateScaler, g_cameraMoveScaler);
-
+	//std::cout << "In Create Device" << std::endl;
 	for (auto iterator = g_Meshes.begin(); iterator != g_Meshes.end(); iterator++) {
 		V_RETURN(g_Meshes[iterator->first]->create(pd3dDevice));
 	}
@@ -348,9 +348,7 @@ void CALLBACK OnD3D11DestroyDevice( void* pUserContext )
 
 	for (auto iterator = g_Meshes.begin(); iterator != g_Meshes.end(); iterator++) {
 		g_Meshes[iterator->first]->destroy();
-		SAFE_DELETE(g_Meshes[iterator->first]);
 	}
-
 
 	g_terrain.destroy();
 	Mesh::destroyInputLayout();
@@ -599,25 +597,40 @@ void CALLBACK OnD3D11FrameRender( ID3D11Device* pd3dDevice, ID3D11DeviceContext*
     //pd3dImmediateContext->IASetInputLayout( g_terrainVertexLayout );
 
 	g_terrain.render(pd3dImmediateContext, g_gameEffect.pass0);
+	
+	XMMATRIX mTrans, mScale, mRotX, mRotY, mRotZ;
+	for (int i = 0; i < cfgParser->objectsData.size(); i++) {
 
-	// Cockpit Transformation Matrices
-	XMMATRIX mTrans, mScale, mRot;
-	mRot = XMMatrixRotationY(DEG2RAD(180));
-	mTrans = XMMatrixTranslation(0, -0.8, 2.1);
-	mScale = XMMatrixScaling(0.05, 0.05, 0.05);
-	g_terrainWorld = mScale * mRot * mTrans * g_camera.GetWorldMatrix();
-	worldViewProj = g_terrainWorld * g_camera.GetViewMatrix() * g_camera.GetProjMatrix();
-	worldNormalsMatrix = XMMatrixInverse(NULL, g_terrainWorld);
-	worldNormalsMatrix = XMMatrixTranspose(worldNormalsMatrix);
+		// Mesh Rotation Matrices	
+		mRotX = XMMatrixRotationX(DEG2RAD(cfgParser->objectsData[i]->rotX));
+		mRotY = XMMatrixRotationY(DEG2RAD(cfgParser->objectsData[i]->rotY));
+		mRotZ = XMMatrixRotationZ(DEG2RAD(cfgParser->objectsData[i]->rotZ));
 
-	// Bind shader variables for Cockpit
-	V(g_gameEffect.worldEV->SetMatrix((float*)&g_terrainWorld));
-	V(g_gameEffect.worldViewProjectionEV->SetMatrix((float*)&worldViewProj));
-	V(g_gameEffect.worldNormalsMatrix->SetMatrix((float*)&worldNormalsMatrix));
-	V(g_gameEffect.cameraPosWorldEV->SetFloatVector((float*)&g_camera.GetEyePt()));
+		// tansform + scale matrice
+		mTrans = XMMatrixTranslation(cfgParser->objectsData[i]->posX, cfgParser->objectsData[i]->posY, cfgParser->objectsData[i]->posZ);
+		mScale = XMMatrixScaling(cfgParser->objectsData[i]->scale, cfgParser->objectsData[i]->scale, cfgParser->objectsData[i]->scale);
 
-	g_Meshes["Cockpit"]->render(pd3dImmediateContext, g_gameEffect.meshPass1, g_gameEffect.diffuseEV, g_gameEffect.specularEV, g_gameEffect.glowEV);
+		
+		if (cfgParser->objectsData[i]->type == "CockpitObject"){
+			g_terrainWorld = mScale * mRotX * mRotY * mRotZ * mTrans * g_camera.GetWorldMatrix();
+		}
+		else if(cfgParser->objectsData[i]->type == "GroundObject"){
+			g_terrainWorld = mScale * mRotX * mRotY * mRotZ * mTrans;
+		}
 
+		worldViewProj = g_terrainWorld * g_camera.GetViewMatrix() * g_camera.GetProjMatrix();
+		worldNormalsMatrix = XMMatrixInverse(NULL, g_terrainWorld);
+		worldNormalsMatrix = XMMatrixTranspose(worldNormalsMatrix);
+	
+
+		// Bind shader variables for Cockpit
+		V(g_gameEffect.worldEV->SetMatrix((float*)&g_terrainWorld));
+		V(g_gameEffect.worldViewProjectionEV->SetMatrix((float*)&worldViewProj));
+		V(g_gameEffect.worldNormalsMatrix->SetMatrix((float*)&worldNormalsMatrix));
+		V(g_gameEffect.cameraPosWorldEV->SetFloatVector((float*)&g_camera.GetEyePt()));
+
+		g_Meshes[cfgParser->objectsData[i]->name]->render(pd3dImmediateContext, g_gameEffect.meshPass1, g_gameEffect.diffuseEV, g_gameEffect.specularEV, g_gameEffect.glowEV);
+	}
     DXUT_BeginPerfEvent( DXUT_PERFEVENTCOLOR, L"HUD / Stats" );
     V(g_hud.OnRender( fElapsedTime ));
     V(g_sampleUI.OnRender( fElapsedTime ));
@@ -636,4 +649,7 @@ void CALLBACK OnD3D11FrameRender( ID3D11Device* pd3dDevice, ID3D11DeviceContext*
 void DeinitApp()
 {
 	SAFE_DELETE(cfgParser);
+	for (auto iterator = g_Meshes.begin(); iterator != g_Meshes.end(); iterator++) {
+		SAFE_DELETE(g_Meshes[iterator->first]);
+	}
 }

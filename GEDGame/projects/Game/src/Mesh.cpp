@@ -59,7 +59,6 @@ HRESULT Mesh::create(ID3D11Device* device)
 	std::vector<T3dVertex> vertexBufferData;
 	std::vector<uint32_t> indexBufferData;
 
-	std::wcout << filenameT3d;
 
 	V(T3d::readFromFile(filenameT3d.c_str(), vertexBufferData, indexBufferData));
 
@@ -94,15 +93,15 @@ HRESULT Mesh::create(ID3D11Device* device)
 
 
 	// Create textures
-	if (!filenameDDSDiffuse.compare(L"-")){
+	if (filenameDDSDiffuse != Utils::buildRessourcePath("-")){
 		V(createTexture(device, filenameDDSDiffuse, &diffuseTex, &diffuseSRV));
 	}
 	
-	if (!filenameDDSSpecular.compare(L"-")){
+	if (filenameDDSSpecular != Utils::buildRessourcePath("-")){
 		V(createTexture(device, filenameDDSSpecular, &specularTex, &specularSRV));
 	}
 	
-	if (!filenameDDSGlow.compare(L"-")){
+	if (filenameDDSGlow != Utils::buildRessourcePath("-")){
 		V(createTexture(device, filenameDDSGlow, &glowTex, &glowSRV));
 	}
 

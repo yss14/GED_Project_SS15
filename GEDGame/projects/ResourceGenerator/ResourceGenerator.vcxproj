@@ -54,7 +54,13 @@ mkdir "$(OutDir)resources"
 "$(SolutionDir)..\..\external\Tools\bin\obj2t3d.exe" -i "$(SolutionDir)..\..\external\art\01-Cockpit\gatling_gun\final\gatling_o_top.obj" -o "$(OutDir)resources\gatling_o_top.t3d" –y
 "$(OutDir)texconv" -o "$(OutDir)resources" -srgbi -f BC1_UNORM_SRGB "$(SolutionDir)..\..\external\art\01-Cockpit\gatling_gun\final\gatling_m_diffuse.png"
 "$(OutDir)texconv" -o "$(OutDir)resources" -srgbi -f BC1_UNORM_SRGB "$(SolutionDir)..\..\external\art\01-Cockpit\gatling_gun\final\gatling_m_specular.png"
-"$(OutDir)texconv" -o "$(OutDir)resources" -srgbi -f BC1_UNORM_SRGB "$(SolutionDir)..\..\external\art\01-Cockpit\gatling_gun\final\gatling_m_glow.png"
+"$(OutDir)texconv" -o "$(OutDir)resources" -srgbi -f BC1_UNORM_SRGB "$(SolutionDir)..\..\external\art\01-Cockpit\gatling_gun\final\gatling_m_glow.png"
+
+"$(SolutionDir)..\..\external\Tools\bin\obj2t3d.exe" -i "$(SolutionDir)..\..\external\art\01-Cockpit\plasma_gun\final\plasma_o_base.obj" -o "$(OutDir)resources\plasma_o_base.t3d" –y
+"$(SolutionDir)..\..\external\Tools\bin\obj2t3d.exe" -i "$(SolutionDir)..\..\external\art\01-Cockpit\plasma_gun\final\plasma_o_top.obj" -o "$(OutDir)resources\plasma_o_top.t3d" –y
+"$(OutDir)texconv" -o "$(OutDir)resources" -srgbi -f BC1_UNORM_SRGB "$(SolutionDir)..\..\external\art\01-Cockpit\plasma_gun\final\plasma_m_diffuse.png"
+"$(OutDir)texconv" -o "$(OutDir)resources" -srgbi -f BC1_UNORM_SRGB "$(SolutionDir)..\..\external\art\01-Cockpit\plasma_gun\final\plasma_m_specular.png"
+"$(OutDir)texconv" -o "$(OutDir)resources" -srgbi -f BC1_UNORM_SRGB "$(SolutionDir)..\..\external\art\01-Cockpit\plasma_gun\final\plasma_m_glow.png"
 
 "$(SolutionDir)..\..\external\Tools\bin\obj2t3d.exe" -i "$(SolutionDir)..\..\external\art\03-Environment\barracks\barracks.obj" -o "$(OutDir)resources\barracks.t3d" –y
 "$(OutDir)texconv" -o "$(OutDir)resources" -srgbi -f BC1_UNORM_SRGB "$(SolutionDir)..\..\external\art\03-Environment\barracks\barracks_diffuse.png"
@@ -88,7 +94,13 @@ mkdir "$(OutDir)resources"
 "$(SolutionDir)..\..\external\Tools\bin\obj2t3d.exe" -i "$(SolutionDir)..\..\external\art\01-Cockpit\gatling_gun\final\gatling_o_top.obj" -o "$(OutDir)resources\gatling_o_top.t3d" –y
 "$(OutDir)texconv" -o "$(OutDir)resources" -srgbi -f BC1_UNORM_SRGB "$(SolutionDir)..\..\external\art\01-Cockpit\gatling_gun\final\gatling_m_diffuse.png"
 "$(OutDir)texconv" -o "$(OutDir)resources" -srgbi -f BC1_UNORM_SRGB "$(SolutionDir)..\..\external\art\01-Cockpit\gatling_gun\final\gatling_m_specular.png"
-"$(OutDir)texconv" -o "$(OutDir)resources" -srgbi -f BC1_UNORM_SRGB "$(SolutionDir)..\..\external\art\01-Cockpit\gatling_gun\final\gatling_m_glow.png"
+"$(OutDir)texconv" -o "$(OutDir)resources" -srgbi -f BC1_UNORM_SRGB "$(SolutionDir)..\..\external\art\01-Cockpit\gatling_gun\final\gatling_m_glow.png"
+
+"$(SolutionDir)..\..\external\Tools\bin\obj2t3d.exe" -i "$(SolutionDir)..\..\external\art\01-Cockpit\plasma_gun\final\plasma_o_base.obj" -o "$(OutDir)resources\plasma_o_base.t3d" –y
+"$(SolutionDir)..\..\external\Tools\bin\obj2t3d.exe" -i "$(SolutionDir)..\..\external\art\01-Cockpit\plasma_gun\final\plasma_o_top.obj" -o "$(OutDir)resources\plasma_o_top.t3d" –y
+"$(OutDir)texconv" -o "$(OutDir)resources" -srgbi -f BC1_UNORM_SRGB "$(SolutionDir)..\..\external\art\01-Cockpit\plasma_gun\final\plasma_m_diffuse.png"
+"$(OutDir)texconv" -o "$(OutDir)resources" -srgbi -f BC1_UNORM_SRGB "$(SolutionDir)..\..\external\art\01-Cockpit\plasma_gun\final\plasma_m_specular.png"
+"$(OutDir)texconv" -o "$(OutDir)resources" -srgbi -f BC1_UNORM_SRGB "$(SolutionDir)..\..\external\art\01-Cockpit\plasma_gun\final\plasma_m_glow.png"
 
 "$(SolutionDir)..\..\external\Tools\bin\obj2t3d.exe" -i "$(SolutionDir)..\..\external\art\03-Environment\barracks\barracks.obj" -o "$(OutDir)resources\barracks.t3d" –y
 "$(OutDir)texconv" -o "$(OutDir)resources" -srgbi -f BC1_UNORM_SRGB "$(SolutionDir)..\..\external\art\03-Environment\barracks\barracks_diffuse.png"
