@@ -10,6 +10,12 @@ ConfigParser::~ConfigParser(){
 	for (auto iterator = meshPathes.begin(); iterator != meshPathes.end(); iterator++) {
 		delete iterator->second;
 	}
+
+	for (int i = 0; i < objectsData.size(); i++) {
+		delete objectsData[i];
+	}
+
+
 }
 
 void ConfigParser::load(std::string filepath){
