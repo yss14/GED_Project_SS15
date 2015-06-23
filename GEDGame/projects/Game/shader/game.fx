@@ -275,7 +275,7 @@ technique11 Render
         SetGeometryShader(NULL);
         SetPixelShader(CompileShader(ps_4_0, TerrainPS()));
         
-        SetRasterizerState(rsCullNone);
+        SetRasterizerState(rsCullFront);
         SetDepthStencilState(EnableDepth, 0);
         SetBlendState(NoBlending, float4(0.0f, 0.0f, 0.0f, 0.0f), 0xFFFFFFFF);
     }

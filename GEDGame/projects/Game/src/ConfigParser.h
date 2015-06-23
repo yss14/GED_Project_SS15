@@ -33,6 +33,16 @@ struct TransformData{
 
 };
 
+struct EnemyData{
+	int hitpoints;
+	float size;
+	float speed;
+
+	std::string enemyType;
+
+	TransformData transform;
+};
+
 class ConfigParser{
 public:
 	ConfigParser();
@@ -52,6 +62,7 @@ public:
 	MeshFiles* getCockpitMeshFiles();
 	std::map<std::string, MeshFiles*> meshPathes;
 	std::vector<TransformData*>		objectsData;
+	std::map<std::string, EnemyData*>objectsEnemyData;
 
 private:
 	std::string terrainHeightPath, terrainColorPath, terrainNormalPath;

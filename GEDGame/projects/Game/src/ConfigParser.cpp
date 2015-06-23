@@ -3,6 +3,7 @@
 
 ConfigParser::ConfigParser(){
 	objectsData;
+	objectsEnemyData;
 }
 
 
@@ -15,6 +16,9 @@ ConfigParser::~ConfigParser(){
 		delete objectsData[i];
 	}
 
+	for (auto iterator = objectsEnemyData.begin(); iterator != objectsEnemyData.end(); iterator++) {
+		delete iterator->second;
+	}
 
 }
 
@@ -55,7 +59,7 @@ void ConfigParser::load(std::string filepath){
 				ifs >> meshFilePaths->normalTexturePath;
 				meshPathes[readValue] = meshFilePaths;
 			}
-			else if (firstWord.compare(std::string("CockpitObject")) || firstWord.compare(std::string("GroundObject"))){
+			else if (firstWord.compare(std::string("CockpitObject"))  == 0|| firstWord.compare(std::string("GroundObject")) == 0){
 				TransformData *tmpData = new TransformData();
 				tmpData->type = firstWord;
 				tmpData->name = readValue;
@@ -69,6 +73,29 @@ void ConfigParser::load(std::string filepath){
 				ifs >> tmpData->posZ;
 
 				objectsData.push_back(tmpData);
+
+			}
+			else if (firstWord.compare(std::string("EnemyType")) == 0){
+				TransformData *tmpData = new TransformData();
+				tmpData->type = firstWord;
+				EnemyData *enemyData = new EnemyData();
+				enemyData->enemyType = readValue;
+				ifs >> enemyData->hitpoints;
+				ifs >> enemyData->size;
+				ifs >> enemyData->speed;
+				ifs >> tmpData->name;
+				ifs >> tmpData->scale;
+
+				ifs >> tmpData->rotX;
+				ifs >> tmpData->rotY;
+				ifs >> tmpData->rotZ;
+
+				ifs >> tmpData->posX;
+				ifs >> tmpData->posY;
+				ifs >> tmpData->posZ;
+
+				enemyData->transform = (*tmpData);
+				objectsEnemyData[readValue] = enemyData;
 
 			}else{
 				std::cout << "Can't read property >" << firstWord << "< from file " << filepath;
