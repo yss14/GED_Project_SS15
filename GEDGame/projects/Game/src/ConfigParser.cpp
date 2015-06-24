@@ -96,7 +96,11 @@ void ConfigParser::load(std::string filepath){
 
 				enemyData->transform = (*tmpData);
 				objectsEnemyData[readValue] = enemyData;
-
+			} else if (firstWord.compare("Spawn") == 0){
+				sstr << readValue;
+				sstr >> this->spawnInteravall;
+				ifs >> spawnMinHeight;
+				ifs >> spawMaxHeight;
 			}else{
 				std::cout << "Can't read property >" << firstWord << "< from file " << filepath;
 			}
@@ -137,4 +141,15 @@ std::string ConfigParser::getTerrainNormalPath(){
 
 float ConfigParser::getTerrainHeight(){
 	return this->terrainHeight;
+}
+
+float ConfigParser::getMinSpawn(){
+	return spawnMinHeight;
+}
+float ConfigParser::getMaxSpawn(){
+	return spawMaxHeight;
+}
+
+float ConfigParser::getIntervall(){
+	return spawnInteravall;
 }

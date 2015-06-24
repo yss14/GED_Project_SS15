@@ -12,6 +12,7 @@
 #include <string>
 #include <cstdint>
 #include <map>
+#include <list>
 
 
 #include "dxut.h"
@@ -41,7 +42,15 @@ using namespace DirectX;
 //--------------------------------------------------------------------------------------
 // Global variables
 //--------------------------------------------------------------------------------------
+struct EnemyInstance{
+	XMVECTOR position;
+	XMVECTOR velocity;
 
+	int remainingHP;
+	std::string typeName;
+
+	XMVECTOR s1, s2;
+};
 // Camera
 struct CAMERAPARAMS {
 	float   fovy;
@@ -76,7 +85,10 @@ ConfigParser*							cfgParser; // ConfigParser Reference
 
 std::map<std::string, Mesh*>			g_Meshes;
 
+std::list<EnemyInstance*>				g_enemyInstances;
+
 bool									canMove = false;
+float									g_SpawnTimer = 0.0f;
 
 //--------------------------------------------------------------------------------------
 // UI control IDs
@@ -540,6 +552,27 @@ void CALLBACK OnFrameMove( double fTime, float fElapsedTime, void* pUserContext 
 	// Set the light vector
     g_lightDir = XMVectorSet(1, 1, 1, 0); // Direction to the directional light in world space    
     g_lightDir = XMVector3Normalize(g_lightDir);
+
+	g_SpawnTimer -= fElapsedTime;
+	if (g_SpawnTimer<0)
+	{
+		g_SpawnTimer += cfgParser->getIntervall();
+		// spawn enemy
+
+		EnemyInstance* instance = new EnemyInstance();
+		float a = static_cast <float> (rand()) / (static_cast <float> (RAND_MAX / (XM_2PI)));
+		const XMFLOAT3 tmps1 = XMFLOAT3(2048 * cfgParser->getTerrainWidth() * std::sin(a), 600 * cfgParser->getTerrainHeight(), 2048 * cfgParser->getTerrainWidth() * std::sin(a));
+		instance->s1 = XMLoadFloat3(&tmps1);
+		const XMFLOAT3 tmps2 = XMFLOAT3(100 * cfgParser->getTerrainWidth() * std::sin(a), 600 * cfgParser->getTerrainHeight(), 100 * cfgParser->getTerrainWidth() * std::sin(a));
+		instance->s2 = XMLoadFloat3(&tmps2);
+		instance->position = instance->s1;
+		instance->velocity = cfgParser->objectsEnemyData["AmyShip1"]->speed * XMVector3Normalize(instance->s2 - instance->s1);
+		g_enemyInstances.push_back(instance);
+		std::cout << "Number of enemies: " << g_enemyInstances.size() << std::endl;
+	}	// Check if enemies reached target location	for (std::list<EnemyInstance*>::const_iterator iterator = g_enemyInstances.begin(), end = g_enemyInstances.end(); iterator != end; ++iterator) {
+		XMVECTOR tmp = XMVectorSubtract((*iterator)->position, (*iterator)->s2);
+		tmp = XMVector3LengthSq(tmp);
+	}
 }
 
 

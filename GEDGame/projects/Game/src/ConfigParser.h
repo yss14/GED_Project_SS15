@@ -1,5 +1,4 @@
 #pragma once
-#pragma once
 
 #include <string>
 #include <fstream>
@@ -57,6 +56,9 @@ public:
 	float getTerrainWidth();
 	float getTerrainDepth();
 	float getTerrainHeight();
+	float getIntervall();
+	float getMinSpawn();
+	float getMaxSpawn();
 	std::string getTerrainTexturePath();
 	std::string getTerrainNormalPath();
 	MeshFiles* getCockpitMeshFiles();
@@ -71,5 +73,8 @@ private:
 	float terrainDepth;
 	float terrainHeight;
 	float spinSpeed;
+	float spawnInteravall;
+	float spawnMinHeight;
+	float spawMaxHeight;
 };
 
