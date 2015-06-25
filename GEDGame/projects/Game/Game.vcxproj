@@ -96,6 +96,7 @@ exit 1</Command>
       <PreprocessorDefinitions>_WIN32_WINNT=0x600;WIN32;NDEBUG;_CONSOLE;%(PreprocessorDefinitions);TARGET_DIRECTORY=LR"($(OutDir))"</PreprocessorDefinitions>
       <SDLCheck>true</SDLCheck>
       <AdditionalIncludeDirectories>..\..\..\..\external\Tools\include\;$(SolutionDir)projects\Effects11\inc\;$(SolutionDir)projects\DXUT\Core\;$(SolutionDir)projects\DXUT\Optional\;$(SolutionDir)projects\DirectXTex\DirectXTex\;$(SolutionDir)projects\DirectXTex\WICTextureLoader\;$(SolutionDir)projects\DirectXTex\DDSTextureLoader\</AdditionalIncludeDirectories>
+      <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>

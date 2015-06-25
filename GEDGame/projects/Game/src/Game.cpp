@@ -43,13 +43,13 @@ using namespace DirectX;
 // Global variables
 //--------------------------------------------------------------------------------------
 struct EnemyInstance{
-	XMVECTOR position;
-	XMVECTOR velocity;
+	XMFLOAT3 position; // Have to be XMFloat3, because c++ compiler optimization gets in trouble with XMVector
+	XMFLOAT3 velocity;
 
 	int remainingHP;
 	std::string typeName;
 
-	XMVECTOR s1, s2;
+	XMFLOAT3 s1, s2;
 };
 // Camera
 struct CAMERAPARAMS {
@@ -531,10 +531,12 @@ void CALLBACK OnFrameMove(double fTime, float fElapsedTime, void* pUserContext)
 {
 	for (auto iter = g_enemyInstances.begin(); iter != g_enemyInstances.end();){
 		// update enemy position
-		(*iter)->position = (*iter)->position + (fElapsedTime * (*iter)->velocity);
+		XMVECTOR posAsVector = XMLoadFloat3(&(*iter)->position);
+		XMVECTOR newPos = posAsVector + fElapsedTime * XMLoadFloat3(&(*iter)->velocity);
+		(*iter)->position = XMFLOAT3(XMVectorGetX(newPos), XMVectorGetY(newPos), XMVectorGetZ(newPos));
 
 		//EnemyInstance *instance = *iter;
-		XMVECTOR tmp = XMVector3Length(XMVectorSubtract((*iter)->position, (*iter)->s2));
+		XMVECTOR tmp = XMVector3Length(XMVectorSubtract(posAsVector, XMLoadFloat3(&(*iter)->s2)));
 		float distance = 0.0f;
 		XMStoreFloat(&distance, tmp);
 
@@ -584,17 +586,11 @@ void CALLBACK OnFrameMove(double fTime, float fElapsedTime, void* pUserContext)
 
 		EnemyInstance* instance = new EnemyInstance();
 		float a = static_cast <float> (rand()) / (static_cast <float> (RAND_MAX / (XM_2PI)));
-		//const XMFLOAT3 tmps1 = XMFLOAT3(100 * cfgParser->getTerrainWidth() * std::sin(a), 600 * cfgParser->getTerrainHeight(), 100 * cfgParser->getTerrainWidth() * std::sin(a));
-		//instance->s1 = XMLoadFloat3(&tmps1);
-		//const XMFLOAT3 tmps2 = XMFLOAT3(2 * cfgParser->getTerrainWidth() * std::sin(a), 600 * cfgParser->getTerrainHeight(), 2 * cfgParser->getTerrainWidth() * std::sin(a));
-		//instance->s2 = XMLoadFloat3(&tmps2);
 
 		float height = cfgParser->getMinSpawn() + float(rand()) / float(RAND_MAX) * (cfgParser->getMaxSpawn() - cfgParser->getMinSpawn());
 
-		const XMFLOAT3 tmp1 = XMFLOAT3(200 * cfgParser->getTerrainWidth() * std::cos(a), -1000 * height, 200 * cfgParser->getTerrainDepth() * std::sin(a));
-		const XMFLOAT3 tmp2 = XMFLOAT3(5 * cfgParser->getTerrainWidth() * std::cos(a), (-1)*(g_terrain.getCenterHeight() + 0.5) * cfgParser->getTerrainHeight(), 5 * cfgParser->getTerrainDepth() * std::sin(a));
-		instance->s1 = XMLoadFloat3(&tmp1);
-		instance->s2 = XMLoadFloat3(&tmp2); 
+		instance->s1 = XMFLOAT3(200 * cfgParser->getTerrainWidth() * std::cos(a), -1000 * height, 200 * cfgParser->getTerrainDepth() * std::sin(a));
+		instance->s2 = XMFLOAT3(5 * cfgParser->getTerrainWidth() * std::cos(a), (-1)*(g_terrain.getCenterHeight() + 0.5) * cfgParser->getTerrainHeight(), 5 * cfgParser->getTerrainDepth() * std::sin(a));
 
 		instance->position = instance->s1;
 		int randomizer = rand() % 5;
@@ -621,10 +617,11 @@ void CALLBACK OnFrameMove(double fTime, float fElapsedTime, void* pUserContext)
 		default:
 			enemyType = "JufShip";
 		}
-
-		instance->velocity = cfgParser->objectsEnemyData[enemyType]->speed * XMVector3Normalize(instance->s2 - instance->s1);
+		XMVECTOR directionNormal = cfgParser->objectsEnemyData[enemyType]->speed * XMVector3Normalize(XMLoadFloat3(&instance->s2) - XMLoadFloat3(&instance->s1));
+		instance->velocity = XMFLOAT3(XMVectorGetX(directionNormal), XMVectorGetY(directionNormal), XMVectorGetZ(directionNormal));
 		instance->typeName = enemyType;
 		g_enemyInstances.push_back(instance);
+		//delete instance;
 		//std::cout << "Number of enemies: " << g_enemyInstances.size() << std::endl;
 	}
 
@@ -704,9 +701,7 @@ void CALLBACK OnD3D11FrameRender(ID3D11Device* pd3dDevice, ID3D11DeviceContext* 
 
 	XMMATRIX mTrans, mScale, mRotX, mRotY, mRotZ, mAnim;
 	for (int i = 0; i < cfgParser->objectsData.size(); ++i) {
-		if (i == 8){
-			break;
-		}
+
 		// Mesh Rotation Matrices	
 		mRotX = XMMatrixRotationX(DEG2RAD(cfgParser->objectsData[i]->rotX));
 		mRotY = XMMatrixRotationY(DEG2RAD(cfgParser->objectsData[i]->rotY));
@@ -749,8 +744,8 @@ void CALLBACK OnD3D11FrameRender(ID3D11Device* pd3dDevice, ID3D11DeviceContext* 
 		mScale = XMMatrixScaling(cfgParser->objectsEnemyData[(*it)->typeName]->transform.scale, cfgParser->objectsEnemyData[(*it)->typeName]->transform.scale, cfgParser->objectsEnemyData[(*it)->typeName]->transform.scale);
 	
 		XMVECTOR tmp = XMLoadFloat3(&XMFLOAT3(cfgParser->objectsEnemyData[(*it)->typeName]->transform.posX, cfgParser->objectsEnemyData[(*it)->typeName]->transform.posY, cfgParser->objectsEnemyData[(*it)->typeName]->transform.posZ));
-		tmp = tmp - ((*it)->position);
-		XMVECTOR d = XMVector3Normalize(((*it)->velocity));
+		tmp = tmp - XMLoadFloat3(&(*it)->position);
+		XMVECTOR d = XMVector3Normalize(XMLoadFloat3(&(*it)->velocity));
 		float a = std::atan2(XMVectorGetX(d), XMVectorGetZ(d));
 
 		mAnim = XMMatrixRotationY(a) * XMMatrixTranslationFromVector(tmp);
@@ -788,7 +783,12 @@ void CALLBACK OnD3D11FrameRender(ID3D11Device* pd3dDevice, ID3D11DeviceContext* 
 void DeinitApp()
 {
 	SAFE_DELETE(cfgParser);
-	for (auto iterator = g_Meshes.begin(); iterator != g_Meshes.end(); iterator++) {
+	for (auto iterator = g_Meshes.begin(); iterator != g_Meshes.end(); iterator++) 
+	{
 		SAFE_DELETE(g_Meshes[iterator->first]);
+	}
+	for (auto it = g_enemyInstances.begin(); it != g_enemyInstances.end(); it++)
+	{
+		SAFE_DELETE((*it));
 	}
 }

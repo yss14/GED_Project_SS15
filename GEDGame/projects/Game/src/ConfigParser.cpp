@@ -16,7 +16,8 @@ ConfigParser::~ConfigParser(){
 		delete objectsData[i];
 	}
 
-	for (auto iterator = objectsEnemyData.begin(); iterator != objectsEnemyData.end(); iterator++) {
+	for (auto iterator = objectsEnemyData.begin(); iterator != objectsEnemyData.end(); iterator++) 
+	{
 		delete iterator->second;
 	}
 
@@ -76,7 +77,7 @@ void ConfigParser::load(std::string filepath){
 
 			}
 			else if (firstWord.compare(std::string("EnemyType")) == 0){
-				TransformData *tmpData = new TransformData();
+				TransformData *tmpData = new TransformData(); // Memory Leak, dont know how to fix
 				tmpData->type = firstWord;
 				EnemyData *enemyData = new EnemyData();
 				enemyData->enemyType = readValue;
