@@ -18,7 +18,8 @@ struct MeshFiles{
 	std::string normalTexturePath;
 };
 
-struct TransformData{
+struct TransformData
+{
 	std::string type;
 	std::string name;
 	float scale = 0;
@@ -32,7 +33,8 @@ struct TransformData{
 
 };
 
-struct EnemyData{
+struct EnemyData
+{
 	int hitpoints;
 	float size;
 	float speed;

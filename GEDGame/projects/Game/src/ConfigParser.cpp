@@ -77,26 +77,27 @@ void ConfigParser::load(std::string filepath){
 
 			}
 			else if (firstWord.compare(std::string("EnemyType")) == 0){
-				TransformData *tmpData = new TransformData(); // Memory Leak, dont know how to fix
-				tmpData->type = firstWord;
+				TransformData tmpData;
+				tmpData.type = firstWord;
 				EnemyData *enemyData = new EnemyData();
 				enemyData->enemyType = readValue;
 				ifs >> enemyData->hitpoints;
 				ifs >> enemyData->size;
 				ifs >> enemyData->speed;
-				ifs >> tmpData->name;
-				ifs >> tmpData->scale;
+				ifs >> tmpData.name;
+				ifs >> tmpData.scale;
 
-				ifs >> tmpData->rotX;
-				ifs >> tmpData->rotY;
-				ifs >> tmpData->rotZ;
+				ifs >> tmpData.rotX;
+				ifs >> tmpData.rotY;
+				ifs >> tmpData.rotZ;
 
-				ifs >> tmpData->posX;
-				ifs >> tmpData->posY;
-				ifs >> tmpData->posZ;
+				ifs >> tmpData.posX;
+				ifs >> tmpData.posY;
+				ifs >> tmpData.posZ;
 
-				enemyData->transform = (*tmpData);
+				enemyData->transform = tmpData;
 				objectsEnemyData[readValue] = enemyData;
+
 			} else if (firstWord.compare("Spawn") == 0){
 				sstr << readValue;
 				sstr >> this->spawnInteravall;
