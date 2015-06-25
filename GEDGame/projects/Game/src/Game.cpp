@@ -542,6 +542,7 @@ void CALLBACK OnFrameMove(double fTime, float fElapsedTime, void* pUserContext)
 		{		
 			auto itrm = iter;
 			iter++;
+			SAFE_DELETE(*itrm);
 			g_enemyInstances.remove(*itrm);
 		}
 		else
@@ -791,4 +792,10 @@ void DeinitApp()
 	for (auto iterator = g_Meshes.begin(); iterator != g_Meshes.end(); iterator++) {
 		SAFE_DELETE(g_Meshes[iterator->first]);
 	}
+
+	for (auto iter = g_enemyInstances.begin(); iter != g_enemyInstances.end(); iter++){
+		SAFE_DELETE(*iter);
+	}
+
+	std::cout << "DeinitApp finished" << std::endl;
 }

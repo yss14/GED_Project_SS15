@@ -1,5 +1,6 @@
 #include "ConfigParser.h"
 
+#define SAFE_DELETE(p)       { if (p) { delete (p);     (p) = nullptr; } }
 
 ConfigParser::ConfigParser(){
 	objectsData;
@@ -9,17 +10,18 @@ ConfigParser::ConfigParser(){
 
 ConfigParser::~ConfigParser(){
 	for (auto iterator = meshPathes.begin(); iterator != meshPathes.end(); iterator++) {
-		delete iterator->second;
+		SAFE_DELETE(iterator->second);
 	}
 
 	for (int i = 0; i < objectsData.size(); i++) {
-		delete objectsData[i];
+		SAFE_DELETE(objectsData[i]);
 	}
 
 	for (auto iterator = objectsEnemyData.begin(); iterator != objectsEnemyData.end(); iterator++) {
-		delete iterator->second;
+		SAFE_DELETE(iterator->second);
 	}
 
+	std::cout << "ConfigParser destructed" << std::endl;
 }
 
 void ConfigParser::load(std::string filepath){
