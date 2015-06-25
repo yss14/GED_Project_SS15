@@ -529,7 +529,8 @@ void CALLBACK OnGUIEvent(UINT nEvent, int nControlID, CDXUTControl* pControl, vo
 //--------------------------------------------------------------------------------------
 void CALLBACK OnFrameMove(double fTime, float fElapsedTime, void* pUserContext)
 {
-	for (auto iter = g_enemyInstances.begin(); iter != g_enemyInstances.end();){		// update enemy position
+	for (auto iter = g_enemyInstances.begin(); iter != g_enemyInstances.end();){
+		// update enemy position
 		(*iter)->position = (*iter)->position + (fElapsedTime * (*iter)->velocity);
 
 		//EnemyInstance *instance = *iter;
@@ -537,19 +538,19 @@ void CALLBACK OnFrameMove(double fTime, float fElapsedTime, void* pUserContext)
 		float distance = 0.0f;
 		XMStoreFloat(&distance, tmp);
 
-		if (distance < 30){		// remove enemy
-			std::cout << "enemy reached target location" << std::endl;
+		if (distance < 30)// remove enemy
+		{		
 			auto itrm = iter;
 			iter++;
 			g_enemyInstances.remove(*itrm);
 		}
-		else{
-			if (iter == g_enemyInstances.begin()){
-				std::cout << "Distance to target location: " << distance << std::endl;
-			}
-			//std::cout << "Distance to target location: " << distance << std::endl;
+		else
+		{
 			iter++;
-		}	}
+		}
+
+
+	}
 
 	UNREFERENCED_PARAMETER(pUserContext);
 	// Update the camera's position based on user input 
@@ -568,7 +569,7 @@ void CALLBACK OnFrameMove(double fTime, float fElapsedTime, void* pUserContext)
 	if (g_terrainSpinning)
 	{
 		// If spinng enabled, rotate the world matrix around the y-axis
-		g_terrainWorld *= XMMatrixRotationY(00.0f * DEG2RAD((float)fTime)); // Rotate around world-space "up" axis
+		g_terrainWorld *= XMMatrixRotationY(0.0f * DEG2RAD((float)fTime)); // Rotate around world-space "up" axis
 	}
 
 	// Set the light vector
@@ -583,16 +584,52 @@ void CALLBACK OnFrameMove(double fTime, float fElapsedTime, void* pUserContext)
 
 		EnemyInstance* instance = new EnemyInstance();
 		float a = static_cast <float> (rand()) / (static_cast <float> (RAND_MAX / (XM_2PI)));
-		const XMFLOAT3 tmps1 = XMFLOAT3(2048 * cfgParser->getTerrainWidth() * std::sin(a), 600 * cfgParser->getTerrainHeight(), 2048 * cfgParser->getTerrainWidth() * std::sin(a));
-		instance->s1 = XMLoadFloat3(&tmps1);
-		const XMFLOAT3 tmps2 = XMFLOAT3(100 * cfgParser->getTerrainWidth() * std::sin(a), 600 * cfgParser->getTerrainHeight(), 100 * cfgParser->getTerrainWidth() * std::sin(a));
-		instance->s2 = XMLoadFloat3(&tmps2);
+		//const XMFLOAT3 tmps1 = XMFLOAT3(100 * cfgParser->getTerrainWidth() * std::sin(a), 600 * cfgParser->getTerrainHeight(), 100 * cfgParser->getTerrainWidth() * std::sin(a));
+		//instance->s1 = XMLoadFloat3(&tmps1);
+		//const XMFLOAT3 tmps2 = XMFLOAT3(2 * cfgParser->getTerrainWidth() * std::sin(a), 600 * cfgParser->getTerrainHeight(), 2 * cfgParser->getTerrainWidth() * std::sin(a));
+		//instance->s2 = XMLoadFloat3(&tmps2);
+
+		float height = cfgParser->getMinSpawn() + float(rand()) / float(RAND_MAX) * (cfgParser->getMaxSpawn() - cfgParser->getMinSpawn());
+
+		const XMFLOAT3 tmp1 = XMFLOAT3(200 * cfgParser->getTerrainWidth() * std::cos(a), -1000 * height, 200 * cfgParser->getTerrainDepth() * std::sin(a));
+		const XMFLOAT3 tmp2 = XMFLOAT3(5 * cfgParser->getTerrainWidth() * std::cos(a), (-1)*(g_terrain.getCenterHeight() + 0.5) * cfgParser->getTerrainHeight(), 5 * cfgParser->getTerrainDepth() * std::sin(a));
+		instance->s1 = XMLoadFloat3(&tmp1);
+		instance->s2 = XMLoadFloat3(&tmp2); 
+
 		instance->position = instance->s1;
-		instance->velocity = cfgParser->objectsEnemyData["AmyShip1"]->speed * XMVector3Normalize(instance->s2 - instance->s1);
-		instance->typeName = "EnemyShipAmy";
+		int randomizer = rand() % 5;
+
+		std::string enemyType;
+
+		switch (randomizer)
+		{
+		case 0:
+			enemyType = "AmyShip1";
+			break;
+		case 1:
+			enemyType = "AmyShip2";
+			break;
+		case 2:
+			enemyType = "JufShip";
+			break;
+		case 3: 
+			enemyType = "ManShip1";
+			break;
+		case 4:
+			enemyType = "ManShip2";
+			break;
+		default:
+			enemyType = "JufShip";
+		}
+
+		instance->velocity = cfgParser->objectsEnemyData[enemyType]->speed * XMVector3Normalize(instance->s2 - instance->s1);
+		instance->typeName = enemyType;
 		g_enemyInstances.push_back(instance);
-		std::cout << "Number of enemies: " << g_enemyInstances.size() << std::endl;
-	}	// Check if enemies reached target location	//for (auto iter = g_enemyInstances.begin(); iter != g_enemyInstances.end();) {
+		//std::cout << "Number of enemies: " << g_enemyInstances.size() << std::endl;
+	}
+
+	// Check if enemies reached target location
+	//for (auto iter = g_enemyInstances.begin(); iter != g_enemyInstances.end();) {
 	//	iter++;
 	//	//EnemyInstance *instance = *iter;
 	//	XMVECTOR tmp = XMVector3Length(XMVectorSubtract((*iter)->position, (*iter)->s2));
@@ -605,7 +642,8 @@ void CALLBACK OnFrameMove(double fTime, float fElapsedTime, void* pUserContext)
 	//	else{
 	//		std::cout << "Distance to target location: " << distance << std::endl;
 	//	}
-	//}
+	//}
+
 }
 
 
@@ -713,8 +751,22 @@ void CALLBACK OnD3D11FrameRender(ID3D11Device* pd3dDevice, ID3D11DeviceContext* 
 		XMVECTOR tmp = XMLoadFloat3(&XMFLOAT3(cfgParser->objectsEnemyData[(*it)->typeName]->transform.posX, cfgParser->objectsEnemyData[(*it)->typeName]->transform.posY, cfgParser->objectsEnemyData[(*it)->typeName]->transform.posZ));
 		tmp = tmp - ((*it)->position);
 		XMVECTOR d = XMVector3Normalize(((*it)->velocity));
-		mAnim = XMMatrixTranslationFromVector(tmp);
-		worldViewProj = mTrans * mAnim * g_camera.GetWorldMatrix();
+		float a = std::atan2(XMVectorGetX(d), XMVectorGetZ(d));
+
+		mAnim = XMMatrixRotationY(a) * XMMatrixTranslationFromVector(tmp);
+
+		g_terrainWorld = mScale * mRotX * mRotY * mRotZ * mTrans * mAnim;  //g_camera.GetWorldMatrix();
+		worldViewProj = g_terrainWorld * g_camera.GetViewMatrix() * g_camera.GetProjMatrix();
+
+		worldNormalsMatrix = XMMatrixInverse(NULL, g_terrainWorld);
+		worldNormalsMatrix = XMMatrixTranspose(worldNormalsMatrix);
+
+		// Bind shader variables for Enemys
+		V(g_gameEffect.worldEV->SetMatrix((float*)&g_terrainWorld));
+		V(g_gameEffect.worldViewProjectionEV->SetMatrix((float*)&worldViewProj));
+		V(g_gameEffect.worldNormalsMatrix->SetMatrix((float*)&worldNormalsMatrix));
+		V(g_gameEffect.cameraPosWorldEV->SetFloatVector((float*)&g_camera.GetEyePt())); 
+		g_Meshes[cfgParser->objectsEnemyData[(*it)->typeName]->transform.name]->render(pd3dImmediateContext, g_gameEffect.meshPass1, g_gameEffect.diffuseEV, g_gameEffect.specularEV, g_gameEffect.glowEV);
 	}
 
 
