@@ -127,6 +127,7 @@ exit 1</Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="src\SpriteRenderer.h" />
     <ClInclude Include="src\ConfigParser.h" />
     <ClInclude Include="src\debug.h" />
     <ClInclude Include="src\GameEffect.h" />
@@ -137,6 +138,7 @@ exit 1</Command>
     <ClInclude Include="src\Vec3f.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="src\SpriteRenderer.cpp" />
     <ClCompile Include="src\ConfigParser.cpp" />
     <ClCompile Include="src\Game.cpp" />
     <ClCompile Include="src\Mesh.cpp" />

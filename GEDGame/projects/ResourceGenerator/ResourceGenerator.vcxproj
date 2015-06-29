@@ -88,7 +88,10 @@ mkdir "$(OutDir)resources"
 "$(OutDir)texconv" -o "$(OutDir)resources" -srgbi -f BC1_UNORM_SRGB "$(SolutionDir)..\..\external\art\02-Enemies\juf_spaceship\juf_spaceship_diffuse.png"
 "$(OutDir)texconv" -o "$(OutDir)resources" -srgbi -f BC1_UNORM_SRGB "$(SolutionDir)..\..\external\art\02-Enemies\juf_spaceship\juf_spaceship_normal.png"
 "$(OutDir)texconv" -o "$(OutDir)resources" -srgbi -f BC1_UNORM_SRGB "$(SolutionDir)..\..\external\art\02-Enemies\juf_spaceship\juf_spaceship_specular.png"
-"$(OutDir)texconv" -o "$(OutDir)resources" -srgbi -f BC1_UNORM_SRGB "$(SolutionDir)..\..\external\art\02-Enemies\juf_spaceship\juf_spaceship_glow.png"</NMakeBuildCommandLine>
+"$(OutDir)texconv" -o "$(OutDir)resources" -srgbi -f BC1_UNORM_SRGB "$(SolutionDir)..\..\external\art\02-Enemies\juf_spaceship\juf_spaceship_glow.png"
+
+"$(OutDir)texconv" -o "$(OutDir)resources" -srgbi -f BC3_UNORM_SRGB "$(SolutionDir)..\..\external\art\05-Sprites\simple\parTrailGatlingDiffuse.png"
+"$(OutDir)texconv" -o "$(OutDir)resources" -srgbi -f BC3_UNORM_SRGB "$(SolutionDir)..\..\external\art\05-Sprites\simple\parTrailPlasmaDiffuse.png"</NMakeBuildCommandLine>
     <NMakeCleanCommandLine>echo "Deleting old resources..."
 del /Q "$(IntDir)*"
 del /Q "$(OutDir)resources\*"</NMakeCleanCommandLine>
@@ -146,7 +149,10 @@ mkdir "$(OutDir)resources"
 "$(OutDir)texconv" -o "$(OutDir)resources" -srgbi -f BC1_UNORM_SRGB "$(SolutionDir)..\..\external\art\02-Enemies\juf_spaceship\juf_spaceship_diffuse.png"
 "$(OutDir)texconv" -o "$(OutDir)resources" -srgbi -f BC1_UNORM_SRGB "$(SolutionDir)..\..\external\art\02-Enemies\juf_spaceship\juf_spaceship_normal.png"
 "$(OutDir)texconv" -o "$(OutDir)resources" -srgbi -f BC1_UNORM_SRGB "$(SolutionDir)..\..\external\art\02-Enemies\juf_spaceship\juf_spaceship_specular.png"
-"$(OutDir)texconv" -o "$(OutDir)resources" -srgbi -f BC1_UNORM_SRGB "$(SolutionDir)..\..\external\art\02-Enemies\juf_spaceship\juf_spaceship_glow.png"</NMakeBuildCommandLine>
+"$(OutDir)texconv" -o "$(OutDir)resources" -srgbi -f BC1_UNORM_SRGB "$(SolutionDir)..\..\external\art\02-Enemies\juf_spaceship\juf_spaceship_glow.png"
+
+"$(OutDir)texconv" -o "$(OutDir)resources" -srgbi -f BC3_UNORM_SRGB "$(SolutionDir)..\..\external\art\05-Sprites\simple\parTrailGatlingDiffuse.png"
+"$(OutDir)texconv" -o "$(OutDir)resources" -srgbi -f BC3_UNORM_SRGB "$(SolutionDir)..\..\external\art\05-Sprites\simple\parTrailPlasmaDiffuse.png"</NMakeBuildCommandLine>
     <NMakeCleanCommandLine>echo "Deleting old resources..."
 del /Q "$(IntDir)*"
 del /Q "$(OutDir)resources\*"</NMakeCleanCommandLine>

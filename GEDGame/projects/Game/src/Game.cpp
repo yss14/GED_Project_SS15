@@ -14,7 +14,7 @@
 #include <map>
 #include <list>
 
-
+#include "SpriteRenderer.h"
 #include "dxut.h"
 #include "DXUTmisc.h"
 #include "DXUTcamera.h"
@@ -24,9 +24,7 @@
 #include "ConfigParser.h"
 #include "Mesh.h"
 #include "Utils.h"
-
 #include "d3dx11effect.h"
-
 #include "Terrain.h"
 #include "GameEffect.h"
 
@@ -89,6 +87,8 @@ std::list<EnemyInstance*>				g_enemyInstances;
 
 bool									canMove = false;
 float									g_SpawnTimer = 0.0f;
+
+SpriteRenderer*							g_SpriteRenderer;
 
 //--------------------------------------------------------------------------------------
 // UI control IDs
@@ -204,7 +204,11 @@ void InitApp()
 	wcstombs_s(&size, pathA, path, MAX_PATH);
 
 	g_Meshes;
+	std::vector<wstring> sprites;
+	sprites.push_back(Utils::buildRessourcePath("parTrailGatlingDiffuse.DDS"));
+	sprites.push_back(Utils::buildRessourcePath("parTrailPlasmaDiffuse.DDS"));
 
+	g_SpriteRenderer = new SpriteRenderer(sprites);
 	cfgParser = new ConfigParser();
 	cfgParser->load(pathA);
 	std::cout << "Loaded game.cfg from " << pathA << "\n";
@@ -340,6 +344,7 @@ HRESULT CALLBACK OnD3D11CreateDevice(ID3D11Device* pd3dDevice,
 	}
 
 	V_RETURN(Mesh::createInputLayout(pd3dDevice, g_gameEffect.meshPass1));
+	V_RETURN(g_SpriteRenderer->create(pd3dDevice));
 	return S_OK;
 }
 
@@ -363,6 +368,7 @@ void CALLBACK OnD3D11DestroyDevice(void* pUserContext)
 	}
 
 	g_terrain.destroy();
+	g_SpriteRenderer->destroy();
 	Mesh::destroyInputLayout();
 	SAFE_DELETE(g_txtHelper);
 	ReleaseShader();
@@ -426,7 +432,7 @@ HRESULT ReloadShader(ID3D11Device* pd3dDevice)
 
 	ReleaseShader();
 	V_RETURN(g_gameEffect.create(pd3dDevice));
-
+	V_RETURN(g_SpriteRenderer->create(pd3dDevice));
 	return S_OK;
 }
 
@@ -436,6 +442,7 @@ HRESULT ReloadShader(ID3D11Device* pd3dDevice)
 void ReleaseShader()
 {
 	g_gameEffect.destroy();
+	g_SpriteRenderer->releaseShader();
 }
 
 //--------------------------------------------------------------------------------------
@@ -782,6 +789,7 @@ void CALLBACK OnD3D11FrameRender(ID3D11Device* pd3dDevice, ID3D11DeviceContext* 
 
 void DeinitApp()
 {
+	SAFE_DELETE(g_SpriteRenderer);
 	SAFE_DELETE(cfgParser);
 	for (auto iterator = g_Meshes.begin(); iterator != g_Meshes.end(); iterator++) 
 	{
