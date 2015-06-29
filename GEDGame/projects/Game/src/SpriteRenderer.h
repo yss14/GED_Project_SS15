@@ -8,12 +8,15 @@
 
 #include <d3dx11effect.h>
 
+#define SAFE_GET_PASS(Technique, name, var)   {assert(Technique!=NULL); var = Technique->GetPassByName( name );						assert(var->IsValid());}
+#define SAFE_GET_TECHNIQUE(effect, name, var) {assert(effect!=NULL); var = effect->GetTechniqueByName( name );						assert(var->IsValid());}
 
 struct SpriteVertex
 {
 	DirectX::XMFLOAT3 position;     // world-space position (sprite center)
 	float radius;                   // world-space radius (= half side length of the sprite quad)
 	int textureIndex;               // which texture to use (out of SpriteRenderer::m_spriteSRV)
+	
 };
 
 class SpriteRenderer
@@ -41,10 +44,10 @@ public:
 
 private:
 	std::vector<std::wstring> m_textureFilenames;
-
+	ID3DX11EffectTechnique*                 technique;
 	// Rendering effect (shaders and related GPU state). Created/released in Reload/ReleaseShader.
-	ID3DX11Effect* m_pEffect;
-
+	ID3DX11Effect*							m_pEffect;
+	ID3DX11EffectPass*                      pass0;
 	// Sprite textures and corresponding shader resource views.
 	//std::vector<ID3D11Texture2D*>          m_spriteTex;       // You may not need this if you use CreateDDSTExtureFromFile!
 	std::vector<ID3D11ShaderResourceView*> m_spriteSRV;

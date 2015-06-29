@@ -62,6 +62,9 @@
     <FxCompile Include="shader\game.fx">
       <Filter>Shader</Filter>
     </FxCompile>
+    <FxCompile Include="SpriteRenderer.fx">
+      <Filter>Shader</Filter>
+    </FxCompile>
   </ItemGroup>
   <ItemGroup>
     <None Include="game.cfg" />

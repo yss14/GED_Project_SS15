@@ -429,10 +429,9 @@ HRESULT ReloadShader(ID3D11Device* pd3dDevice)
 	assert(pd3dDevice != NULL);
 
 	HRESULT hr;
-
 	ReleaseShader();
 	V_RETURN(g_gameEffect.create(pd3dDevice));
-	V_RETURN(g_SpriteRenderer->create(pd3dDevice));
+	V_RETURN(g_SpriteRenderer->reloadShader(pd3dDevice));
 	return S_OK;
 }
 
