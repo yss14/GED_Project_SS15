@@ -89,6 +89,7 @@ bool									canMove = false;
 float									g_SpawnTimer = 0.0f;
 
 SpriteRenderer*							g_SpriteRenderer;
+std::vector<SpriteVertex>				sprites;
 
 //--------------------------------------------------------------------------------------
 // UI control IDs
@@ -770,6 +771,12 @@ void CALLBACK OnD3D11FrameRender(ID3D11Device* pd3dDevice, ID3D11DeviceContext* 
 		g_Meshes[cfgParser->objectsEnemyData[(*it)->typeName]->transform.name]->render(pd3dImmediateContext, g_gameEffect.meshPass1, g_gameEffect.diffuseEV, g_gameEffect.specularEV, g_gameEffect.glowEV);
 	}
 
+	sprites.push_back(SpriteVertex(DirectX::XMFLOAT3(0,0,10), 5, 0));
+	sprites.push_back(SpriteVertex(DirectX::XMFLOAT3(5, 0, 10), 5, 0));
+	sprites.push_back(SpriteVertex(DirectX::XMFLOAT3(5, 5, 10), 5, 0));
+	sprites.push_back(SpriteVertex(DirectX::XMFLOAT3(5, 0, 10), 5, 0));
+
+	g_SpriteRenderer->renderSprites(pd3dImmediateContext, sprites, g_camera);
 
 	DXUT_BeginPerfEvent(DXUT_PERFEVENTCOLOR, L"HUD / Stats");
 	V(g_hud.OnRender(fElapsedTime));

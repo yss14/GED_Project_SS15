@@ -82,7 +82,20 @@ HRESULT SpriteRenderer::create(ID3D11Device* pdevice){
 }
 
 void SpriteRenderer::renderSprites(ID3D11DeviceContext* context, const std::vector<SpriteVertex>& sprites, const CFirstPersonCamera& camera){
+	
+	D3D11_BOX box;
+	box.left = 0; box.right = sprites.size() * sizeof(SpriteVertex);
+	box.top = 0; box.bottom = 1;
+	box.front = 0; box.back = 1;
+	
+	context->UpdateSubresource(this->m_pVertexBuffer, 0, &box, &sprites, 0, 0);
+	unsigned int strides[] = { sizeof(SpriteVertex), }, offsets[] = { 0, };
+	context->IASetVertexBuffers(0, 1, &m_pVertexBuffer, strides, offsets);
+	context->IASetInputLayout(m_pInputLayout);
+	context->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_POINTLIST);
 
+	pass0->Apply(0, context);
+	context->Draw(1, 0);
 }
 
 void SpriteRenderer::destroy(){

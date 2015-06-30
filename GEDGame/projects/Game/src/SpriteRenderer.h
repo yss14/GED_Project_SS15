@@ -16,7 +16,13 @@ struct SpriteVertex
 	DirectX::XMFLOAT3 position;     // world-space position (sprite center)
 	float radius;                   // world-space radius (= half side length of the sprite quad)
 	int textureIndex;               // which texture to use (out of SpriteRenderer::m_spriteSRV)
-	
+
+	SpriteVertex(DirectX::XMFLOAT3 pos, float r, int ti) : position(pos), radius(r), textureIndex(ti){
+
+	}
+
+
+
 };
 
 class SpriteRenderer
