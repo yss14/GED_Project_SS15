@@ -89,7 +89,7 @@ bool									canMove = false;
 float									g_SpawnTimer = 0.0f;
 
 SpriteRenderer*							g_SpriteRenderer;
-std::vector<SpriteVertex>				sprites;
+std::vector<SpriteVertex>				spritesVector;
 
 //--------------------------------------------------------------------------------------
 // UI control IDs
@@ -210,6 +210,10 @@ void InitApp()
 	sprites.push_back(Utils::buildRessourcePath("parTrailPlasmaDiffuse.DDS"));
 
 	g_SpriteRenderer = new SpriteRenderer(sprites);
+	spritesVector.push_back(SpriteVertex(DirectX::XMFLOAT3(0, 0, 10), 5, 0));
+	spritesVector.push_back(SpriteVertex(DirectX::XMFLOAT3(5, 0, 10), 5, 0));
+	spritesVector.push_back(SpriteVertex(DirectX::XMFLOAT3(5, 5, 10), 5, 0));
+	spritesVector.push_back(SpriteVertex(DirectX::XMFLOAT3(5, 0, 10), 5, 0));
 	cfgParser = new ConfigParser();
 	cfgParser->load(pathA);
 	std::cout << "Loaded game.cfg from " << pathA << "\n";
@@ -671,7 +675,7 @@ void CALLBACK OnD3D11FrameRender(ID3D11Device* pd3dDevice, ID3D11DeviceContext* 
 	}
 
 	ID3D11RenderTargetView* pRTV = DXUTGetD3D11RenderTargetView();
-	float clearColor[4] = { 0.5f, 0.5f, 0.5f, 1.0f };
+	float clearColor[4] = { 0.0f, 0.0f, 0.0f, 1.0f };		// background color 
 	pd3dImmediateContext->ClearRenderTargetView(pRTV, clearColor);
 
 	if (g_gameEffect.effect == NULL) {
@@ -771,12 +775,7 @@ void CALLBACK OnD3D11FrameRender(ID3D11Device* pd3dDevice, ID3D11DeviceContext* 
 		g_Meshes[cfgParser->objectsEnemyData[(*it)->typeName]->transform.name]->render(pd3dImmediateContext, g_gameEffect.meshPass1, g_gameEffect.diffuseEV, g_gameEffect.specularEV, g_gameEffect.glowEV);
 	}
 
-	sprites.push_back(SpriteVertex(DirectX::XMFLOAT3(0,0,10), 5, 0));
-	sprites.push_back(SpriteVertex(DirectX::XMFLOAT3(5, 0, 10), 5, 0));
-	sprites.push_back(SpriteVertex(DirectX::XMFLOAT3(5, 5, 10), 5, 0));
-	sprites.push_back(SpriteVertex(DirectX::XMFLOAT3(5, 0, 10), 5, 0));
-
-	g_SpriteRenderer->renderSprites(pd3dImmediateContext, sprites, g_camera);
+	g_SpriteRenderer->renderSprites(pd3dImmediateContext, spritesVector, g_camera);
 
 	DXUT_BeginPerfEvent(DXUT_PERFEVENTCOLOR, L"HUD / Stats");
 	V(g_hud.OnRender(fElapsedTime));

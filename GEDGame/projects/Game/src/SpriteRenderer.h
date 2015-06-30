@@ -10,6 +10,7 @@
 
 #define SAFE_GET_PASS(Technique, name, var)   {assert(Technique!=NULL); var = Technique->GetPassByName( name );						assert(var->IsValid());}
 #define SAFE_GET_TECHNIQUE(effect, name, var) {assert(effect!=NULL); var = effect->GetTechniqueByName( name );						assert(var->IsValid());}
+#define SAFE_GET_MATRIX(effect, name, var)    {assert(effect!=NULL); var = effect->GetVariableByName( name )->AsMatrix();			assert(var->IsValid());}
 
 struct SpriteVertex
 {
@@ -49,6 +50,7 @@ public:
 	void renderSprites(ID3D11DeviceContext* context, const std::vector<SpriteVertex>& sprites, const CFirstPersonCamera& camera);
 
 private:
+	ID3DX11EffectMatrixVariable*            g_vProjection;
 	std::vector<std::wstring> m_textureFilenames;
 	ID3DX11EffectTechnique*                 technique;
 	// Rendering effect (shaders and related GPU state). Created/released in Reload/ReleaseShader.

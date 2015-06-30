@@ -5,6 +5,9 @@ struct MyVertex{
 };
 
 
+matrix g_ViewProjection;
+
+
 // Rasterizer states
 RasterizerState rsCullNone {
 	CullMode = None;
@@ -27,6 +30,7 @@ BlendState NoBlending
 // ShaderCode
 void DummyVS(MyVertex input, out float4 pos : SV_Position) {
 	pos = float4(0, 0, 0.5, 1);
+	pos = mul(pos, g_ViewProjection);
 }
 float4 DummyPS(float4 pos : SV_Position) : SV_Target0{
 	return float4(1, 1, 0, 1);

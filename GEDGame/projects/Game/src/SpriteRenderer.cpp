@@ -67,10 +67,12 @@ HRESULT SpriteRenderer::create(ID3D11Device* pdevice){
 	const D3D11_INPUT_ELEMENT_DESC layout[] = // http://msdn.microsoft.com/en-us/library/bb205117%28v=vs.85%29.aspx
 	{
 		{ "POSITION", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, D3D11_APPEND_ALIGNED_ELEMENT, D3D11_INPUT_PER_VERTEX_DATA, 0 },
-		{ "RADIUS", 0, DXGI_FORMAT_R32G32_FLOAT, 0, D3D11_APPEND_ALIGNED_ELEMENT, D3D11_INPUT_PER_VERTEX_DATA, 0 },
-		{ "TEXTUREINDEX", 0, DXGI_FORMAT_R32G32B32A32_UINT, 0, D3D11_APPEND_ALIGNED_ELEMENT, D3D11_INPUT_PER_VERTEX_DATA, 0 },
+		{ "RADIUS", 0, DXGI_FORMAT_R32_FLOAT, 0, D3D11_APPEND_ALIGNED_ELEMENT, D3D11_INPUT_PER_VERTEX_DATA, 0 },
+		{ "TEXTUREINDEX", 0, DXGI_FORMAT_R32_UINT, 0, D3D11_APPEND_ALIGNED_ELEMENT, D3D11_INPUT_PER_VERTEX_DATA, 0 },
 	};
 	UINT numElements = sizeof(layout) / sizeof(layout[0]);
+
+	SAFE_GET_MATRIX(m_pEffect, "g_ViewProjection", g_vProjection);
 
 	// Create the input layout
 	D3DX11_PASS_DESC pd;
@@ -88,12 +90,16 @@ void SpriteRenderer::renderSprites(ID3D11DeviceContext* context, const std::vect
 	box.top = 0; box.bottom = 1;
 	box.front = 0; box.back = 1;
 	
-	context->UpdateSubresource(this->m_pVertexBuffer, 0, &box, &sprites, 0, 0);
+	context->UpdateSubresource(this->m_pVertexBuffer, 0, &box, &sprites[0], 0, 0);
 	unsigned int strides[] = { sizeof(SpriteVertex), }, offsets[] = { 0, };
 	context->IASetVertexBuffers(0, 1, &m_pVertexBuffer, strides, offsets);
 	context->IASetInputLayout(m_pInputLayout);
 	context->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_POINTLIST);
 
+	DirectX::XMMATRIX viewProjection;
+	viewProjection = camera.GetProjMatrix() * camera.GetViewMatrix();
+	g_vProjection->SetMatrix((float*)&viewProjection);
+	
 	pass0->Apply(0, context);
 	context->Draw(1, 0);
 }
