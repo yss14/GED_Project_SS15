@@ -10,6 +10,19 @@ RasterizerState rsCullNone {
 	CullMode = None;
 };
 
+DepthStencilState EnableDepth
+{
+	DepthEnable = TRUE;
+	DepthWriteMask = ALL;
+	DepthFunc = LESS_EQUAL;
+};
+
+BlendState NoBlending
+{
+	AlphaToCoverageEnable = FALSE;
+	BlendEnable[0] = FALSE;
+};
+
 
 // ShaderCode
 void DummyVS(MyVertex input, out float4 pos : SV_Position) {
