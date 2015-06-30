@@ -39,7 +39,7 @@ HRESULT SpriteRenderer::reloadShader(ID3D11Device* pdevice){
 
 	// Obtain the effect technique
 	SAFE_GET_TECHNIQUE(m_pEffect, "Render", technique);
-
+	
 	// Obtain the effect pass
 	SAFE_GET_PASS(technique, "P0", pass0);
 	return S_OK;
@@ -73,6 +73,8 @@ HRESULT SpriteRenderer::create(ID3D11Device* pdevice){
 	UINT numElements = sizeof(layout) / sizeof(layout[0]);
 
 	SAFE_GET_MATRIX(m_pEffect, "g_ViewProjection", g_vProjection);
+	SAFE_GET_VECTOR(m_pEffect, "camRight", g_camRight);
+	SAFE_GET_VECTOR(m_pEffect, "camUp", g_camUp);
 
 	// Create the input layout
 	D3DX11_PASS_DESC pd;
@@ -99,7 +101,9 @@ void SpriteRenderer::renderSprites(ID3D11DeviceContext* context, const std::vect
 	DirectX::XMMATRIX viewProjection;
 	viewProjection = camera.GetProjMatrix() * camera.GetViewMatrix();
 	g_vProjection->SetMatrix((float*)&viewProjection);
-	
+	g_camRight->SetFloatVector((float*)&camera.GetWorldRight());
+	g_camUp->SetFloatVector((float*)&camera.GetWorldUp());
+
 	pass0->Apply(0, context);
 	context->Draw(1, 0);
 }
