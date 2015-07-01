@@ -85,8 +85,9 @@ HRESULT SpriteRenderer::create(ID3D11Device* pdevice){
 	return hr;
 }
 
-void SpriteRenderer::renderSprites(ID3D11DeviceContext* context, const std::vector<SpriteVertex>& sprites, const CFirstPersonCamera& camera){
-	
+HRESULT SpriteRenderer::renderSprites(ID3D11DeviceContext* context, const std::vector<SpriteVertex>& sprites, const CFirstPersonCamera& camera){
+	HRESULT hr;
+
 	D3D11_BOX box;
 	box.left = 0; box.right = sprites.size() * sizeof(SpriteVertex);
 	box.top = 0; box.bottom = 1;
@@ -99,13 +100,15 @@ void SpriteRenderer::renderSprites(ID3D11DeviceContext* context, const std::vect
 	context->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_POINTLIST);
 
 	DirectX::XMMATRIX viewProjection;
-	viewProjection = camera.GetProjMatrix() * camera.GetViewMatrix();
-	g_vProjection->SetMatrix((float*)&viewProjection);
-	g_camRight->SetFloatVector((float*)&camera.GetWorldRight());
-	g_camUp->SetFloatVector((float*)&camera.GetWorldUp());
+	viewProjection = camera.GetViewMatrix() * camera.GetProjMatrix();
+	V_RETURN(g_vProjection->SetMatrix((float*)&viewProjection));
+	V_RETURN(g_camRight->SetFloatVector((float*)&camera.GetWorldRight()));
+	V_RETURN(g_camUp->SetFloatVector((float*)&camera.GetWorldUp()));
 
-	pass0->Apply(0, context);
+	V_RETURN(pass0->Apply(0, context));
 	context->Draw(1, 0);
+
+	return hr;
 }
 
 void SpriteRenderer::destroy(){

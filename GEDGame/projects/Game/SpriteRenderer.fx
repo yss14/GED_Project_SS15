@@ -33,33 +33,46 @@ BlendState NoBlending
 
 
 // ShaderCode
-void DummyVS(in SpriteVertex input, out SpriteVertex output) {
+/*void DummyVS(in SpriteVertex input, out SpriteVertex output) {
 	output = (SpriteVertex)0;
-	//output.Pos = mul(input.Pos, g_ViewProjection);
+	output.Pos = mul(input.Pos, g_ViewProjection);
 	output.Pos = input.Pos;
+}*/
+
+void DummyVS(SpriteVertex input, out float4 pos : SV_Position) {
+	pos = float4(0, 0, 0.5, 1);
+	pos = mul(pos, g_ViewProjection);
 }
-float4 DummyPS(PSVertex pos) : SV_Target0{
+
+float4 DummyPS(float4 pos : SV_Position) : SV_Target0{
 	return float4(1, 1, 0, 1);
 }
+
+/*float4 DummyPS(PSVertex pos) : SV_Target0{
+	return float4(1.0f, 1.0f, 0.0f, 1.0f);
+}*/
 
 [maxvertexcount(4)]
 void SpriteGS(point SpriteVertex vertex[1], inout TriangleStream<PSVertex> stream){
 
-	vertex[0].Pos = mul(vertex[0].Pos, g_ViewProjection);
-
+	float radius = vertex[0].Radius;
 	PSVertex v;
-	v.Position = float4(vertex[0].Pos.x - vertex[0].Radius, vertex[0].Pos.x + vertex[0].Radius, vertex[0].Pos.z, 1); // upper left
-	v.t = float2(0, 0);
-	stream.Append(v); // output first vertex
-	v.Position = float4(vertex[0].Pos.x + vertex[0].Radius, vertex[0].Pos.x + vertex[0].Radius, vertex[0].Pos.z, 1); // upper right
-	v.t = float2(0, 1);
-	stream.Append(v); // output second vertex
-	v.Position = float4(vertex[0].Pos.x - vertex[0].Radius, vertex[0].Pos.x - vertex[0].Radius, vertex[0].Pos.z, 1); // lower left
-	v.t = float2(1, 0);
-	stream.Append(v); // output third vertex
-	v.Position = float4(vertex[0].Pos.x + vertex[0].Radius, vertex[0].Pos.x - vertex[0].Radius, vertex[0].Pos.z, 1); // lower right
-	v.t = float2(1, 1);
-	stream.Append(v); // output third vertex
+
+	v.Position = mul(float4(vertex[0].Pos - radius * camRight - radius * camUp, 1.0f), g_ViewProjection);
+	v.t = float2(0.0f, 0.0f);
+	stream.Append(v);
+
+	v.Position = mul(float4(vertex[0].Pos + radius * camRight - radius * camUp, 1.0f), g_ViewProjection);
+	v.t = float2(0.0f, 1.0f);
+	stream.Append(v);
+
+	v.Position = mul(float4(vertex[0].Pos - radius * camRight + radius * camUp, 1.0f), g_ViewProjection);
+	v.t = float2(1.0f, 0.0f);
+	stream.Append(v);
+
+	v.Position = mul(float4(vertex[0].Pos + radius * camRight + radius * camUp, 1.0f), g_ViewProjection);
+	v.t = float2(1.0f, 1.0f);
+	stream.Append(v);
 }
 
 //--------------------------------------------------------------------------------------
@@ -70,7 +83,7 @@ technique11 Render
 	pass P0
 	{
 		SetVertexShader(CompileShader(vs_4_0, DummyVS()));
-		SetGeometryShader(CompileShader(gs_4_0, SpriteGS()));
+		SetGeometryShader(NULL);
 		SetPixelShader(CompileShader(ps_4_0, DummyPS()));
 
 		SetRasterizerState(rsCullNone);

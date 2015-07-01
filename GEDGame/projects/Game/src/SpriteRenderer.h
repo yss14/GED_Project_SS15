@@ -48,7 +48,7 @@ public:
 	void destroy();
 
 	// Render the given sprites. They must already be sorted into back-to-front order.
-	void renderSprites(ID3D11DeviceContext* context, const std::vector<SpriteVertex>& sprites, const CFirstPersonCamera& camera);
+	HRESULT renderSprites(ID3D11DeviceContext* context, const std::vector<SpriteVertex>& sprites, const CFirstPersonCamera& camera);
 
 private:
 	ID3DX11EffectMatrixVariable*            g_vProjection;

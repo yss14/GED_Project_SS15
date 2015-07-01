@@ -210,10 +210,11 @@ void InitApp()
 	sprites.push_back(Utils::buildRessourcePath("parTrailPlasmaDiffuse.DDS"));
 
 	g_SpriteRenderer = new SpriteRenderer(sprites);
-	spritesVector.push_back(SpriteVertex(DirectX::XMFLOAT3(0, 1000, 10), 10, 0));
-	spritesVector.push_back(SpriteVertex(DirectX::XMFLOAT3(0, -1000, 10), 10, 0));
-	spritesVector.push_back(SpriteVertex(DirectX::XMFLOAT3(0, 2000, 10), 10, 0));
-	spritesVector.push_back(SpriteVertex(DirectX::XMFLOAT3(0, -2000, 10), 10, 0));
+
+	spritesVector.push_back(SpriteVertex(DirectX::XMFLOAT3(0, 0, 10), 5, 0));
+	spritesVector.push_back(SpriteVertex(DirectX::XMFLOAT3(0.0f, 500.0f, 10.0f), 100.0f, 0));
+	spritesVector.push_back(SpriteVertex(DirectX::XMFLOAT3(0.0f, 800.0f, 10.0f), 100.0f, 0));
+	spritesVector.push_back(SpriteVertex(DirectX::XMFLOAT3(0.0f, 1000.0f, 10.0f), 100.0f, 0));
 	cfgParser = new ConfigParser();
 	cfgParser->load(pathA);
 	std::cout << "Loaded game.cfg from " << pathA << "\n";
@@ -708,7 +709,7 @@ void CALLBACK OnD3D11FrameRender(ID3D11Device* pd3dDevice, ID3D11DeviceContext* 
 	// Set input layout
 	//pd3dImmediateContext->IASetInputLayout( g_terrainVertexLayout );
 
-	//g_terrain.render(pd3dImmediateContext, g_gameEffect.pass0);
+	g_terrain.render(pd3dImmediateContext, g_gameEffect.pass0);
 
 	XMMATRIX mTrans, mScale, mRotX, mRotY, mRotZ, mAnim;
 	for (int i = 0; i < cfgParser->objectsData.size(); ++i) {
