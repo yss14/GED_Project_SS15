@@ -33,16 +33,16 @@ BlendState NoBlending
 
 
 // ShaderCode
-/*void DummyVS(in SpriteVertex input, out SpriteVertex output) {
+void DummyVS(in SpriteVertex input, out SpriteVertex output) {
 	output = (SpriteVertex)0;
-	output.Pos = mul(input.Pos, g_ViewProjection);
+	//output.Pos = mul(input.Pos, g_ViewProjection);
 	output.Pos = input.Pos;
-}*/
+}
 
-void DummyVS(SpriteVertex input, out float4 pos : SV_Position) {
+/*void DummyVS(SpriteVertex input, out float4 pos : SV_Position) {
 	pos = float4(0, 0, 0.5, 1);
 	pos = mul(pos, g_ViewProjection);
-}
+}*/
 
 float4 DummyPS(float4 pos : SV_Position) : SV_Target0{
 	return float4(1, 1, 0, 1);
@@ -52,27 +52,38 @@ float4 DummyPS(float4 pos : SV_Position) : SV_Target0{
 	return float4(1.0f, 1.0f, 0.0f, 1.0f);
 }*/
 
-[maxvertexcount(4)]
+[maxvertexcount(6)]
 void SpriteGS(point SpriteVertex vertex[1], inout TriangleStream<PSVertex> stream){
 
 	float radius = vertex[0].Radius;
-	PSVertex v;
+	PSVertex v1,v2,v3,v4;
 
-	v.Position = mul(float4(vertex[0].Pos - radius * camRight - radius * camUp, 1.0f), g_ViewProjection);
-	v.t = float2(0.0f, 0.0f);
-	stream.Append(v);
+	//Links Unten
+	v1.Position = mul(float4(vertex[0].Pos - radius * camRight - radius * camUp, 1.0f), g_ViewProjection);
+	v1.t = float2(0.0f, 0.0f);
 
-	v.Position = mul(float4(vertex[0].Pos + radius * camRight - radius * camUp, 1.0f), g_ViewProjection);
-	v.t = float2(0.0f, 1.0f);
-	stream.Append(v);
+	//Rechts Unten
+	v2.Position = mul(float4(vertex[0].Pos + radius * camRight - radius * camUp, 1.0f), g_ViewProjection);
+	v2.t = float2(0.0f, 1.0f);
 
-	v.Position = mul(float4(vertex[0].Pos - radius * camRight + radius * camUp, 1.0f), g_ViewProjection);
-	v.t = float2(1.0f, 0.0f);
-	stream.Append(v);
+	//Links Oben
+	v3.Position = mul(float4(vertex[0].Pos - radius * camRight + radius * camUp, 1.0f), g_ViewProjection);
+	v3.t = float2(1.0f, 0.0f);
 
-	v.Position = mul(float4(vertex[0].Pos + radius * camRight + radius * camUp, 1.0f), g_ViewProjection);
-	v.t = float2(1.0f, 1.0f);
-	stream.Append(v);
+	//Rechts Oben
+	v4.Position = mul(float4(vertex[0].Pos + radius * camRight + radius * camUp, 1.0f), g_ViewProjection);
+	v4.t = float2(1.0f, 1.0f);
+
+	stream.Append(v3);
+	stream.Append(v4);
+	stream.Append(v1);
+
+	stream.RestartStrip();
+
+	stream.Append(v1);
+	stream.Append(v4);
+	stream.Append(v2);
+	
 }
 
 //--------------------------------------------------------------------------------------
@@ -83,7 +94,7 @@ technique11 Render
 	pass P0
 	{
 		SetVertexShader(CompileShader(vs_4_0, DummyVS()));
-		SetGeometryShader(NULL);
+		SetGeometryShader(CompileShader(gs_4_0, SpriteGS()));
 		SetPixelShader(CompileShader(ps_4_0, DummyPS()));
 
 		SetRasterizerState(rsCullNone);

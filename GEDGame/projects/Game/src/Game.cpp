@@ -212,9 +212,9 @@ void InitApp()
 	g_SpriteRenderer = new SpriteRenderer(sprites);
 
 	spritesVector.push_back(SpriteVertex(DirectX::XMFLOAT3(0, 0, 10), 5, 0));
-	spritesVector.push_back(SpriteVertex(DirectX::XMFLOAT3(0.0f, 500.0f, 10.0f), 100.0f, 0));
-	spritesVector.push_back(SpriteVertex(DirectX::XMFLOAT3(0.0f, 800.0f, 10.0f), 100.0f, 0));
-	spritesVector.push_back(SpriteVertex(DirectX::XMFLOAT3(0.0f, 1000.0f, 10.0f), 100.0f, 0));
+	spritesVector.push_back(SpriteVertex(DirectX::XMFLOAT3(0.0f, 500.0f, 10.0f), 10.0f, 0));
+	spritesVector.push_back(SpriteVertex(DirectX::XMFLOAT3(0.0f, 800.0f, 10.0f), 10.0f, 0));
+	spritesVector.push_back(SpriteVertex(DirectX::XMFLOAT3(0.0f, 1000.0f, 10.0f), 10.0f, 0));
 	cfgParser = new ConfigParser();
 	cfgParser->load(pathA);
 	std::cout << "Loaded game.cfg from " << pathA << "\n";

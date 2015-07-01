@@ -93,7 +93,7 @@ HRESULT SpriteRenderer::renderSprites(ID3D11DeviceContext* context, const std::v
 	box.top = 0; box.bottom = 1;
 	box.front = 0; box.back = 1;
 	
-	context->UpdateSubresource(this->m_pVertexBuffer, 0, &box, &sprites[0], 0, 0);
+	context->UpdateSubresource(m_pVertexBuffer, 0, &box, &sprites[0], 0, 0);
 	unsigned int strides[] = { sizeof(SpriteVertex), }, offsets[] = { 0, };
 	context->IASetVertexBuffers(0, 1, &m_pVertexBuffer, strides, offsets);
 	context->IASetInputLayout(m_pInputLayout);
@@ -106,7 +106,7 @@ HRESULT SpriteRenderer::renderSprites(ID3D11DeviceContext* context, const std::v
 	V_RETURN(g_camUp->SetFloatVector((float*)&camera.GetWorldUp()));
 
 	V_RETURN(pass0->Apply(0, context));
-	context->Draw(1, 0);
+	context->Draw(sprites.size(), 0);
 
 	return hr;
 }
