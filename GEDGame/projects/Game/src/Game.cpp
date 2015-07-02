@@ -178,7 +178,7 @@ int _tmain(int argc, _TCHAR* argv[])
 	InitApp();
 	DXUTInit(true, true, NULL); // Parse the command line, show msgboxes on error, no extra command line params
 	DXUTSetCursorSettings(true, true);
-	DXUTCreateWindow(L"TODO: Insert Title Here"); // You may change the title
+	DXUTCreateWindow(L"Ultra Game lel"); // You may change the title
 
 	DXUTCreateDevice(D3D_FEATURE_LEVEL_10_0, true, 1280, 720);
 
@@ -210,11 +210,17 @@ void InitApp()
 	sprites.push_back(Utils::buildRessourcePath("parTrailPlasmaDiffuse.DDS"));
 
 	g_SpriteRenderer = new SpriteRenderer(sprites);
-
-	spritesVector.push_back(SpriteVertex(DirectX::XMFLOAT3(0, 0, 10), 5, 0));
-	spritesVector.push_back(SpriteVertex(DirectX::XMFLOAT3(0.0f, 500.0f, 10.0f), 10.0f, 0));
-	spritesVector.push_back(SpriteVertex(DirectX::XMFLOAT3(0.0f, 800.0f, 10.0f), 10.0f, 0));
-	spritesVector.push_back(SpriteVertex(DirectX::XMFLOAT3(0.0f, 1000.0f, 10.0f), 10.0f, 0));
+	srand(time(0));
+	for (int i = 0; i < 500; i++)
+	{
+		spritesVector.push_back(SpriteVertex(
+			DirectX::XMFLOAT3(
+				rand() / (float)(RAND_MAX) * 1000 - 500.0f, 
+				rand() / (float)(RAND_MAX) * 500 + 100,
+				rand() / (float)(RAND_MAX) * 1000 - 500.0f), 
+				rand() / (float)(RAND_MAX) * 50, 
+				int(rand() / (float)(RAND_MAX) * 2)));
+	}
 	cfgParser = new ConfigParser();
 	cfgParser->load(pathA);
 	std::cout << "Loaded game.cfg from " << pathA << "\n";
@@ -406,7 +412,7 @@ HRESULT CALLBACK OnD3D11ResizedSwapChain(ID3D11Device* pd3dDevice, IDXGISwapChai
 	g_cameraParams.aspect = pBackBufferSurfaceDesc->Width / (FLOAT)pBackBufferSurfaceDesc->Height;
 	g_cameraParams.fovy = 0.785398f;
 	g_cameraParams.nearPlane = 1.f;
-	g_cameraParams.farPlane = 5000.f;
+	g_cameraParams.farPlane = 50000.f;
 
 	g_camera.SetProjParams(g_cameraParams.fovy, g_cameraParams.aspect, g_cameraParams.nearPlane, g_cameraParams.farPlane);
 	g_camera.SetEnablePositionMovement(false);
@@ -676,7 +682,7 @@ void CALLBACK OnD3D11FrameRender(ID3D11Device* pd3dDevice, ID3D11DeviceContext* 
 	}
 
 	ID3D11RenderTargetView* pRTV = DXUTGetD3D11RenderTargetView();
-	float clearColor[4] = { 0.0f, 0.0f, 0.0f, 1.0f };		// background color 
+	float clearColor[4] = { 0.0f, 0.3f, 0.9f, 1.0f };		// background color 
 	pd3dImmediateContext->ClearRenderTargetView(pRTV, clearColor);
 
 	if (g_gameEffect.effect == NULL) {
