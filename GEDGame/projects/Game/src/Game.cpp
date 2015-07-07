@@ -7,10 +7,6 @@
 #include <DirectXMath.h>
 #include <vector>
 #include <iostream>
-#include <fstream>
-#include <sstream>
-#include <string>
-#include <cstdint>
 #include <map>
 #include <list>
 
@@ -23,12 +19,9 @@
 #include "SDKmisc.h"
 #include "ConfigParser.h"
 #include "Mesh.h"
-#include "Utils.h"
 #include "d3dx11effect.h"
 #include "Terrain.h"
 #include "GameEffect.h"
-
-#include "debug.h"
 
 
 // Help macros
@@ -63,7 +56,7 @@ CFirstPersonCamera                      g_camera;               // A first perso
 // User Interface
 CDXUTDialogResourceManager              g_dialogResourceManager; // manager for shared resources of dialogs
 CD3DSettingsDlg                         g_settingsDlg;          // Device settings dialog
-CDXUTTextHelper*                        g_txtHelper = NULL;
+CDXUTTextHelper*                        g_txtHelper = nullptr;
 CDXUTDialog                             g_hud;                  // dialog for standard controls
 CDXUTDialog                             g_sampleUI;             // dialog for sample specific controls
 
@@ -91,6 +84,8 @@ float									g_SpawnTimer = 0.0f;
 SpriteRenderer*							g_SpriteRenderer;
 std::vector<SpriteVertex>				spritesVector;
 
+float									gatlingTime = 0.0f;
+float									plasmaTime = 0.0f;
 //--------------------------------------------------------------------------------------
 // UI control IDs
 //--------------------------------------------------------------------------------------
@@ -124,7 +119,7 @@ void CALLBACK OnD3D11FrameRender(ID3D11Device* pd3dDevice, ID3D11DeviceContext* 
 void InitApp();
 void RenderText();
 void DeinitApp();
-
+boolean SpriteSort(const SpriteVertex &s1, const SpriteVertex &s2);
 void ReleaseShader();
 HRESULT ReloadShader(ID3D11Device* pd3dDevice);
 
@@ -176,7 +171,7 @@ int _tmain(int argc, _TCHAR* argv[])
 	//DXUTSetIsInGammaCorrectMode(false);
 
 	InitApp();
-	DXUTInit(true, true, NULL); // Parse the command line, show msgboxes on error, no extra command line params
+	DXUTInit(true, true, nullptr); // Parse the command line, show msgboxes on error, no extra command line params
 	DXUTSetCursorSettings(true, true);
 	DXUTCreateWindow(L"Ultra Game lel"); // You may change the title
 
@@ -223,15 +218,8 @@ void InitApp()
 		//		rand() / (float)(RAND_MAX) * 500 + 100,
 		//		rand() / (float)(RAND_MAX) * 1000 - 500.0f), 
 		//		rand() / (float)(RAND_MAX) * 50, 
-		//		int(rand() / (float)(RAND_MAX) * 2)));
-
-		
+		//		int(rand() / (float)(RAND_MAX) * 2)));	
 	//}
-
-	spritesVector.push_back(SpriteVertex(DirectX::XMFLOAT3(
-		cfgParser->projectileData["Gatling"]->posX,
-		cfgParser->projectileData["Gatling"]->posY,
-		cfgParser->projectileData["Gatling"]->posZ), cfgParser->projectileData["Gatling"]->radius, 0));
 
 	// Intialize the user interface
 
@@ -516,6 +504,40 @@ void CALLBACK OnKeyboard(UINT nChar, bool bKeyDown, bool bAltDown, void* pUserCo
 		canMove = !canMove;
 	}
 
+	if (nChar == 'G')			// Fire Gatling Gun
+	{
+		if (gatlingTime > cfgParser->projectileData["Gatling"]->firerate)
+		{
+			const XMFLOAT3 tmpPos(cfgParser->projectileData["Gatling"]->posX, cfgParser->projectileData["Gatling"]->posY, cfgParser->projectileData["Gatling"]->posZ);
+			 
+			XMFLOAT3 newtmpPos;
+			XMFLOAT3 tmpVel;
+			XMStoreFloat3(&tmpVel, g_camera.GetWorldAhead());
+			XMStoreFloat3(&tmpVel, XMLoadFloat3(&tmpVel)  * cfgParser->projectileData["Gatling"]->speed);
+			XMStoreFloat3(&newtmpPos, XMVector3Transform(XMLoadFloat3(&tmpPos), g_camera.GetWorldMatrix()));
+			spritesVector.push_back(SpriteVertex(newtmpPos, tmpVel, cfgParser->projectileData["Gatling"]->radius, 0, cfgParser->projectileData["Gatling"]->gravity));
+			std::cout << "Fire Gatling \n";
+			gatlingTime = 0.0f;
+		}
+	}
+
+	if (nChar == 'P')			// Fire Plasma Gun
+	{
+		if (plasmaTime > cfgParser->projectileData["Plasma"]->firerate)
+		{
+			const XMFLOAT3 tmpPos(cfgParser->projectileData["Plasma"]->posX, cfgParser->projectileData["Plasma"]->posY, cfgParser->projectileData["Plasma"]->posZ);
+			
+			XMFLOAT3 newtmpPos;
+			XMFLOAT3 tmpVel;
+			XMStoreFloat3(&tmpVel, g_camera.GetWorldAhead());
+			XMStoreFloat3(&tmpVel, XMLoadFloat3(&tmpVel)  * cfgParser->projectileData["Gatling"]->speed);
+			XMStoreFloat3(&newtmpPos, XMVector3Transform(XMLoadFloat3(&tmpPos), g_camera.GetWorldMatrix()));
+			spritesVector.push_back(SpriteVertex(newtmpPos, tmpVel, cfgParser->projectileData["Plasma"]->radius, 1, cfgParser->projectileData["Plasma"]->gravity));
+			std::cout << "Fire Plasma \n";
+			plasmaTime = 0.0f;
+		}
+	}
+
 	g_camera.SetEnablePositionMovement(canMove);
 	UNREFERENCED_PARAMETER(nChar);
 	UNREFERENCED_PARAMETER(bKeyDown);
@@ -651,6 +673,47 @@ void CALLBACK OnFrameMove(double fTime, float fElapsedTime, void* pUserContext)
 		//std::cout << "Number of enemies: " << g_enemyInstances.size() << std::endl;
 	}
 
+	// Projectile Handling
+	plasmaTime += fElapsedTime;
+	gatlingTime += fElapsedTime;
+
+	for (int i = 0; i < spritesVector.size(); i++)
+	{
+		const XMFLOAT3 newGrav(0.0f, spritesVector[i].gravity * fElapsedTime, 0.0f);
+		XMVECTOR gravity = XMLoadFloat3(&newGrav);
+		const XMFLOAT3 vel(spritesVector[i].velocity);
+		XMVECTOR velo = XMLoadFloat3(&vel);
+		XMFLOAT3 NewVel(spritesVector[i].velocity);
+		XMStoreFloat3(&NewVel, velo + gravity);
+		spritesVector[i].velocity = NewVel;
+		XMVECTOR newVelVec = XMLoadFloat3(&NewVel);
+
+		const XMFLOAT3 oldPos3 = spritesVector[i].position;
+		XMVECTOR oldPos = XMLoadFloat3(&oldPos3);
+		const XMFLOAT3 deltaTime(fElapsedTime, fElapsedTime, fElapsedTime);
+		XMVECTOR deltaVec = XMLoadFloat3(&deltaTime);
+		XMVECTOR newPos = oldPos + newVelVec * deltaVec;
+		XMStoreFloat3(&spritesVector[i].position, newPos);
+		
+		XMVECTOR distance = newPos - g_camera.GetEyePt();
+		float distancef = 0.0f;
+		XMStoreFloat(&distancef, XMVector3Length(distance));
+		spritesVector[i].distanceToCam = distancef;
+
+		if (distancef > 10000.0f)
+		{
+			spritesVector.erase(spritesVector.begin() + i);
+			i--;
+			std::cout << "Number of projectiles " << spritesVector.size() << "\n";
+		}
+		
+	}
+
+	// sort Projectiles
+
+	std::sort(spritesVector.begin(), spritesVector.end(), SpriteSort);
+
+
 	// Check if enemies reached target location
 	//for (auto iter = g_enemyInstances.begin(); iter != g_enemyInstances.end();) {
 	//	iter++;
@@ -693,7 +756,7 @@ void CALLBACK OnD3D11FrameRender(ID3D11Device* pd3dDevice, ID3D11DeviceContext* 
 	float clearColor[4] = { 0.0f, 0.3f, 0.9f, 1.0f };		// background color 
 	pd3dImmediateContext->ClearRenderTargetView(pRTV, clearColor);
 
-	if (g_gameEffect.effect == NULL) {
+	if (g_gameEffect.effect == nullptr) {
 		g_txtHelper->Begin();
 		g_txtHelper->SetInsertionPos(5, 5);
 		g_txtHelper->SetForegroundColor(XMVectorSet(1.0f, 1.0f, 0.0f, 1.0f));
@@ -790,7 +853,11 @@ void CALLBACK OnD3D11FrameRender(ID3D11Device* pd3dDevice, ID3D11DeviceContext* 
 		g_Meshes[cfgParser->objectsEnemyData[(*it)->typeName]->transform.name]->render(pd3dImmediateContext, g_gameEffect.meshPass1, g_gameEffect.diffuseEV, g_gameEffect.specularEV, g_gameEffect.glowEV);
 	}
 
-	g_SpriteRenderer->renderSprites(pd3dImmediateContext, spritesVector, g_camera);
+	if (spritesVector.size() > 0)
+	{
+		g_SpriteRenderer->renderSprites(pd3dImmediateContext, spritesVector, g_camera);
+	}
+	
 
 	DXUT_BeginPerfEvent(DXUT_PERFEVENTCOLOR, L"HUD / Stats");
 	V(g_hud.OnRender(fElapsedTime));
@@ -819,4 +886,9 @@ void DeinitApp()
 	{
 		SAFE_DELETE((*it));
 	}
+}
+
+boolean SpriteSort(const SpriteVertex &s1, const SpriteVertex &s2)
+{
+	return (s1.distanceToCam < s2.distanceToCam);
 }

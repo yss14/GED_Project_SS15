@@ -69,4 +69,7 @@
   <ItemGroup>
     <None Include="game.cfg" />
   </ItemGroup>
+  <ItemGroup>
+    <Text Include="readme.txt" />
+  </ItemGroup>
 </Project>

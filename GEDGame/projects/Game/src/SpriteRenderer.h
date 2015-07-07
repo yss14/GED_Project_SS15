@@ -13,19 +13,19 @@
 #define SAFE_GET_MATRIX(effect, name, var)    {assert(effect!=NULL); var = effect->GetVariableByName( name )->AsMatrix();			assert(var->IsValid());}
 #define SAFE_GET_VECTOR(effect, name, var)    {assert(effect!=NULL); var = effect->GetVariableByName( name )->AsVector();			assert(var->IsValid());}
 #define SAFE_GET_RESOURCE(effect, name, var)  {assert(effect!=NULL); var = effect->GetVariableByName( name )->AsShaderResource();	assert(var->IsValid());}
+#include <list>
 
 struct SpriteVertex
 {
-	DirectX::XMFLOAT3 position;     // world-space position (sprite center)
-	float radius;                   // world-space radius (= half side length of the sprite quad)
-	int textureIndex;               // which texture to use (out of SpriteRenderer::m_spriteSRV)
-
-	SpriteVertex(DirectX::XMFLOAT3 pos, float r, int ti) : position(pos), radius(r), textureIndex(ti){
-
+	DirectX::XMFLOAT3		position;     // world-space position (sprite center)
+	DirectX::XMFLOAT3		velocity;
+	float					radius;       // world-space radius (= half side length of the sprite quad)
+	int						textureIndex; // which texture to use (out of SpriteRenderer::m_spriteSRV)
+	float					gravity;
+	float					distanceToCam;
+	SpriteVertex(DirectX::XMFLOAT3 pos, DirectX::XMFLOAT3 vel, float r, int ti, float grav) : position(pos), radius(r), textureIndex(ti), velocity(vel), gravity(grav){
+		distanceToCam = 0.0f;
 	}
-
-
-
 };
 
 class SpriteRenderer

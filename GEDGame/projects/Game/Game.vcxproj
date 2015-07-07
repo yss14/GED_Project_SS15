@@ -182,6 +182,9 @@ exit 1</Command>
       <Project>{df460eab-570d-4b50-9089-2e2fc801bf38}</Project>
     </ProjectReference>
   </ItemGroup>
+  <ItemGroup>
+    <Text Include="readme.txt" />
+  </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
   </ImportGroup>
