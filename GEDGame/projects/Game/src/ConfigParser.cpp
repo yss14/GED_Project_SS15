@@ -4,6 +4,7 @@
 ConfigParser::ConfigParser(){
 	objectsData;
 	objectsEnemyData;
+	projectileData;
 }
 
 
@@ -17,6 +18,11 @@ ConfigParser::~ConfigParser(){
 	}
 
 	for (auto iterator = objectsEnemyData.begin(); iterator != objectsEnemyData.end(); iterator++) 
+	{
+		delete iterator->second;
+	}
+
+	for (auto iterator = projectileData.begin(); iterator != projectileData.end(); iterator++)
 	{
 		delete iterator->second;
 	}
@@ -103,7 +109,23 @@ void ConfigParser::load(std::string filepath){
 				sstr >> this->spawnInteravall;
 				ifs >> spawnMinHeight;
 				ifs >> spawMaxHeight;
-			}else{
+			}
+			else if (firstWord.compare("Gatling") || firstWord.compare("Plasma"))
+			{
+				ProjectileData* tmpData = new ProjectileData();
+				tmpData->textureName = readValue;
+				ifs >> tmpData->radius;
+				ifs >> tmpData->posX;
+				ifs >> tmpData->posY;
+				ifs >> tmpData->posZ;
+				ifs >> tmpData->speed;
+				ifs >> tmpData->firerate;
+				ifs >> tmpData->damage;
+				ifs >> tmpData->gravity;
+				
+				projectileData[firstWord] = tmpData;
+			}
+			else{
 				std::cout << "Can't read property >" << firstWord << "< from file " << filepath;
 			}
 		}

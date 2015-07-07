@@ -204,26 +204,34 @@ void InitApp()
 	size_t size;
 	wcstombs_s(&size, pathA, path, MAX_PATH);
 
-	g_Meshes;
-	std::vector<wstring> sprites;
-	sprites.push_back(Utils::buildRessourcePath("parTrailGatlingDiffuse.DDS"));
-	sprites.push_back(Utils::buildRessourcePath("parTrailPlasmaDiffuse.DDS"));
-
-	g_SpriteRenderer = new SpriteRenderer(sprites);
-	srand(time(0));
-	for (int i = 0; i < 500; i++)
-	{
-		spritesVector.push_back(SpriteVertex(
-			DirectX::XMFLOAT3(
-				rand() / (float)(RAND_MAX) * 1000 - 500.0f, 
-				rand() / (float)(RAND_MAX) * 500 + 100,
-				rand() / (float)(RAND_MAX) * 1000 - 500.0f), 
-				rand() / (float)(RAND_MAX) * 50, 
-				int(rand() / (float)(RAND_MAX) * 2)));
-	}
 	cfgParser = new ConfigParser();
 	cfgParser->load(pathA);
 	std::cout << "Loaded game.cfg from " << pathA << "\n";
+
+	g_Meshes;
+	std::vector<wstring> sprites;
+	sprites.push_back(Utils::buildRessourcePath(cfgParser->projectileData["Gatling"]->textureName));
+	sprites.push_back(Utils::buildRessourcePath(cfgParser->projectileData["Plasma"]->textureName));
+
+	g_SpriteRenderer = new SpriteRenderer(sprites);
+	srand(time(0));
+	//for (int i = 0; i < 500; i++)
+	//{
+		//spritesVector.push_back(SpriteVertex(
+		//	DirectX::XMFLOAT3(
+		//		rand() / (float)(RAND_MAX) * 1000 - 500.0f, 
+		//		rand() / (float)(RAND_MAX) * 500 + 100,
+		//		rand() / (float)(RAND_MAX) * 1000 - 500.0f), 
+		//		rand() / (float)(RAND_MAX) * 50, 
+		//		int(rand() / (float)(RAND_MAX) * 2)));
+
+		
+	//}
+
+	spritesVector.push_back(SpriteVertex(DirectX::XMFLOAT3(
+		cfgParser->projectileData["Gatling"]->posX,
+		cfgParser->projectileData["Gatling"]->posY,
+		cfgParser->projectileData["Gatling"]->posZ), cfgParser->projectileData["Gatling"]->radius, 0));
 
 	// Intialize the user interface
 

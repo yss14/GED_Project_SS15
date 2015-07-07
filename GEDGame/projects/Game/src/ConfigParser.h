@@ -33,6 +33,20 @@ struct TransformData
 
 };
 
+struct ProjectileData
+{
+	std::string textureName;
+	float speed = 0.0f;
+	float firerate = 0.0f;
+	float damage = 0.0f;
+	float gravity = 0.0f;
+	float radius = 0.0f;
+
+	float posX = 0;
+	float posY = 0;
+	float posZ = 0;
+};
+
 struct EnemyData
 {
 	int hitpoints;
@@ -64,9 +78,10 @@ public:
 	std::string getTerrainTexturePath();
 	std::string getTerrainNormalPath();
 	MeshFiles* getCockpitMeshFiles();
-	std::map<std::string, MeshFiles*> meshPathes;
-	std::vector<TransformData*>		objectsData;
-	std::map<std::string, EnemyData*>objectsEnemyData;
+	std::map<std::string, MeshFiles*>		meshPathes;
+	std::vector<TransformData*>				objectsData;
+	std::map<std::string, EnemyData*>		objectsEnemyData;
+	std::map<std::string, ProjectileData*>	projectileData;
 
 private:
 	std::string terrainHeightPath, terrainColorPath, terrainNormalPath;
