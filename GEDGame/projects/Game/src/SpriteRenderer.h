@@ -12,6 +12,7 @@
 #define SAFE_GET_TECHNIQUE(effect, name, var) {assert(effect!=NULL); var = effect->GetTechniqueByName( name );						assert(var->IsValid());}
 #define SAFE_GET_MATRIX(effect, name, var)    {assert(effect!=NULL); var = effect->GetVariableByName( name )->AsMatrix();			assert(var->IsValid());}
 #define SAFE_GET_VECTOR(effect, name, var)    {assert(effect!=NULL); var = effect->GetVariableByName( name )->AsVector();			assert(var->IsValid());}
+#define SAFE_GET_RESOURCE(effect, name, var)  {assert(effect!=NULL); var = effect->GetVariableByName( name )->AsShaderResource();	assert(var->IsValid());}
 
 struct SpriteVertex
 {
@@ -62,11 +63,13 @@ private:
 	ID3DX11EffectPass*                      pass0;
 	// Sprite textures and corresponding shader resource views.
 	//std::vector<ID3D11Texture2D*>          m_spriteTex;       // You may not need this if you use CreateDDSTExtureFromFile!
-	std::vector<ID3D11ShaderResourceView*> m_spriteSRV;
+	std::vector<ID3D11ShaderResourceView*>				m_spriteSRV;
+	std::vector<ID3DX11EffectShaderResourceVariable*>	m_spriteTexVar;
 
 	// Maximum number of allowed sprites, i.e. size of the vertex buffer.
 	size_t m_spriteCountMax;
 	// Vertex buffer for sprite vertices, and corresponding input layout.
 	ID3D11Buffer* m_pVertexBuffer;
 	ID3D11InputLayout* m_pInputLayout;
+
 };

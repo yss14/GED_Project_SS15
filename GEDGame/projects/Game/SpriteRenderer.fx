@@ -1,27 +1,37 @@
-struct SpriteVertex{
+
+
+struct SpriteVertex
+{
 	float3 Pos				: POSITION;
 	float Radius			: RADIUS;
 	uint TexIndex			: TEXTUREINDEX;
 };
 
-struct PSVertex{
-	float4 Position :	SV_Position;
-	float2 t		:	TEXCOORD;
+struct PSVertex
+{
+	float4	Position		:	SV_Position;
+	float2	t				:	TEXCOORD;
+	uint	TexIndex		:	TEXTUREINDEX;
 };
 
+// INDEX 0: Gatling
+// INDEX 1: Plasma
+// siehe Game.cpp
+Texture2D		g_Tex[2];
 
 matrix g_ViewProjection;
 float3 camRight, camUp;
 
 // Rasterizer states
-RasterizerState rsCullNone {
+RasterizerState rsCullNone 
+{
 	CullMode = None;
 };
 
 DepthStencilState EnableDepth
 {
 	DepthEnable = TRUE;
-	DepthWriteMask = ALL;
+	DepthWriteMask = ZERO;
 	DepthFunc = LESS_EQUAL;
 };
 
@@ -31,59 +41,72 @@ BlendState NoBlending
 	BlendEnable[0] = FALSE;
 };
 
+BlendState AlphaBlending
+{
+	BlendEnable[0] = TRUE;
+	SrcBlend[0] = SRC_ALPHA;
+	SrcBlendAlpha[0] = ONE;
+	DestBlend[0] = INV_SRC_ALPHA;
+	DestBlendAlpha[0] = INV_SRC_ALPHA;
+};
+
+SamplerState samLinearClamp
+{
+	Filter = MIN_MAG_MIP_LINEAR;
+	AddressU = Clamp;
+	AddressV = Clamp;
+};
+
 
 // ShaderCode
 void DummyVS(in SpriteVertex input, out SpriteVertex output) {
-	output = (SpriteVertex)0;
-	//output.Pos = mul(input.Pos, g_ViewProjection);
-	output.Pos = input.Pos;
+	output = input;
 }
 
-/*void DummyVS(SpriteVertex input, out float4 pos : SV_Position) {
-	pos = float4(0, 0, 0.5, 1);
-	pos = mul(pos, g_ViewProjection);
-}*/
 
-float4 DummyPS(float4 pos : SV_Position) : SV_Target0{
-	return float4(1, 1, 0, 1);
+float4 DummyPS(in PSVertex input) : SV_Target0
+{
+	switch (input.TexIndex) // Index for g_Tex has to be a Constant!!!!!!!!11!!!!!!!11111
+	{
+		case 0: // Texture 0
+			return g_Tex[0].Sample(samLinearClamp, input.t); 
+		case 1:
+			return g_Tex[1].Sample(samLinearClamp, input.t);
+	}
+	return float4(1, 0, 1, 1);
 }
 
 /*float4 DummyPS(PSVertex pos) : SV_Target0{
 	return float4(1.0f, 1.0f, 0.0f, 1.0f);
 }*/
 
-[maxvertexcount(6)]
+[maxvertexcount(4)]
 void SpriteGS(point SpriteVertex vertex[1], inout TriangleStream<PSVertex> stream){
 
 	float radius = vertex[0].Radius;
-	PSVertex v1,v2,v3,v4;
-
-	//Links Unten
-	v1.Position = mul(float4(vertex[0].Pos - radius * camRight - radius * camUp, 1.0f), g_ViewProjection);
-	v1.t = float2(0.0f, 0.0f);
-
-	//Rechts Unten
-	v2.Position = mul(float4(vertex[0].Pos + radius * camRight - radius * camUp, 1.0f), g_ViewProjection);
-	v2.t = float2(0.0f, 1.0f);
+	PSVertex v = (PSVertex)0;
+	v.TexIndex = vertex[0].TexIndex;
 
 	//Links Oben
-	v3.Position = mul(float4(vertex[0].Pos - radius * camRight + radius * camUp, 1.0f), g_ViewProjection);
-	v3.t = float2(1.0f, 0.0f);
+	v.Position = mul(float4(vertex[0].Pos - radius * camRight + radius * camUp, 1.0f), g_ViewProjection);
+	v.t = float2(0.0f, 1.0f);
+	stream.Append(v);
 
 	//Rechts Oben
-	v4.Position = mul(float4(vertex[0].Pos + radius * camRight + radius * camUp, 1.0f), g_ViewProjection);
-	v4.t = float2(1.0f, 1.0f);
+	v.Position = mul(float4(vertex[0].Pos + radius * camRight + radius * camUp, 1.0f), g_ViewProjection);
+	v.t = float2(1.0f, 1.0f);
+	stream.Append(v);
 
-	stream.Append(v3);
-	stream.Append(v4);
-	stream.Append(v1);
+	//Links Unten
+	v.Position = mul(float4(vertex[0].Pos - radius * camRight - radius * camUp, 1.0f), g_ViewProjection);
+	v.t = float2(0.0f, 0.0f);
+	stream.Append(v);
 
-	stream.RestartStrip();
+	//Rechts Unten
+	v.Position = mul(float4(vertex[0].Pos + radius * camRight - radius * camUp, 1.0f), g_ViewProjection);
+	v.t = float2(1.0f, 0.0f);
+	stream.Append(v);
 
-	stream.Append(v1);
-	stream.Append(v4);
-	stream.Append(v2);
-	
 }
 
 //--------------------------------------------------------------------------------------
@@ -99,6 +122,6 @@ technique11 Render
 
 		SetRasterizerState(rsCullNone);
 		SetDepthStencilState(EnableDepth, 0);
-		SetBlendState(NoBlending, float4(0.0f, 0.0f, 0.0f, 0.0f), 0xFFFFFFFF);
+		SetBlendState(AlphaBlending, float4(0.0f, 0.0f, 0.0f, 0.0f), 0xFFFFFFFF);
 	}
 }

@@ -2,11 +2,16 @@
 #include "DXUT.h"
 #include "d3dx11effect.h"
 #include "SDKmisc.h"
+#include "DXUTmisc.h"
 
 #include <iostream>
 #include <fstream>
 #include <sstream>
 #include <vector>
+#include <algorithm>
+
+#include <DDSTextureLoader.h>
+#include "DirectXTex.h"
 
 SpriteRenderer::SpriteRenderer(const std::vector<std::wstring>& textureFilenames){
 	m_textureFilenames = textureFilenames;
@@ -49,8 +54,8 @@ void SpriteRenderer::releaseShader(){
 	SAFE_RELEASE(m_pEffect);
 }
 
-HRESULT SpriteRenderer::create(ID3D11Device* pdevice){
-
+HRESULT SpriteRenderer::create(ID3D11Device* pdevice)
+{
 	HRESULT hr;
 
 	D3D11_BUFFER_DESC bufferDesc;
@@ -82,11 +87,34 @@ HRESULT SpriteRenderer::create(ID3D11Device* pdevice){
 	V_RETURN(pdevice->CreateInputLayout(layout, numElements, pd.pIAInputSignature,
 		pd.IAInputSignatureSize, &m_pInputLayout));
 
+	// Load the Textures data
+	m_spriteSRV.resize(m_textureFilenames.size());
+	m_spriteTexVar.resize(m_textureFilenames.size());
+	int index = 0;
+	for (std::wstring &tex : m_textureFilenames)
+	{
+		V(DirectX::CreateDDSTextureFromFile(pdevice, tex.c_str(), nullptr, &m_spriteSRV[index]));
+		m_spriteTexVar[index] = m_pEffect->GetVariableByName("g_Tex")->GetElement(index)->AsShaderResource();
+		assert(m_spriteTexVar[index]->IsValid());
+		index++;
+	}
+
+
 	return hr;
 }
 
-HRESULT SpriteRenderer::renderSprites(ID3D11DeviceContext* context, const std::vector<SpriteVertex>& sprites, const CFirstPersonCamera& camera){
+HRESULT SpriteRenderer::renderSprites(ID3D11DeviceContext* context, const std::vector<SpriteVertex>& sprites, const CFirstPersonCamera& camera)
+{
 	HRESULT hr;
+
+	//// Sort the Sprites along CameraZ
+	//const DirectX::XMVECTOR camZ = camera.GetWorldAhead();
+	//std::sort(sprites.begin(), sprites.end(), [](const SpriteVertex & a, const SpriteVertex & b) -> bool
+	//{
+	//	DirectX::XMVECTOR a1 = DirectX::XMVector3Dot(XMLoadFloat3(&(a.position)), &camZ);
+	//	DirectX::XMVECTOR b1 = DirectX::XMVector3Dot(XMLoadFloat3(&(b.position)), camZ);
+	//	return ;
+	//});
 
 	D3D11_BOX box;
 	box.left = 0; box.right = sprites.size() * sizeof(SpriteVertex);
@@ -105,6 +133,13 @@ HRESULT SpriteRenderer::renderSprites(ID3D11DeviceContext* context, const std::v
 	V_RETURN(g_camRight->SetFloatVector((float*)&camera.GetWorldRight()));
 	V_RETURN(g_camUp->SetFloatVector((float*)&camera.GetWorldUp()));
 
+	int index = 0;
+	for (ID3DX11EffectShaderResourceVariable *var : m_spriteTexVar)
+	{
+		V(var->SetResource(m_spriteSRV[index]));
+		index++;
+	}
+
 	V_RETURN(pass0->Apply(0, context));
 	context->Draw(sprites.size(), 0);
 
@@ -114,7 +149,10 @@ HRESULT SpriteRenderer::renderSprites(ID3D11DeviceContext* context, const std::v
 void SpriteRenderer::destroy(){
 	for (int i = 0; i < m_spriteSRV.size(); i++){
 		SAFE_RELEASE(m_spriteSRV[i]);
+		SAFE_RELEASE(m_spriteTexVar[i]);
 	}
+	m_spriteSRV.clear();
+	m_spriteTexVar.clear();
 
 	SAFE_RELEASE(m_pEffect);
 	SAFE_RELEASE(m_pVertexBuffer);

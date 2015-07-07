@@ -75,7 +75,8 @@ struct T3dVertexPSIn
 	float3 PosWorld : POSITION; //Position in world space
 	float3 NorWorld : NORMAL;	//Normal in world space
 	float3 TanWorld : TANGENT;	//Tangent in world space (not used in Ass. 5)
-};
+};
+
 
 //--------------------------------------------------------------------------------------
 // Samplers
@@ -136,7 +137,6 @@ BlendState NoBlending
     BlendEnable[0] = FALSE;
 };
 
-
 //--------------------------------------------------------------------------------------
 // Shaders
 //--------------------------------------------------------------------------------------
@@ -160,24 +160,24 @@ PosTexLi SimpleVS(PosNorTex Input) {
 PosTex TerrainVS(uint VertexID : SV_VertexID){
 	PosTex output = (PosTex)0;
 
-	int x = VertexID % g_TerrainRes;
-	int z = VertexID / g_TerrainRes;
+	float x = VertexID % g_TerrainRes;
+	float z = VertexID / g_TerrainRes;
 
 	//Calc
-	output.Pos.x = x;
-	output.Pos.z = z;
+	output.Pos.x = x / g_TerrainRes;
+	output.Pos.z = z / g_TerrainRes;
 	output.Pos.y = g_HeightMap[VertexID];
 
 	//Translate
-	output.Pos.x = output.Pos.x - g_TerrainRes / 2;
-	output.Pos.z = output.Pos.z - g_TerrainRes / 2;
+	output.Pos.x = output.Pos.x - 0.5;
+	output.Pos.z = output.Pos.z - 0.5;
 	output.Pos.y = output.Pos.y - 0.5;
 
 	//For matrix operations
 	output.Pos.w = 1;
 
-	output.Tex.x = (float)x / (g_TerrainRes - 1.0);
-	output.Tex.y = (float)z / (g_TerrainRes - 1.0);
+	output.Tex.x = x / (g_TerrainRes - 1.0);
+	output.Tex.y = z / (g_TerrainRes - 1.0);
 
 	// Transform position from object space to homogenious clip space
 	output.Pos = mul(output.Pos, g_WorldViewProjection);
