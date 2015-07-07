@@ -23,7 +23,8 @@ struct SpriteVertex
 	int						textureIndex; // which texture to use (out of SpriteRenderer::m_spriteSRV)
 	float					gravity;
 	float					distanceToCam;
-	SpriteVertex(DirectX::XMFLOAT3 pos, DirectX::XMFLOAT3 vel, float r, int ti, float grav) : position(pos), radius(r), textureIndex(ti), velocity(vel), gravity(grav){
+	float					damage;
+	SpriteVertex(DirectX::XMFLOAT3 pos, DirectX::XMFLOAT3 vel, float r, int ti, float grav, float dam) : damage(dam), position(pos), radius(r), textureIndex(ti), velocity(vel), gravity(grav){
 		distanceToCam = 0.0f;
 	}
 };

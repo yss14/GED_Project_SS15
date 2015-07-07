@@ -509,13 +509,13 @@ void CALLBACK OnKeyboard(UINT nChar, bool bKeyDown, bool bAltDown, void* pUserCo
 		if (gatlingTime > cfgParser->projectileData["Gatling"]->firerate)
 		{
 			const XMFLOAT3 tmpPos(cfgParser->projectileData["Gatling"]->posX, cfgParser->projectileData["Gatling"]->posY, cfgParser->projectileData["Gatling"]->posZ);
-			 
+
 			XMFLOAT3 newtmpPos;
 			XMFLOAT3 tmpVel;
 			XMStoreFloat3(&tmpVel, g_camera.GetWorldAhead());
 			XMStoreFloat3(&tmpVel, XMLoadFloat3(&tmpVel)  * cfgParser->projectileData["Gatling"]->speed);
 			XMStoreFloat3(&newtmpPos, XMVector3Transform(XMLoadFloat3(&tmpPos), g_camera.GetWorldMatrix()));
-			spritesVector.push_back(SpriteVertex(newtmpPos, tmpVel, cfgParser->projectileData["Gatling"]->radius, 0, cfgParser->projectileData["Gatling"]->gravity));
+			spritesVector.push_back(SpriteVertex(newtmpPos, tmpVel, cfgParser->projectileData["Gatling"]->radius, 0, cfgParser->projectileData["Gatling"]->gravity, cfgParser->projectileData["Gatling"]->damage));
 			std::cout << "Fire Gatling \n";
 			gatlingTime = 0.0f;
 		}
@@ -532,7 +532,7 @@ void CALLBACK OnKeyboard(UINT nChar, bool bKeyDown, bool bAltDown, void* pUserCo
 			XMStoreFloat3(&tmpVel, g_camera.GetWorldAhead());
 			XMStoreFloat3(&tmpVel, XMLoadFloat3(&tmpVel)  * cfgParser->projectileData["Gatling"]->speed);
 			XMStoreFloat3(&newtmpPos, XMVector3Transform(XMLoadFloat3(&tmpPos), g_camera.GetWorldMatrix()));
-			spritesVector.push_back(SpriteVertex(newtmpPos, tmpVel, cfgParser->projectileData["Plasma"]->radius, 1, cfgParser->projectileData["Plasma"]->gravity));
+			spritesVector.push_back(SpriteVertex(newtmpPos, tmpVel, cfgParser->projectileData["Plasma"]->radius, 1, cfgParser->projectileData["Plasma"]->gravity, cfgParser->projectileData["Plasma"]->damage));
 			std::cout << "Fire Plasma \n";
 			plasmaTime = 0.0f;
 		}
@@ -588,7 +588,7 @@ void CALLBACK OnFrameMove(double fTime, float fElapsedTime, void* pUserContext)
 		float distance = 0.0f;
 		XMStoreFloat(&distance, tmp);
 
-		if (distance < 30)// remove enemy
+		if (distance < 2.0f)// remove enemy
 		{		
 			auto itrm = iter;
 			iter++;
@@ -637,8 +637,8 @@ void CALLBACK OnFrameMove(double fTime, float fElapsedTime, void* pUserContext)
 
 		float height = cfgParser->getMinSpawn() + float(rand()) / float(RAND_MAX) * (cfgParser->getMaxSpawn() - cfgParser->getMinSpawn());
 
-		instance->s1 = XMFLOAT3(200 * cfgParser->getTerrainWidth() * std::cos(a), -1000 * height, 200 * cfgParser->getTerrainDepth() * std::sin(a));
-		instance->s2 = XMFLOAT3(5 * cfgParser->getTerrainWidth() * std::cos(a), (-1)*(g_terrain.getCenterHeight() + 0.5) * cfgParser->getTerrainHeight(), 5 * cfgParser->getTerrainDepth() * std::sin(a));
+		instance->s1 = XMFLOAT3(3 * cfgParser->getTerrainWidth() * std::cos(a), -1 * height, 3 * cfgParser->getTerrainDepth() * std::sin(a));
+		instance->s2 = XMFLOAT3(cfgParser->getTerrainWidth() * std::cos(a), -1 * (g_terrain.getCenterHeight() + 0.2f) * cfgParser->getTerrainHeight(),cfgParser->getTerrainDepth() * std::sin(a));
 
 		instance->position = instance->s1;
 		int randomizer = rand() % 5;
@@ -705,6 +705,41 @@ void CALLBACK OnFrameMove(double fTime, float fElapsedTime, void* pUserContext)
 			spritesVector.erase(spritesVector.begin() + i);
 			i--;
 			std::cout << "Number of projectiles " << spritesVector.size() << "\n";
+		} else
+		{
+			// check for colision with enemy
+			for (auto iter = g_enemyInstances.begin(); iter != g_enemyInstances.end();)
+			{
+				const XMFLOAT3 enemyPos3 = (*iter)->position;
+				XMVECTOR enemyPos = XMLoadFloat3(&enemyPos3);
+				XMVECTOR distance = enemyPos - newPos;
+				float distancec1c2;
+				XMStoreFloat(&distancec1c2, XMVector3Length(distance));
+
+				if (distancec1c2 < pow(cfgParser->objectsEnemyData[(*iter)->typeName]->size + spritesVector[i].radius, 2))
+				{
+					(*iter)->remainingHP -= spritesVector[i].damage;
+					// Remove projectile
+					spritesVector.erase(spritesVector.begin() + i);
+					i--;
+					std::cout << "Hit" << std::endl; 
+
+					if ((*iter)->remainingHP <= 0)
+					{
+						auto itrm = iter;
+						iter++;
+						g_enemyInstances.remove(*itrm);
+						std::cout << "Enemy died! \n";
+					} else
+					{
+						iter++;
+					}
+					break;
+				}else
+				{
+					iter++;
+				}
+			}
 		}
 		
 	}
@@ -822,7 +857,11 @@ void CALLBACK OnD3D11FrameRender(ID3D11Device* pd3dDevice, ID3D11DeviceContext* 
 		g_Meshes[cfgParser->objectsData[i]->name]->render(pd3dImmediateContext, g_gameEffect.meshPass1, g_gameEffect.diffuseEV, g_gameEffect.specularEV, g_gameEffect.glowEV);
 	}
 
-	for (auto it = g_enemyInstances.begin(); it != g_enemyInstances.end(); it++){
+	for (auto it = g_enemyInstances.begin(); it 
+		
+		
+		
+		!= g_enemyInstances.end(); it++){
 		// Mesh Rotation Matrices	
 		mRotX = XMMatrixRotationX(DEG2RAD(cfgParser->objectsEnemyData[(*it)->typeName]->transform.rotX));
 		mRotY = XMMatrixRotationY(DEG2RAD(cfgParser->objectsEnemyData[(*it)->typeName]->transform.rotY));
