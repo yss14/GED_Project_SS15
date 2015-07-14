@@ -588,7 +588,7 @@ void CALLBACK OnFrameMove(double fTime, float fElapsedTime, void* pUserContext)
 		float distance = 0.0f;
 		XMStoreFloat(&distance, tmp);
 
-		if (distance < 2.0f)// remove enemy
+		if (distance < 200.0f)// remove enemy
 		{		
 			auto itrm = iter;
 			iter++;
@@ -638,7 +638,8 @@ void CALLBACK OnFrameMove(double fTime, float fElapsedTime, void* pUserContext)
 		float height = cfgParser->getMinSpawn() + float(rand()) / float(RAND_MAX) * (cfgParser->getMaxSpawn() - cfgParser->getMinSpawn());
 
 		instance->s1 = XMFLOAT3(3 * cfgParser->getTerrainWidth() * std::cos(a), -1 * height, 3 * cfgParser->getTerrainDepth() * std::sin(a));
-		instance->s2 = XMFLOAT3(cfgParser->getTerrainWidth() * std::cos(a), -1 * (g_terrain.getCenterHeight() + 0.2f) * cfgParser->getTerrainHeight(),cfgParser->getTerrainDepth() * std::sin(a));
+		XMVECTOR s2Temp = g_camera.GetEyePt();
+		instance->s2 = XMFLOAT3(XMVectorGetX(s2Temp), XMVectorGetY(s2Temp)*(-1), XMVectorGetZ(s2Temp));//XMFLOAT3(cfgParser->getTerrainWidth() * std::cos(a), -1 * (g_terrain.getCenterHeight() + 0.2f) * cfgParser->getTerrainHeight(),cfgParser->getTerrainDepth() * std::sin(a));
 
 		instance->position = instance->s1;
 		int randomizer = rand() % 5;
@@ -712,13 +713,18 @@ void CALLBACK OnFrameMove(double fTime, float fElapsedTime, void* pUserContext)
 			{
 				const XMFLOAT3 enemyPos3 = (*iter)->position;
 				XMVECTOR enemyPos = XMLoadFloat3(&enemyPos3);
-				XMVECTOR distance = enemyPos - newPos;
+				XMVECTOR distancec2c1 = XMVectorSubtract(enemyPos,newPos);
 				float distancec1c2;
-				XMStoreFloat(&distancec1c2, XMVector3Length(distance));
-
-				if (distancec1c2 < pow(cfgParser->objectsEnemyData[(*iter)->typeName]->size + spritesVector[i].radius, 2))
+				XMStoreFloat(&distancec1c2, XMVector3Length(distancec2c1));
+				//std::cout << "DIstance: " << distancec1c2 << " RadialD: " << cfgParser->objectsEnemyData[(*iter)->typeName]->size + spritesVector[i].radius << std::endl;
+				//std::cout << enemyPos3.x << "|" << enemyPos3.y << "|" << enemyPos3.z << std::endl;
+				//std::cout << XMVectorGetX(newPos) << "|" << XMVectorGetY(newPos) << "|" << XMVectorGetZ(newPos) << std::endl;
+				
+				//cfgParser->objectsEnemyData[(*iter)->typeName]->size + spritesVector[i].radius
+				
+				if (distancec1c2 < 1000)
 				{
-					(*iter)->remainingHP -= spritesVector[i].damage;
+					(*iter)->remainingHP -= 100000.0f;//spritesVector[i].damage;
 					// Remove projectile
 					spritesVector.erase(spritesVector.begin() + i);
 					i--;
@@ -929,5 +935,5 @@ void DeinitApp()
 
 boolean SpriteSort(const SpriteVertex &s1, const SpriteVertex &s2)
 {
-	return (s1.distanceToCam < s2.distanceToCam);
+	return (s1.distanceToCam > s2.distanceToCam);
 }
