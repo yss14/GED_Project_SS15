@@ -2,16 +2,20 @@
 
 struct SpriteVertex
 {
-	float3 Pos				: POSITION;
-	float Radius			: RADIUS;
-	uint TexIndex			: TEXTUREINDEX;
+	float3 Pos				 : POSITION;
+	float  Radius			 : RADIUS;
+	uint   TexIndex			 : TEXTUREINDEX;
+	float  AnimationProgress : ANIMAION_PROGRESS;
+	float  OpacityFactor     : OPACITY_FACTOR;
 };
 
 struct PSVertex
 {
-	float4	Position		:	SV_Position;
-	float2	t				:	TEXCOORD;
-	uint	TexIndex		:	TEXTUREINDEX;
+	float4	Position		  :	SV_Position;
+	float2	t				  :	TEXCOORD;
+	uint	TexIndex		  :	TEXTUREINDEX;
+	float	AnimationProgress : ANIMAION_PROGRESS;
+	float	OpacityFactor	  : OPACITY_FACTOR;
 };
 
 // INDEX 0: Gatling
@@ -80,10 +84,10 @@ float4 DummyPS(in PSVertex input) : SV_Target0
 	{
 		case 0: // Texture 0
 			g_SpriteTex[0].GetDimensions(dims.x, dims.y, dims.z); //dims is written here!
-			return g_SpriteTex[0].Sample(samAnisotropic, float3(input.t, 0));//dims);
+			return g_SpriteTex[0].Sample(samAnisotropic, float3(input.t, input.AnimationProgress*dims.z))*float4(1, 1, 1, input.OpacityFactor);
 		case 1:
 			g_SpriteTex[1].GetDimensions(dims.x, dims.y, dims.z); //dims is written here!
-			return g_SpriteTex[1].Sample(samAnisotropic, float3(input.t, 0));// dims);
+			return g_SpriteTex[1].Sample(samAnisotropic, float3(input.t, input.AnimationProgress*dims.z))*float4(1, 1, 1, input.OpacityFactor);
 	}
 	return float4(1, 0, 1, 1);
 }
@@ -98,6 +102,8 @@ void SpriteGS(point SpriteVertex vertex[1], inout TriangleStream<PSVertex> strea
 	float radius = vertex[0].Radius;
 	PSVertex v = (PSVertex)0;
 	v.TexIndex = vertex[0].TexIndex;
+	v.AnimationProgress = vertex[0].AnimationProgress;
+	v.OpacityFactor = vertex[0].OpacityFactor;
 
 	//Links Oben
 	v.Position = mul(float4(vertex[0].Pos - radius * camRight + radius * camUp, 1.0f), g_ViewProjection);

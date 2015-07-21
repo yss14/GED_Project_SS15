@@ -24,8 +24,20 @@ struct SpriteVertex
 	float					gravity;
 	float					distanceToCam;
 	float					damage;
-	SpriteVertex(DirectX::XMFLOAT3 pos, DirectX::XMFLOAT3 vel, float r, int ti, float grav, float dam) : damage(dam), position(pos), radius(r), textureIndex(ti), velocity(vel), gravity(grav){
-		distanceToCam = 0.0f;
+	float					animationProgress;
+	float					opacityFactor;
+	SpriteVertex(DirectX::XMFLOAT3 pos, DirectX::XMFLOAT3 vel, float r, int ti, float grav, float dam) :
+		damage(dam),
+		position(pos),
+		radius(r),
+		textureIndex(ti),
+		velocity(vel),
+		gravity(grav),
+		distanceToCam(0),
+		animationProgress(0),
+		opacityFactor(1)
+	{
+
 	}
 };
 
