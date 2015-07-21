@@ -110,7 +110,7 @@ void ConfigParser::load(std::string filepath){
 				ifs >> spawnMinHeight;
 				ifs >> spawMaxHeight;
 			}
-			else if (firstWord.compare("Gatling") || firstWord.compare("Plasma"))
+			else if (firstWord.compare("Gatling") == 0 || firstWord.compare("Plasma") == 0)
 			{
 				ProjectileData* tmpData = new ProjectileData();
 				tmpData->textureName = readValue;
@@ -122,8 +122,19 @@ void ConfigParser::load(std::string filepath){
 				ifs >> tmpData->firerate;
 				ifs >> tmpData->damage;
 				ifs >> tmpData->gravity;
-				
+
 				projectileData[firstWord] = tmpData;
+			}
+			else if (firstWord.compare("Explosion") == 0)
+			{
+				ExplosionData* tmpData = new ExplosionData();
+				tmpData->explosionName = readValue;
+
+				ifs >> tmpData->fileName;
+				ifs >> tmpData->texIndex;
+				ifs >> tmpData->duration;
+
+				explosionData[readValue] = tmpData;
 			}
 			else{
 				std::cout << "Can't read property >" << firstWord << "< from file " << filepath;

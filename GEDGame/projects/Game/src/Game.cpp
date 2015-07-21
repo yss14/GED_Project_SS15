@@ -86,6 +86,7 @@ std::vector<SpriteVertex>				spritesVector;
 
 float									gatlingTime = 0.0f;
 float									plasmaTime = 0.0f;
+float									explosionTime = 0.0f;
 //--------------------------------------------------------------------------------------
 // UI control IDs
 //--------------------------------------------------------------------------------------
@@ -207,6 +208,7 @@ void InitApp()
 	std::vector<wstring> sprites;
 	sprites.push_back(Utils::buildRessourcePath(cfgParser->projectileData["Gatling"]->textureName));
 	sprites.push_back(Utils::buildRessourcePath(cfgParser->projectileData["Plasma"]->textureName));
+	sprites.push_back(Utils::buildRessourcePath(cfgParser->explosionData["explosion1"]->fileName));
 
 	g_SpriteRenderer = new SpriteRenderer(sprites);
 	srand(time(0));
@@ -521,6 +523,18 @@ void CALLBACK OnKeyboard(UINT nChar, bool bKeyDown, bool bAltDown, void* pUserCo
 		}
 	}
 
+	if (nChar == 'H')			// Explosion
+	{
+		if (explosionTime >= 1)
+		{
+			XMFLOAT3 newtmpPos(0,470,0);
+			XMFLOAT3 tmpVel(0,0,0);
+			spritesVector.push_back(SpriteVertex(newtmpPos, tmpVel, 1000, 2, 0, 0));
+			std::cout << "Explosion \n";
+			explosionTime = 0;
+		}
+	}
+
 	if (nChar == 'P')			// Fire Plasma Gun
 	{
 		if (plasmaTime > cfgParser->projectileData["Plasma"]->firerate)
@@ -677,74 +691,90 @@ void CALLBACK OnFrameMove(double fTime, float fElapsedTime, void* pUserContext)
 	// Projectile Handling
 	plasmaTime += fElapsedTime;
 	gatlingTime += fElapsedTime;
+	explosionTime += fElapsedTime;
 
 	for (int i = 0; i < spritesVector.size(); i++)
 	{
-		const XMFLOAT3 newGrav(0.0f, spritesVector[i].gravity * fElapsedTime, 0.0f);
-		XMVECTOR gravity = XMLoadFloat3(&newGrav);
-		const XMFLOAT3 vel(spritesVector[i].velocity);
-		XMVECTOR velo = XMLoadFloat3(&vel);
-		XMFLOAT3 NewVel(spritesVector[i].velocity);
-		XMStoreFloat3(&NewVel, velo + gravity);
-		spritesVector[i].velocity = NewVel;
-		XMVECTOR newVelVec = XMLoadFloat3(&NewVel);
-
-		const XMFLOAT3 oldPos3 = spritesVector[i].position;
-		XMVECTOR oldPos = XMLoadFloat3(&oldPos3);
-		const XMFLOAT3 deltaTime(fElapsedTime, fElapsedTime, fElapsedTime);
-		XMVECTOR deltaVec = XMLoadFloat3(&deltaTime);
-		XMVECTOR newPos = oldPos + newVelVec * deltaVec;
-		XMStoreFloat3(&spritesVector[i].position, newPos);
-		
-		XMVECTOR distance = newPos - g_camera.GetEyePt();
-		float distancef = 0.0f;
-		XMStoreFloat(&distancef, XMVector3Length(distance));
-		spritesVector[i].distanceToCam = distancef;
-
-		if (distancef > 10000.0f)
+		if (spritesVector[i].textureIndex == 0 || spritesVector[i].textureIndex == 1)
 		{
-			spritesVector.erase(spritesVector.begin() + i);
-			i--;
-			std::cout << "Number of projectiles " << spritesVector.size() << "\n";
-		} else
-		{
-			// check for colision with enemy
-			for (auto iter = g_enemyInstances.begin(); iter != g_enemyInstances.end();)
+			const XMFLOAT3 newGrav(0.0f, spritesVector[i].gravity * fElapsedTime, 0.0f);
+			XMVECTOR gravity = XMLoadFloat3(&newGrav);
+			const XMFLOAT3 vel(spritesVector[i].velocity);
+			XMVECTOR velo = XMLoadFloat3(&vel);
+			XMFLOAT3 NewVel(spritesVector[i].velocity);
+			XMStoreFloat3(&NewVel, velo + gravity);
+			spritesVector[i].velocity = NewVel;
+			XMVECTOR newVelVec = XMLoadFloat3(&NewVel);
+
+			const XMFLOAT3 oldPos3 = spritesVector[i].position;
+			XMVECTOR oldPos = XMLoadFloat3(&oldPos3);
+			const XMFLOAT3 deltaTime(fElapsedTime, fElapsedTime, fElapsedTime);
+			XMVECTOR deltaVec = XMLoadFloat3(&deltaTime);
+			XMVECTOR newPos = oldPos + newVelVec * deltaVec;
+			XMStoreFloat3(&spritesVector[i].position, newPos);
+
+			XMVECTOR distance = newPos - g_camera.GetEyePt();
+			float distancef = 0.0f;
+			XMStoreFloat(&distancef, XMVector3Length(distance));
+			spritesVector[i].distanceToCam = distancef;
+
+			if (distancef > 10000.0f)
 			{
-				const XMFLOAT3 enemyPos3 = (*iter)->position;
-				XMVECTOR enemyPos = XMLoadFloat3(&enemyPos3);
-				XMVECTOR distancec2c1 = XMVectorSubtract(enemyPos,newPos);
-				float distancec1c2;
-				XMStoreFloat(&distancec1c2, XMVector3Length(distancec2c1));
-				//std::cout << "DIstance: " << distancec1c2 << " RadialD: " << cfgParser->objectsEnemyData[(*iter)->typeName]->size + spritesVector[i].radius << std::endl;
-				//std::cout << enemyPos3.x << "|" << enemyPos3.y << "|" << enemyPos3.z << std::endl;
-				//std::cout << XMVectorGetX(newPos) << "|" << XMVectorGetY(newPos) << "|" << XMVectorGetZ(newPos) << std::endl;
-				
-				//cfgParser->objectsEnemyData[(*iter)->typeName]->size + spritesVector[i].radius
-				
-				if (distancec1c2 < 1000)
+				spritesVector.erase(spritesVector.begin() + i);
+				i--;
+				std::cout << "Number of projectiles " << spritesVector.size() << "\n";
+			}
+			else
+			{
+				// check for colision with enemy
+				for (auto iter = g_enemyInstances.begin(); iter != g_enemyInstances.end();)
 				{
-					(*iter)->remainingHP -= 100000.0f;//spritesVector[i].damage;
-					// Remove projectile
-					spritesVector.erase(spritesVector.begin() + i);
-					i--;
-					std::cout << "Hit" << std::endl; 
+					const XMFLOAT3 enemyPos3 = (*iter)->position;
+					XMVECTOR enemyPos = XMLoadFloat3(&enemyPos3);
+					XMVECTOR distancec2c1 = XMVectorSubtract(enemyPos, newPos);
+					float distancec1c2;
+					XMStoreFloat(&distancec1c2, XMVector3Length(distancec2c1));
+					//std::cout << "DIstance: " << distancec1c2 << " RadialD: " << cfgParser->objectsEnemyData[(*iter)->typeName]->size + spritesVector[i].radius << std::endl;
+					//std::cout << enemyPos3.x << "|" << enemyPos3.y << "|" << enemyPos3.z << std::endl;
+					//std::cout << XMVectorGetX(newPos) << "|" << XMVectorGetY(newPos) << "|" << XMVectorGetZ(newPos) << std::endl;
 
-					if ((*iter)->remainingHP <= 0)
+					//cfgParser->objectsEnemyData[(*iter)->typeName]->size + spritesVector[i].radius
+
+					if (distancec1c2 < 1000)
 					{
-						auto itrm = iter;
-						iter++;
-						g_enemyInstances.remove(*itrm);
-						std::cout << "Enemy died! \n";
-					} else
+						(*iter)->remainingHP -= 100000.0f;//spritesVector[i].damage;
+						// Remove projectile
+						spritesVector.erase(spritesVector.begin() + i);
+						i--;
+						std::cout << "Hit" << std::endl;
+
+						if ((*iter)->remainingHP <= 0)
+						{
+							auto itrm = iter;
+							iter++;
+							g_enemyInstances.remove(*itrm);
+							std::cout << "Enemy died! \n";
+						}
+						else
+						{
+							iter++;
+						}
+						break;
+					}
+					else
 					{
 						iter++;
 					}
-					break;
-				}else
-				{
-					iter++;
 				}
+			}
+		}
+		else //Explosion
+		{
+			spritesVector[i].animationProgress += fElapsedTime;
+			if (spritesVector[i].animationProgress > 1.0f)
+			{
+				spritesVector.erase(spritesVector.begin() + i);
+				i--;
 			}
 		}
 		

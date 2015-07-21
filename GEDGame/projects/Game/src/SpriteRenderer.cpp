@@ -12,8 +12,12 @@
 
 #include <DDSTextureLoader.h>
 #include "DirectXTex.h"
+#include "ConfigParser.h"
 
-SpriteRenderer::SpriteRenderer(const std::vector<std::wstring>& textureFilenames){
+extern ConfigParser cfgParser;
+
+SpriteRenderer::SpriteRenderer(const std::vector<std::wstring>& textureFilenames)
+{
 	m_textureFilenames = textureFilenames;
 	m_pEffect = nullptr;
 	m_spriteSRV;

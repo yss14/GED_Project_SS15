@@ -58,6 +58,14 @@ struct EnemyData
 	TransformData transform;
 };
 
+struct ExplosionData
+{
+	std::string explosionName;
+	std::string fileName;
+	int texIndex;
+	float duration;
+};
+
 class ConfigParser{
 public:
 	ConfigParser();
@@ -82,6 +90,7 @@ public:
 	std::vector<TransformData*>				objectsData;
 	std::map<std::string, EnemyData*>		objectsEnemyData;
 	std::map<std::string, ProjectileData*>	projectileData;
+	std::map<std::string, ExplosionData*>	explosionData;
 
 private:
 	std::string terrainHeightPath, terrainColorPath, terrainNormalPath;

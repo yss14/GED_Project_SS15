@@ -88,6 +88,9 @@ float4 DummyPS(in PSVertex input) : SV_Target0
 		case 1:
 			g_SpriteTex[1].GetDimensions(dims.x, dims.y, dims.z); //dims is written here!
 			return g_SpriteTex[1].Sample(samAnisotropic, float3(input.t, input.AnimationProgress*dims.z))*float4(1, 1, 1, input.OpacityFactor);
+		case 2:
+			g_SpriteTex[2].GetDimensions(dims.x, dims.y, dims.z); //dims is written here!
+			return g_SpriteTex[2].Sample(samAnisotropic, float3(input.t, input.AnimationProgress*dims.z))*float4(1, 1, 1, input.OpacityFactor);
 	}
 	return float4(1, 0, 1, 1);
 }
@@ -107,22 +110,22 @@ void SpriteGS(point SpriteVertex vertex[1], inout TriangleStream<PSVertex> strea
 
 	//Links Oben
 	v.Position = mul(float4(vertex[0].Pos - radius * camRight + radius * camUp, 1.0f), g_ViewProjection);
-	v.t = float2(0.0f, 1.0f);
+	v.t = float2(0.0f, 0.0f);
 	stream.Append(v);
 
 	//Rechts Oben
 	v.Position = mul(float4(vertex[0].Pos + radius * camRight + radius * camUp, 1.0f), g_ViewProjection);
-	v.t = float2(1.0f, 1.0f);
+	v.t = float2(1.0f, 0.0f);
 	stream.Append(v);
 
 	//Links Unten
 	v.Position = mul(float4(vertex[0].Pos - radius * camRight - radius * camUp, 1.0f), g_ViewProjection);
-	v.t = float2(0.0f, 0.0f);
+	v.t = float2(0.0f, 1.0f);
 	stream.Append(v);
 
 	//Rechts Unten
 	v.Position = mul(float4(vertex[0].Pos + radius * camRight - radius * camUp, 1.0f), g_ViewProjection);
-	v.t = float2(1.0f, 0.0f);
+	v.t = float2(1.0f, 1.0f);
 	stream.Append(v);
 
 }
