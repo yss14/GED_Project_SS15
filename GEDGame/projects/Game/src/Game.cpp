@@ -770,11 +770,16 @@ void CALLBACK OnFrameMove(double fTime, float fElapsedTime, void* pUserContext)
 		}
 		else //Explosion
 		{
-			spritesVector[i].animationProgress += fElapsedTime;
-			if (spritesVector[i].animationProgress > 1.0f)
+			spritesVector[i].animationProgress += fElapsedTime*0.7f;
+			if (spritesVector[i].animationProgress >= 0.7f)
 			{
-				spritesVector.erase(spritesVector.begin() + i);
-				i--;
+				spritesVector[i].opacityFactor -= fElapsedTime * 1.5f;
+				if (spritesVector[i].opacityFactor <= 0)
+				{
+					spritesVector.erase(spritesVector.begin() + i);
+					i--;
+				}
+				//spritesVector[i].animationProgress = 0;
 			}
 		}
 		
