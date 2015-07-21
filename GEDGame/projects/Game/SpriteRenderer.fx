@@ -17,7 +17,8 @@ struct PSVertex
 // INDEX 0: Gatling
 // INDEX 1: Plasma
 // siehe Game.cpp
-Texture2D		g_Tex[2];
+//Texture2D		g_Tex[2];
+Texture2DArray g_SpriteTex[5];
 
 matrix g_ViewProjection;
 float3 camRight, camUp;
@@ -57,6 +58,13 @@ SamplerState samLinearClamp
 	AddressV = Clamp;
 };
 
+SamplerState samAnisotropic
+{
+	Filter = ANISOTROPIC;
+	AddressU = Wrap;
+	AddressV = Wrap;
+};
+
 
 // ShaderCode
 void DummyVS(in SpriteVertex input, out SpriteVertex output) {
@@ -66,12 +74,16 @@ void DummyVS(in SpriteVertex input, out SpriteVertex output) {
 
 float4 DummyPS(in PSVertex input) : SV_Target0
 {
+	float3 dims; //(x-width, y-height, arraysize)
+
 	switch (input.TexIndex) // Index for g_Tex has to be a Constant!!!!!!!!11!!!!!!!11111
 	{
 		case 0: // Texture 0
-			return g_Tex[0].Sample(samLinearClamp, input.t); 
+			g_SpriteTex[0].GetDimensions(dims.x, dims.y, dims.z); //dims is written here!
+			return g_SpriteTex[0].Sample(samAnisotropic, float3(input.t, 0));//dims);
 		case 1:
-			return g_Tex[1].Sample(samLinearClamp, input.t);
+			g_SpriteTex[1].GetDimensions(dims.x, dims.y, dims.z); //dims is written here!
+			return g_SpriteTex[1].Sample(samAnisotropic, float3(input.t, 0));// dims);
 	}
 	return float4(1, 0, 1, 1);
 }

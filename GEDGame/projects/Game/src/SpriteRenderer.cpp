@@ -93,16 +93,18 @@ HRESULT SpriteRenderer::create(ID3D11Device* pdevice)
 
 	// Load the Textures data
 	m_spriteSRV.resize(m_textureFilenames.size());
-	m_spriteTexVar.resize(m_textureFilenames.size());
 	int index = 0;
 	for (std::wstring &tex : m_textureFilenames)
 	{
-		V(DirectX::CreateDDSTextureFromFile(pdevice, tex.c_str(), nullptr, &m_spriteSRV[index]));
-		m_spriteTexVar[index] = m_pEffect->GetVariableByName("g_Tex")->GetElement(index)->AsShaderResource();
-		assert(m_spriteTexVar[index]->IsValid());
+		//load textures to shader
+
+		ID3D11Texture2D *test = nullptr;
+
+		V_RETURN(DirectX::CreateDDSTextureFromFile(pdevice, tex.c_str(), nullptr, &m_spriteSRV[index]));
+		m_pEffect->GetVariableByName("g_SpriteTex")->GetElement(index)->AsShaderResource()->SetResource(m_spriteSRV[index]);
+		//assert(m_spriteTexVar[index]->IsValid());
 		index++;
 	}
-
 
 	return hr;
 }
@@ -137,13 +139,6 @@ HRESULT SpriteRenderer::renderSprites(ID3D11DeviceContext* context, const std::v
 	V_RETURN(g_camRight->SetFloatVector((float*)&camera.GetWorldRight()));
 	V_RETURN(g_camUp->SetFloatVector((float*)&camera.GetWorldUp()));
 
-	int index = 0;
-	for (ID3DX11EffectShaderResourceVariable *var : m_spriteTexVar)
-	{
-		V(var->SetResource(m_spriteSRV[index]));
-		index++;
-	}
-
 	V_RETURN(pass0->Apply(0, context));
 	context->Draw(sprites.size(), 0);
 
@@ -153,10 +148,8 @@ HRESULT SpriteRenderer::renderSprites(ID3D11DeviceContext* context, const std::v
 void SpriteRenderer::destroy(){
 	for (int i = 0; i < m_spriteSRV.size(); i++){
 		SAFE_RELEASE(m_spriteSRV[i]);
-		SAFE_RELEASE(m_spriteTexVar[i]);
 	}
 	m_spriteSRV.clear();
-	m_spriteTexVar.clear();
 
 	SAFE_RELEASE(m_pEffect);
 	SAFE_RELEASE(m_pVertexBuffer);

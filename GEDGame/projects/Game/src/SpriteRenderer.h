@@ -65,7 +65,7 @@ private:
 	// Sprite textures and corresponding shader resource views.
 	//std::vector<ID3D11Texture2D*>          m_spriteTex;       // You may not need this if you use CreateDDSTExtureFromFile!
 	std::vector<ID3D11ShaderResourceView*>				m_spriteSRV;
-	std::vector<ID3DX11EffectShaderResourceVariable*>	m_spriteTexVar;
+	//std::vector<ID3D11Texture2D*>						m_spriteTexVar;
 
 	// Maximum number of allowed sprites, i.e. size of the vertex buffer.
 	size_t m_spriteCountMax;
